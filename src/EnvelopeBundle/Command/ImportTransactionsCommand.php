@@ -20,7 +20,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
         $this
             ->setName("account:import")
             ->setDescription("Imports Bank Transactions into Account")
-            ->addArgument('accountID', InputArgument::REQUIRED, 'The transaction account ID')
+            ->addArgument('accountName', InputArgument::REQUIRED, 'The transaction account name')
             ->addArgument('inputFile', InputArgument::REQUIRED, 'CSV file of transactions');
 
     }
@@ -36,14 +36,17 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
         }
 
         $account = $em->getRepository('EnvelopeBundle:Account')
-            ->find($input->getArgument('accountID'));
+            ->findOneByName($input->getArgument('accountName'));
+        if(!$account) {
+            $output->writeln("Unable to find that account");
+            exit(1);
+        }
 
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
             while(($row = fgetcsv($handle)) !== FALSE) {
                 if(sizeof($row) < 5) {
                     continue;
                 }
-                var_dump($row);
                 // date,amount,__,__,Type,Description,Balance,__
                 $date = new \DateTime($row[0]);
                 $amount = $row[1];

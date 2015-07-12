@@ -24,9 +24,9 @@ class Account
     /**
      * @var string
      *
-     * @ORM\Column(name="AccountName", type="string", length=255, nullable=false)
+     * @ORM\Column(name="Name", type="string", length=255, nullable=false)
      */
-    private $accountName;
+    private $name;
 
     /**
      * Get id
@@ -41,12 +41,12 @@ class Account
     /**
      * Set accountName
      *
-     * @param string $accountName
+     * @param string $name
      * @return Account
      */
-    public function setAccountName($accountName)
+    public function setName($name)
     {
-        $this->accountName = $accountName;
+        $this->name = $name;
 
         return $this;
     }
@@ -56,9 +56,9 @@ class Account
      *
      * @return string 
      */
-    public function getAccountName()
+    public function getName()
     {
-        return $this->accountName;
+        return $this->name;
     }
 
 

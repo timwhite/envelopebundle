@@ -38,20 +38,20 @@ class AutoBudgetCommand  extends ContainerAwareCommand
         //    ->find($input->getArgument('accountID'));
 
         // Find all unassigned transactions (no budget transactions assigned to them at all)
-        $qb = $em->createQueryBuilder();
         $query = $em->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             WHERE NOT EXISTS (
               SELECT b
               FROM EnvelopeBundle:BudgetTransaction b
+              WHERE b.transaction = t
             )
             '
         );
 
         $transactions = $query->getResult();
         foreach($transactions as $transaction) {
-            //$output->writeln($transaction->getDescription());
+            $output->writeln($transaction->getDescription());
             foreach($this->searches as $searchBudget => $searchDescriptions) {
                 // Load Budget Account
                 $budgetAccount = $this->loadBudgetAccount($searchBudget);

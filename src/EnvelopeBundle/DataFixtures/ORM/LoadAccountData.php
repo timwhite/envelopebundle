@@ -22,7 +22,7 @@ class LoadAccountData implements FixtureInterface {
         ];
         foreach ($BankAccounts as $accountName) {
             $account = new Account();
-            $account->setAccountName($accountName);
+            $account->setName($accountName);
             $manager->persist($account);
         }
         foreach ($BudgetAccounts as $accountName) {
