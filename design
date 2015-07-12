@@ -1,0 +1,44 @@
+# Transactions table represent real bank accounts
+TX ID | Description | FullDescription | Account | Date | Amount
+
+# Budget Transactions table represents transactions in a budget account, they
+# must be linked to real transactions
+Budget TX ID | TX ID | Budget Account | Amount
+
+# Transfers between real bank accounts can use a special budget account for 
+# transfers, so we end up with 2 transactions and the budget account should 
+# still be $0
+1 | Savings | Today | -$10
+2 | Spending | Today | $10
+
+1 | 1 | Transfer Budget | -$10
+2 | 2 | Transfer Budget | $10
+
+# Transfers between budgets work with a null bank account (as the budget
+# transfer amounts must sum to $0
+5 | BudgetTransferAccount | Today | $0
+
+# Split transactions also work
+3 | Spending | Yesterday | -$10
+
+3 | 3 | Tim PM | -$2
+4 | 3 | Sara PM | -$8
+
+# Any unbalanced transactions need to be dealt with
+SELECT * from Transactions JOIN Budgets on TX ID WHERE SUM(Budget.Amounts) != Transaction.Amount
+
+
+
+# Bank Accounts
+# Budget Accounts
+AccountID | AccountName | Type
+
+
+# All income goes into an Income Budget, then a budget transfer transaction can
+# be done to distribute it to the correct budgets
+
+# Budgets are stored as weekly/fortnightly distribution table (Display it with
+# weekly amount as calculated). Easy display of all budgets sum vs entered
+# income amount to help with working out budgets
+# Maybe allow a formula that we calculate into an amount?
+BudgetID | Budget | Amount | Formula?/Notes
