@@ -36,6 +36,7 @@ class AutoBudgetCommand  extends ContainerAwareCommand
         $em = $this->getContainer()->get("doctrine")->getManager();
         //$account = $em->getRepository('EnvelopeBundle:Account')
         //    ->find($input->getArgument('accountID'));
+        $searches = $em->createQuery('SELECT s from EnvelopeBundle:AutoCodeSearch s')->getResult();
 
         // Find all unassigned transactions (no budget transactions assigned to them at all)
         $query = $em->createQuery(
@@ -52,22 +53,17 @@ class AutoBudgetCommand  extends ContainerAwareCommand
         $transactions = $query->getResult();
         foreach($transactions as $transaction) {
             $output->writeln($transaction->getDescription());
-            foreach($this->searches as $searchBudget => $searchDescriptions) {
-                // Load Budget Account
-                $budgetAccount = $this->loadBudgetAccount($searchBudget);
-                foreach($searchDescriptions as $searchDescription)
+            foreach($searches as $search) {
+                if(strpos($transaction->getDescription(), $search->getSearch()) !== false)
                 {
-                    if(strpos($transaction->getDescription(), $searchDescription) !== false)
-                    {
-                        $budgetTransaction = new BudgetTransaction();
-                        $budgetTransaction->setAmount($transaction->getAmount());
-                        $budgetTransaction->setBudgetAccount($budgetAccount);
-                        $budgetTransaction->setTransaction($transaction);
-                        $output->writeln($transaction->getDescription());
-                        $output->writeln($searchDescription);
-                        $output->writeln($searchBudget);
-                        $em->persist($budgetTransaction);
-                    }
+                    $budgetTransaction = new BudgetTransaction();
+                    $budgetTransaction->setAmount($transaction->getAmount());
+                    $budgetTransaction->setBudgetAccount($search->getBudgetAccount());
+                    $budgetTransaction->setTransaction($transaction);
+                    $output->writeln($transaction->getDescription());
+                    $output->writeln($search->getSearch());
+                    $output->writeln($search->getBudgetAccount()->getBudgetName());
+                    $em->persist($budgetTransaction);
                 }
                 $em->flush();
             }
@@ -76,9 +72,4 @@ class AutoBudgetCommand  extends ContainerAwareCommand
 
     }
 
-    protected function loadBudgetAccount($budgetName) {
-        $em = $this->getContainer()->get("doctrine")->getManager();
-        return $em->getRepository('EnvelopeBundle:BudgetAccount')
-            ->findOneBy(['budget_name' => $budgetName]);
-    }
 }

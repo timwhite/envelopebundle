@@ -1,3 +1,11 @@
 envelope_homepage:
     path:     /hello/{name}
     defaults: { _controller: EnvelopeBundle:Default:index }
+
+envelope_transactions:
+    path:   /transactions/
+    defaults: { _controller: EnvelopeBundle:Default:transactionList}
+
+envelope_budgets:
+    path:   /budgetaccounts/
+    defaults: { _controller: EnvelopeBundle:Default:budgetAccountList}

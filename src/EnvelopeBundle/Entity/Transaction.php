@@ -55,6 +55,11 @@ class Transaction
      */
     private $amount;
 
+    /**
+     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction")
+     */
+    private $budget_transactions;
+
 
     /**
      * Get id
@@ -179,5 +184,55 @@ class Transaction
     public function getAccount()
     {
         return $this->account;
+    }
+
+    public function getBudgetSum()
+    {
+        $balance = 0;
+        foreach($this->budget_transactions as $transaction)
+        {
+            $balance += $transaction->getAmount();
+        }
+        return $balance;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add budget_transactions
+     *
+     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     * @return Transaction
+     */
+    public function addBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    {
+        $this->budget_transactions[] = $budgetTransactions;
+
+        return $this;
+    }
+
+    /**
+     * Remove budget_transactions
+     *
+     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     */
+    public function removeBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    {
+        $this->budget_transactions->removeElement($budgetTransactions);
+    }
+
+    /**
+     * Get budget_transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getBudgetTransactions()
+    {
+        return $this->budget_transactions;
     }
 }

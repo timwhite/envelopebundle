@@ -3,11 +3,13 @@
 namespace EnvelopeBundle\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\BudgetAccount;
 
-class LoadAccountData implements FixtureInterface {
+class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface {
     /**
      * {@inheritDoc}
      */
@@ -18,7 +20,9 @@ class LoadAccountData implements FixtureInterface {
             'Mortgage',
             'Tim PM',
             'Sara PM',
-            'Fast Food'
+            'Fast Food',
+            'Petrol',
+            'Tim Work Lunch'
         ];
         foreach ($BankAccounts as $accountName) {
             $account = new Account();
@@ -32,5 +36,13 @@ class LoadAccountData implements FixtureInterface {
         }
 
         $manager->flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOrder()
+    {
+        return 1; // the order in which fixtures will be loaded
     }
 }

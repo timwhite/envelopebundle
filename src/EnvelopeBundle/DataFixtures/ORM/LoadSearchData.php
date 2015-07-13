@@ -5,8 +5,10 @@ namespace EnvelopeBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use EnvelopeBundle\Entity\AutoCodeSearch;
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 
-class LoadSearchData implements FixtureInterface {
+class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface {
     /**
      * {@inheritDoc}
      */
@@ -16,7 +18,18 @@ class LoadSearchData implements FixtureInterface {
             [
                 'Fast Food' => [
                     ' HJ ',
-                    'DOMINOS'
+                    'DOMINOS',
+                    'MCDONALDS',
+                    'KFC'
+                ],
+                'Tim Work Lunch' => [
+                    'CORNER CARVERY AND COFFEE',
+                    'AURA BAR'
+                ],
+                'Petrol' => [
+                    'WW PETROL',
+                    'FREEDOM FUELS',
+                    ' BP '
                 ]
             ];
 
@@ -32,5 +45,13 @@ class LoadSearchData implements FixtureInterface {
             }
         }
         $manager->flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOrder()
+    {
+        return 2;
     }
 }

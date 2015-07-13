@@ -22,13 +22,13 @@ class BudgetTransaction
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Transaction")
+     * @ORM\ManyToOne(targetEntity="Transaction", inversedBy="budget_transactions")
      * @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=false)
      */
     private $transaction;
 
     /**
-     * @ORM\ManyToOne(targetEntity="BudgetAccount")
+     * @ORM\ManyToOne(targetEntity="BudgetAccount", inversedBy="budget_transactions")
      * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
      */
     private $budgetAccount;

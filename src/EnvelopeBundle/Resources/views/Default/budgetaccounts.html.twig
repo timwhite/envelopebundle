@@ -1,0 +1,5 @@
+<ul>
+{% for budget in budgetaccounts %}
+    <li>{{ budget.budgetName }} ${{ budget.balance }}</li>
+{% endfor %}
+</ul>
