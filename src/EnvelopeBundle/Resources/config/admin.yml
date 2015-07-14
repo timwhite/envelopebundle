@@ -1,11 +1,44 @@
 services:
-    sonata.admin.post:
+    sonata.admin.budgetaccount:
         class: EnvelopeBundle\Admin\BudgetAccountAdmin
         tags:
             - { name: sonata.admin, manager_type: orm, group: "Accounts", label: "Budget Account" }
         arguments:
             - ~
             - EnvelopeBundle\Entity\BudgetAccount
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.account:
+        class: EnvelopeBundle\Admin\AccountAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Accounts", label: "Bank Account" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\Account
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.budgettransaction:
+        class: EnvelopeBundle\Admin\BudgetTransactionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Transactions", label: "Budget Transactions" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\BudgetTransaction
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.transaction:
+        class: EnvelopeBundle\Admin\TransactionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Transactions", label: "Bank Transactions" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\Transaction
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]

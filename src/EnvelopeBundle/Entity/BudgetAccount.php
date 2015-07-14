@@ -118,4 +118,9 @@ class BudgetAccount
         }
         return $balance;
     }
+
+    public function __toString()
+    {
+        return $this->getBudgetName() . ': ' . $this->getBalance();
+    }
 }
