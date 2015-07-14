@@ -1,0 +1,11 @@
+services:
+    sonata.admin.post:
+        class: EnvelopeBundle\Admin\BudgetAccountAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Accounts", label: "Budget Account" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\BudgetAccount
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
