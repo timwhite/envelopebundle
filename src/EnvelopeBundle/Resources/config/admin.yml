@@ -42,3 +42,14 @@ services:
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.autocodesearch:
+        class: EnvelopeBundle\Admin\AutoCodeSearchAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Coding", label: "Auto Code Searches" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\AutoCodeSearch
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
