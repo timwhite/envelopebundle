@@ -235,4 +235,9 @@ class Transaction
     {
         return $this->budget_transactions;
     }
+
+    public function __toString()
+    {
+        return $this->getDescription() . ': ' .$this->getBudgetSum() . '/' . $this->getAmount();
+    }
 }
