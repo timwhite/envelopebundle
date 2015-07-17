@@ -32,6 +32,13 @@ class AutoCodeSearch
      */
     private $search;
 
+    /**
+     * @ORM\Column(name="description_rename", type="string", length=255, nullable=true)
+     *
+     * The description we rename autocoded transactions
+     */
+    private $rename = null;
+
 
 
     /**
@@ -88,5 +95,28 @@ class AutoCodeSearch
     public function getBudgetAccount()
     {
         return $this->budgetAccount;
+    }
+
+    /**
+     * Set rename
+     *
+     * @param string $rename
+     * @return AutoCodeSearch
+     */
+    public function setRename($rename)
+    {
+        $this->rename = $rename;
+
+        return $this;
+    }
+
+    /**
+     * Get rename
+     *
+     * @return string 
+     */
+    public function getRename()
+    {
+        return $this->rename;
     }
 }

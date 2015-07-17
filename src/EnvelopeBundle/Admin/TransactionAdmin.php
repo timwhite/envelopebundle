@@ -40,6 +40,7 @@ class TransactionAdmin extends Admin
             ->add('fullDescription')
             ->add('account')
             ->add('amount')
+            ->add('unassignedSum')
         ;
     }
 }

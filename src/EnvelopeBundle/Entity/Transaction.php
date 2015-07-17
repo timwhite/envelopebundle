@@ -195,6 +195,12 @@ class Transaction
         }
         return $balance;
     }
+
+    public function getUnassignedSum()
+    {
+        return $this->getBudgetSum() - $this->getAmount();
+    }
+
     /**
      * Constructor
      */

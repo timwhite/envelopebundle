@@ -63,6 +63,13 @@ class AutoBudgetCommand  extends ContainerAwareCommand
                     $output->writeln($transaction->getDescription());
                     $output->writeln($search->getSearch());
                     $output->writeln($search->getBudgetAccount()->getBudgetName());
+
+                    if($search->getRename() != "")
+                    {
+                        $transaction->setDescription($search->getRename());
+                        $em->persist($transaction);
+                    }
+
                     $em->persist($budgetTransaction);
                 }
                 $em->flush();

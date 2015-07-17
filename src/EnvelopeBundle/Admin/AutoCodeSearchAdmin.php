@@ -14,6 +14,7 @@ class AutoCodeSearchAdmin extends Admin
     {
         $formMapper
             ->add('search', 'text', array('label' => 'Search Text'))
+            ->add('rename', 'text', array('label' => 'Transaction Description Rename', 'required' => false))
             ->add('budgetAccount', 'entity', array('class' => 'EnvelopeBundle\Entity\BudgetAccount'))
         ;
     }
@@ -33,6 +34,7 @@ class AutoCodeSearchAdmin extends Admin
         $listMapper
             ->addIdentifier('search')
             ->add('budgetAccount')
+            ->add('rename')
         ;
     }
 }
