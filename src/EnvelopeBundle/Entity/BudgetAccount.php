@@ -33,6 +33,13 @@ class BudgetAccount
      */
     private $budget_transactions;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="BudgetGroup", inversedBy="group_accounts")
+     * @ORM\JoinColumn(name="budget_group", referencedColumnName="id", nullable=false)
+     */
+    private $budget_group;
+
+
 
     /**
      * Get id
@@ -122,5 +129,29 @@ class BudgetAccount
     public function __toString()
     {
         return $this->getBudgetName() . ': ' . $this->getBalance();
+    }
+
+
+    /**
+     * Set budget_group
+     *
+     * @param \EnvelopeBundle\Entity\BudgetGroup $budgetGroup
+     * @return BudgetAccount
+     */
+    public function setBudgetGroup(\EnvelopeBundle\Entity\BudgetGroup $budgetGroup)
+    {
+        $this->budget_group = $budgetGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get budget_group
+     *
+     * @return \EnvelopeBundle\Entity\BudgetGroup 
+     */
+    public function getBudgetGroup()
+    {
+        return $this->budget_group;
     }
 }

@@ -14,6 +14,7 @@ class BudgetAccountAdmin extends Admin
     {
         $formMapper
             ->add('budget_name', 'text', array('label' => 'Budget Account Name'))
+            ->add('budget_group')
         ;
     }
 
@@ -30,6 +31,7 @@ class BudgetAccountAdmin extends Admin
     {
         $listMapper
             ->addIdentifier('budget_name')
+            ->add('budget_group')
         ;
     }
 }

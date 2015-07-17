@@ -60,6 +60,13 @@ class Transaction
      */
     private $budget_transactions;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Import")
+     * @ORM\JoinColumn(name="import_id", referencedColumnName="id", nullable=true)
+     */
+    private $import;
+
+
 
     /**
      * Get id
@@ -245,5 +252,28 @@ class Transaction
     public function __toString()
     {
         return $this->getDescription() . ': ' .$this->getBudgetSum() . '/' . $this->getAmount();
+    }
+
+    /**
+     * Set import
+     *
+     * @param \EnvelopeBundle\Entity\Import $import
+     * @return Transaction
+     */
+    public function setImport(\EnvelopeBundle\Entity\Import $import = null)
+    {
+        $this->import = $import;
+
+        return $this;
+    }
+
+    /**
+     * Get import
+     *
+     * @return \EnvelopeBundle\Entity\Import 
+     */
+    public function getImport()
+    {
+        return $this->import;
     }
 }

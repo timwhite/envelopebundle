@@ -71,9 +71,11 @@ class AutoBudgetCommand  extends ContainerAwareCommand
                     }
 
                     $em->persist($budgetTransaction);
+                    break;
                 }
-                $em->flush();
+
             }
+            $em->flush();
         }
         // Run the descriptions against a list of keywords per budget
 

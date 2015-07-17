@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Command;
 
+use EnvelopeBundle\Entity\Import;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -42,7 +43,12 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             exit(1);
         }
 
+
+
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
+            $import = new Import();
+            $em->persist($import);
+
             while(($row = fgetcsv($handle)) !== FALSE) {
                 if(sizeof($row) < 5) {
                     continue;
@@ -61,6 +67,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 $transaction->setAmount($amount);
                 $transaction->setDescription($description);
                 $transaction->setFullDescription($row[4] . ':' . $row[5]);
+                $transaction->setImport($import);
 
                 $em->persist($transaction);
             }
