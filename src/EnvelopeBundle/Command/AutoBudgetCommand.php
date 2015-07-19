@@ -52,7 +52,7 @@ class AutoBudgetCommand  extends ContainerAwareCommand
 
         $transactions = $query->getResult();
         foreach($transactions as $transaction) {
-            $output->writeln($transaction->getDescription());
+            //$output->writeln($transaction->getDescription());
             foreach($searches as $search) {
                 if(strpos($transaction->getDescription(), $search->getSearch()) !== false)
                 {

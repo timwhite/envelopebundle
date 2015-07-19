@@ -22,7 +22,7 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
                 'Electricity',
                 'Mobile Phone',
                 'House Insurance',
-                'Go Card',
+                'Transport',
                 'Tithe',
                 'AOG WR',
                 'Stu and Jo',

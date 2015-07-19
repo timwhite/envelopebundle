@@ -22,7 +22,9 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             ->setName("account:import")
             ->setDescription("Imports Bank Transactions into Account")
             ->addArgument('accountName', InputArgument::REQUIRED, 'The transaction account name')
-            ->addArgument('inputFile', InputArgument::REQUIRED, 'CSV file of transactions');
+            ->addArgument('inputFile', InputArgument::REQUIRED, 'CSV file of transactions')
+            ->addOption('import_duplicates', null, InputOption::VALUE_NONE, 'Import suspected duplicates')
+        ;
 
     }
 
@@ -48,6 +50,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
             $import = new Import();
             $em->persist($import);
+            $em->flush();
 
             while(($row = fgetcsv($handle)) !== FALSE) {
                 if(sizeof($row) < 5) {
@@ -61,12 +64,41 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 {
                     $description = $row[4];
                 }
+                $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
+
+                if(!$input->getOption('import_duplicates'))
+                {
+                    // Attempt to detect duplicate transaction
+                    $query = $em->createQuery('
+                      SELECT t FROM EnvelopeBundle\Entity\Transaction t
+                      WHERE t.account = :account
+                      AND t.fullDescription = :fulldesc
+                      AND t.amount = :amount
+                      AND t.date = :tdate
+                      AND t.import != :import');
+                    $query->setParameters(
+                        [
+                            'account' => $account,
+                            'fulldesc' => $fullDescription,
+                            'amount' => $amount,
+                            'tdate' => $date,
+                            'import' => $import->getId()
+                        ]
+                    );
+                    $results = $query->getResult();
+                    if(sizeof($results) > 0)
+                    {
+                        $output->writeln("Not importing duplicate($import) transaction: ".$date->format('Y-m-d H:i:s').": $amount, $fullDescription");
+                        continue;
+                    }
+                }
+
                 $transaction = new Transaction();
                 $transaction->setAccount($account);
                 $transaction->setDate($date);
                 $transaction->setAmount($amount);
                 $transaction->setDescription($description);
-                $transaction->setFullDescription($row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]));
+                $transaction->setFullDescription($fullDescription);
                 $transaction->setImport($import);
 
                 $em->persist($transaction);

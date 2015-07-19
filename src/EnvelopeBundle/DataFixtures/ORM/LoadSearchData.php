@@ -65,7 +65,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     ['SU QLD FORTITUDE', 'SU Support']
                 ],
 
-                'Mobile' => [
+                'Mobile Phone' => [
                     ['INTERNET TRANSFER Sara Phone', 'Sara Mobile']
                 ],
                 'Transport' => [

@@ -66,4 +66,9 @@ class Import
     {
         return $this->importTime;
     }
+
+    public function __toString()
+    {
+        return $this->id . " " . $this->importTime->format('Y-m-d H:i:s');
+    }
 }
