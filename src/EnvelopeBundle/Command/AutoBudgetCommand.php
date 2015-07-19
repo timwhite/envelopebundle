@@ -47,38 +47,37 @@ class AutoBudgetCommand  extends ContainerAwareCommand
               FROM EnvelopeBundle:BudgetTransaction b
               WHERE b.transaction = t
             )
+            AND t.description LIKE :search
             '
         );
 
-        $transactions = $query->getResult();
-        foreach($transactions as $transaction) {
-            //$output->writeln($transaction->getDescription());
-            foreach($searches as $search) {
-                if(strpos($transaction->getDescription(), $search->getSearch()) !== false)
-                {
-                    $budgetTransaction = new BudgetTransaction();
-                    $budgetTransaction->setAmount($transaction->getAmount());
-                    $budgetTransaction->setBudgetAccount($search->getBudgetAccount());
-                    $budgetTransaction->setTransaction($transaction);
-                    $output->writeln($transaction->getDescription());
-                    $output->writeln($search->getSearch());
-                    $output->writeln($search->getBudgetAccount()->getBudgetName());
+        foreach($searches as $search) {
+            $query->setParameters(
+                ['search' => "%" . $search->getSearch() . "%"]
+            );
 
-                    if($search->getRename() != "")
-                    {
-                        $transaction->setDescription($search->getRename());
-                        $em->persist($transaction);
-                    }
 
-                    $em->persist($budgetTransaction);
-                    break;
+            $transactions = $query->getResult();
+            foreach ($transactions as $transaction) {
+                $budgetTransaction = new BudgetTransaction();
+                $budgetTransaction->setAmount($transaction->getAmount());
+                $budgetTransaction->setBudgetAccount($search->getBudgetAccount());
+                $budgetTransaction->setTransaction($transaction);
+                $output->writeln($transaction->getDescription());
+                $output->writeln($search->getSearch());
+                $output->writeln($search->getBudgetAccount()->getBudgetName());
+
+                if ($search->getRename() != "") {
+                    $transaction->setDescription($search->getRename());
+                    $em->persist($transaction);
                 }
 
+                $em->persist($budgetTransaction);
             }
             $em->flush();
         }
-        // Run the descriptions against a list of keywords per budget
-
     }
+
+
 
 }
