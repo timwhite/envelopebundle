@@ -208,8 +208,13 @@ class Transaction
 
     public function getUnassignedSum()
     {
+        return $this->getAmount() - $this->getBudgetSum();
+    }
+
+    public function getUnassignedSumFormatted()
+    {
         setlocale(LC_MONETARY, 'en_AU');
-        return money_format('%i', $this->getBudgetSum() - $this->getAmount());
+        return money_format('%i', $this->getUnassignedSum());
     }
 
     /**
