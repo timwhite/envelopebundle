@@ -27,7 +27,8 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     ['AURA BAR', 'Aura Bar'],
                     ['VIETNAM HOUSE FORTITUDE', 'Vietnam House'],
                     ['RED LOTUS VIET', 'Red Lotus'],
-                    ['GOOD MORNING SUSHI', 'Good Morning Sushi']
+                    ['GOOD MORNING SUSHI', 'Good Morning Sushi'],
+                    ['SUSHI ON THE RUN', 'Sushi on the run'],
                 ],
                 'Petrol' => [
                     ['WW PETROL', 'Petrol'],
@@ -35,9 +36,16 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     [' BP ', 'Petrol'],
                     ['FREEDOM FUELS', 'Petrol'],
                     ['FIFTY FIVE TRADING', 'Petrol'],
+                    ['CALTEX', 'Petrol'],
                 ],
                 'Electricity' => [
                     ['Click Energy', 'Electricity']
+                ],
+                'Internet' => [
+                    ['IINET LIMITED PERTH', 'Internet Iinet']
+                ],
+                'Car Loan' => [
+                    ['INTERNET TRANSFER Car Repay', 'Car Repayment']
                 ],
                 'Google Play' => [
                     ['GOOGLE *Music', 'Google Play Music']
@@ -78,8 +86,12 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     ['AUS GOV FAMILIES', 'Family Tax']
 
                 ],
+                'Lucy Rent' => [
+                    ['Rent Lucy Watson', 'Lucy Rent']
+                ],
                 'Groceries' => [
-                    ['ST IVES BAKERY', 'St Ives Bakery']
+                    ['ST IVES BAKERY', 'St Ives Bakery'],
+                    ['FOODWORKS VALLEY', 'Foodworks'],
                 ],
                 'Prescriptions' => [
                     ['Goodna Day Night ', 'Pharmacy'],

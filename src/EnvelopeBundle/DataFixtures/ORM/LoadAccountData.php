@@ -33,6 +33,10 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
                 'Water/Rates',
                 'Internet',
                 'Kids PM',
+                'Car Loan',
+                'Lucy Car Loan',
+                'Lucy Rent'
+
             ],
             'Cash' => [
                 'Groceries',
@@ -80,7 +84,9 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
             'Budget Special' => [
                 'Float',
                 'Income Distribution',
-                'Bank Account Transfer'
+                'Bank Account Transfer',
+                'Car Loan Special',
+                'Lucy Car Loan Special'
             ]
         ];
         foreach ($BankAccounts as $accountName) {

@@ -24,7 +24,7 @@ class BudgetAccount
     /**
      * @var string
      *
-     * @ORM\Column(name="BudgetName", type="string", length=255, nullable=false)
+     * @ORM\Column(name="BudgetName", type="string", length=255, nullable=false, unique=true)
      */
     private $budget_name;
 
