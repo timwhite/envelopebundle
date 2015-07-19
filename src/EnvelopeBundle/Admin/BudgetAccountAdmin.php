@@ -32,6 +32,7 @@ class BudgetAccountAdmin extends Admin
         $listMapper
             ->addIdentifier('budget_name')
             ->add('budget_group')
+            ->add('balance')
         ;
     }
 }

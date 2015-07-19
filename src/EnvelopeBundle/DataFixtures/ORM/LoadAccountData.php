@@ -16,7 +16,7 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $BankAccounts = ['NAB Cash', 'NAB Everyday', 'ANZ Offset', 'ANZ Credit Card'];
+        $BankAccounts = ['NAB Cash', 'NAB Everyday', 'ANZ Offset', 'ANZ Credit Card', 'Budget Transfer'];
         $BudgetAccounts = [
             'Regular' => [
                 'Electricity',

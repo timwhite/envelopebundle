@@ -27,11 +27,11 @@ class DefaultController extends Controller
     {
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT b
-            FROM EnvelopeBundle:BudgetAccount b
+            FROM EnvelopeBundle:BudgetGroup b
             '
         );
 
         return $this->render('EnvelopeBundle:Default:budgetaccounts.html.twig',
-            array('budgetaccounts' => $query->getResult()));
+            array('budgetgroups' => $query->getResult()));
     }
 }

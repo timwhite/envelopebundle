@@ -30,6 +30,7 @@ class AccountAdmin extends Admin
     {
         $listMapper
             ->addIdentifier('name')
+            ->add('balance')
         ;
     }
 }

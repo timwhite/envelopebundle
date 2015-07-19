@@ -193,6 +193,9 @@ class Transaction
         return $this->account;
     }
 
+    /**
+     * @return string
+     */
     public function getBudgetSum()
     {
         $balance = 0;
@@ -205,7 +208,8 @@ class Transaction
 
     public function getUnassignedSum()
     {
-        return $this->getBudgetSum() - $this->getAmount();
+        setlocale(LC_MONETARY, 'en_AU');
+        return money_format('%i', $this->getBudgetSum() - $this->getAmount());
     }
 
     /**

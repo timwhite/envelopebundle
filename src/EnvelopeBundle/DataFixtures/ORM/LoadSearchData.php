@@ -34,6 +34,10 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     ['FREEDOM FUELS', 'Petrol'],
                     [' BP ', 'Petrol'],
                     ['FREEDOM FUELS', 'Petrol'],
+                    ['FIFTY FIVE TRADING', 'Petrol'],
+                ],
+                'Electricity' => [
+                    ['Click Energy', 'Electricity']
                 ],
                 'Google Play' => [
                     ['GOOGLE *Music', 'Google Play Music']
@@ -45,6 +49,30 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                 'Tithe' => [
                     ['INTERNET TRANSFER TITHE', 'Tithe']
                 ],
+                'World Vision' => [
+                    ['WORLD VISION AUSTRALIA', 'World Vision']
+                ],
+                'Stu and Jo' => [
+                    ['INTERNET TRANSFER SUPPORT', 'Stu & Jo Support']
+                ],
+                'Africa' => [
+                    ['OPERATION AFRICA', 'Operation Africa']
+                ],
+                'AOG WR' => [
+                    ['Winds ACC Inter', 'Kelvin AOG WR']
+                ],
+                'SU' => [
+                    ['SU QLD FORTITUDE', 'SU Support']
+                ],
+
+                'Mobile' => [
+                    ['INTERNET TRANSFER Sara Phone', 'Sara Mobile']
+                ],
+                'Transport' => [
+                    ['TRANSLINK TRANSIT AU', 'Go Card'],
+                    ['QLD MOTORWAYS MANAGEMENT EIGHT MILE', 'Go Via']
+                ],
+
                 'Income Distribution' => [
                     ['12366170889420 SCRIPTURE UNION', 'Tim Salary'],
                     ['AUS GOV FAMILIES', 'Family Tax']
@@ -55,6 +83,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                 ],
                 'Prescriptions' => [
                     ['Goodna Day Night ', 'Pharmacy'],
+                    ['TERRY WHITE CHEMISTS', 'Pharmacy']
 
                 ]
             ];

@@ -1,5 +1,33 @@
-<ul>
-{% for budget in budgetaccounts %}
-    <li>{{ budget.budgetName }} ${{ budget.balance }}</li>
-{% endfor %}
-</ul>
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block page_content %}
+    <div class="row">
+    {% for budgetgroup in budgetgroups %}
+
+        <div class="col-sm-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ budgetgroup.name }}</h3>
+                    <div class="box-tools pull-right">
+                        <span class="label label-info">{{ budgetgroup.budgetsum|localizedcurrency('AUD') }}</span>
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table table-striped">
+                    {% for budget in budgetgroup.budgetaccounts %}
+                        <tr>
+                            <td>{{ budget.budgetName }}</td>
+                            <td align="right">{{ budget.balance|localizedcurrency('AUD') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                <div class="box-footer">
+                        The footer of the box
+                </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div><!-- col -->
+
+    {% endfor %}
+    </div><!-- row -->
+{% endblock %}

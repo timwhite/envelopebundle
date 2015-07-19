@@ -29,6 +29,11 @@ class Account
     private $name;
 
     /**
+     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account")
+     */
+    private $transactions;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -66,5 +71,57 @@ class Account
         return $this->getName();
     }
 
+    /**
+     * @return string
+     */
+    public function getBalance()
+    {
+        $balance = 0;
+        foreach($this->transactions as $transaction)
+        {
+            $balance += $transaction->getAmount();
+        }
+        return $balance;
+    }
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add transactions
+     *
+     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     * @return Account
+     */
+    public function addTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    {
+        $this->transactions[] = $transactions;
+
+        return $this;
+    }
+
+    /**
+     * Remove transactions
+     *
+     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     */
+    public function removeTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    {
+        $this->transactions->removeElement($transactions);
+    }
+
+    /**
+     * Get transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
+    }
 }

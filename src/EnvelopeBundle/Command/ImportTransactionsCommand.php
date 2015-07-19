@@ -56,7 +56,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 // date,amount,__,__,Type,Description,Balance,__
                 $date = new \DateTime($row[0]);
                 $amount = $row[1];
-                $description = $row[5];
+                $description = preg_replace("/ {2,}/", " ", $row[5]);
                 if($description == "")
                 {
                     $description = $row[4];
@@ -66,7 +66,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 $transaction->setDate($date);
                 $transaction->setAmount($amount);
                 $transaction->setDescription($description);
-                $transaction->setFullDescription($row[4] . ':' . $row[5]);
+                $transaction->setFullDescription($row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]));
                 $transaction->setImport($import);
 
                 $em->persist($transaction);

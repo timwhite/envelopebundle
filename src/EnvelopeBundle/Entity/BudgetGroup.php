@@ -112,4 +112,14 @@ class BudgetGroup
     {
         return $this->budget_accounts;
     }
+
+    public function getBudgetSum()
+    {
+        $balance = 0;
+        foreach($this->getBudgetAccounts() as $account)
+        {
+            $balance += $account->getBalance();
+        }
+        return $balance;
+    }
 }
