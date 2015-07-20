@@ -64,7 +64,7 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
                 'Kids Swimming',
                 'Dentist',
                 'Car Rego',
-                'Car Maint',
+                'Car Maintenance',
                 'Car Insurance',
                 'RACQ',
                 'Birthdays Us',

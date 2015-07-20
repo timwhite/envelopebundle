@@ -14,8 +14,8 @@ class DefaultController extends Controller
     public function transactionListAction()
     {
         $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Transaction t
+            'SELECT a
+            FROM EnvelopeBundle:Account a
             '
         );
 
@@ -26,14 +26,14 @@ class DefaultController extends Controller
             WHERE b.transaction = t
             GROUP BY t.id
             HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
-
+            ORDER BY t.date
             '
         );
 
 
         return $this->render('EnvelopeBundle:Default:transactions.html.twig',
             [
-                'transactions' => $query->getResult(),
+                'accounts' => $query->getResult(),
                 'unbalancedtransactions' => $query2->getResult()
             ]);
     }

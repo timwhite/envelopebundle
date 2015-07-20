@@ -20,7 +20,8 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     [' HJ ', 'HJ'],
                     ['DOMINOS', 'Dominos'],
                     ['MCDONALDS', 'McDonalds'],
-                    ['KFC', 'KFC']
+                    ['KFC', 'KFC'],
+                    ['SUBWAY', 'Subway'],
                 ],
                 'Tim Work Lunch' => [
                     ['CORNER CARVERY AND COFFEE', 'Corner Carvery'],
@@ -29,6 +30,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                     ['RED LOTUS VIET', 'Red Lotus'],
                     ['GOOD MORNING SUSHI', 'Good Morning Sushi'],
                     ['SUSHI ON THE RUN', 'Sushi on the run'],
+                    [' TARA F & B ', 'Tara Thai'],
                 ],
                 'Petrol' => [
                     ['WW PETROL', 'Petrol'],
@@ -46,6 +48,9 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                 ],
                 'Car Loan' => [
                     ['INTERNET TRANSFER Car Repay', 'Car Repayment']
+                ],
+                'Car Maintenance' => [
+                    ['REPCO', 'Repco']
                 ],
                 'Google Play' => [
                     ['GOOGLE *Music', 'Google Play Music']
@@ -92,10 +97,18 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
                 'Groceries' => [
                     ['ST IVES BAKERY', 'St Ives Bakery'],
                     ['FOODWORKS VALLEY', 'Foodworks'],
+                    [' COLES ', 'Coles'],
+                    [' WOOLWORTHS ', 'Woolworths'],
+                    [' DRAKE SUPERMARKETS ', 'Drake Supermarkets'],
+                    ['BAKERS DELIGHT', 'Bakers Delight'],
+                    [' IGA ', 'IGA'],
+                    ['ALDI', 'ALDI']
+
                 ],
                 'Prescriptions' => [
                     ['Goodna Day Night ', 'Pharmacy'],
-                    ['TERRY WHITE CHEMISTS', 'Pharmacy']
+                    ['TERRY WHITE CHEMISTS', 'Pharmacy'],
+                    ['DISCOUNT DRUG STORE', 'Pharmacy'],
 
                 ]
             ];
