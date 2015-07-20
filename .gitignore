@@ -11,3 +11,6 @@
 /web/bundles/
 *~
 .idea/
+autocodesearches.yaml
+bankaccounts.yaml
+budgetaccounts.yaml
