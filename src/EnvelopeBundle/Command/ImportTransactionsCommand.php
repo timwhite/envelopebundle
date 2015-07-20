@@ -24,6 +24,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             ->addArgument('accountName', InputArgument::REQUIRED, 'The transaction account name')
             ->addArgument('inputFile', InputArgument::REQUIRED, 'CSV file of transactions')
             ->addOption('import_duplicates', null, InputOption::VALUE_NONE, 'Import suspected duplicates')
+            ->addOption('importANZ', null, InputOption::VALUE_NONE, 'Import an ANZ CSV file')
         ;
 
     }
@@ -59,12 +60,20 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 // date,amount,__,__,Type,Description,Balance,__
                 $date = new \DateTime($row[0]);
                 $amount = $row[1];
-                $description = preg_replace("/ {2,}/", " ", $row[5]);
-                if($description == "")
+
+                // ANZ and NAB differ for importing description
+                if($input->getOption('importANZ'))
                 {
-                    $description = $row[4];
+                    // ANZ format is date,amount,description
+                    $description = preg_replace("/ {2,}/", " ", $row[2]);
+                    $fullDescription = $description;
+                } else {
+                    $description = preg_replace("/ {2,}/", " ", $row[5]);
+                    if ($description == "") {
+                        $description = $row[4];
+                    }
+                    $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
                 }
-                $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
 
                 if(!$input->getOption('import_duplicates'))
                 {
