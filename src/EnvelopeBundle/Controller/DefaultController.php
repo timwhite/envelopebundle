@@ -19,8 +19,23 @@ class DefaultController extends Controller
             '
         );
 
-        return $this->render('EnvelopeBundle:Default:index.html.twig',
-            array('transactions' => $query->getResult()));
+        $query2 = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT t
+            FROM EnvelopeBundle:Transaction t
+            LEFT JOIN EnvelopeBundle:BudgetTransaction b
+            WHERE b.transaction = t
+            GROUP BY t.id
+            HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
+
+            '
+        );
+
+
+        return $this->render('EnvelopeBundle:Default:transactions.html.twig',
+            [
+                'transactions' => $query->getResult(),
+                'unbalancedtransactions' => $query2->getResult()
+            ]);
     }
 
     public function budgetAccountListAction()
