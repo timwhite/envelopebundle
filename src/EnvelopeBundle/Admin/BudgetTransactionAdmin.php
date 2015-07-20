@@ -32,7 +32,8 @@ class BudgetTransactionAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('transaction')
+            ->addIdentifier('id')
+            ->add('transaction')
             ->add('budgetAccount')
             ->add('amount')
         ;

@@ -9,6 +9,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\BudgetAccount;
 use EnvelopeBundle\Entity\BudgetGroup;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Parser;
 
 class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface {
     /**
@@ -16,79 +18,16 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $BankAccounts = ['NAB Cash', 'NAB Everyday', 'ANZ Offset', 'ANZ Credit Card', 'Budget Transfer'];
-        $BudgetAccounts = [
-            'Regular' => [
-                'Electricity',
-                'Mobile Phone',
-                'House Insurance',
-                'Transport',
-                'Tithe',
-                'AOG WR',
-                'Stu and Jo',
-                'World Vision',
-                'Africa',
-                'SU',
-                'Google Play',
-                'Water/Rates',
-                'Internet',
-                'Kids PM',
-                'Car Loan',
-                'Lucy Car Loan',
-                'Lucy Rent'
 
-            ],
-            'Cash' => [
-                'Groceries',
-                'Kids',
-                'Petrol',
-                'Family Day',
-                'Eat Out',
-                'Dates',
-                'Tim Work Lunch',
-                'God Money',
-                'Tim PM',
-                'Sara PM',
-                'Household Consumables',
-                'Clothing',
-                'Prescriptions',
-                'Medical',
-                'Household'
+        $yaml = new Parser();
+        try {
+            $BankAccounts = $yaml->parse(file_get_contents('bankaccounts.yaml'));
+            $BudgetAccounts = $yaml->parse(file_get_contents('budgetaccounts.yaml'));
+        } catch (ParseException $e) {
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
+            throw $e;
+        }
 
-
-
-            ],
-            'Savings' => [
-                'Mortgage',
-                'School',
-                'Kids Swimming',
-                'Dentist',
-                'Car Rego',
-                'Car Maintenance',
-                'Car Insurance',
-                'RACQ',
-                'Birthdays Us',
-                'Holidays',
-                'Christmas Food',
-                'Christmas WA',
-                'Christmas Photobooks',
-                'Christmas Watson',
-                'Christmas Us',
-                'Birthdays and Parties',
-                'Emergency',
-                'Missions',
-                'Interest Offset',
-                'Home Maintenance',
-                'Car Savings',
-            ],
-            'Budget Special' => [
-                'Float',
-                'Income Distribution',
-                'Bank Account Transfer',
-                'Car Loan Special',
-                'Lucy Car Loan Special'
-            ]
-        ];
         foreach ($BankAccounts as $accountName) {
             $account = new Account();
             $account->setName($accountName);

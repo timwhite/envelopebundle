@@ -7,6 +7,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 use EnvelopeBundle\Entity\AutoCodeSearch;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Parser;
 
 class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface {
     /**
@@ -14,104 +16,13 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
      */
     public function load(ObjectManager $manager)
     {
-        $budget_searches =
-            [
-                'Eat Out' => [
-                    [' HJ ', 'HJ'],
-                    ['DOMINOS', 'Dominos'],
-                    ['MCDONALDS', 'McDonalds'],
-                    ['KFC', 'KFC'],
-                    ['SUBWAY', 'Subway'],
-                ],
-                'Tim Work Lunch' => [
-                    ['CORNER CARVERY AND COFFEE', 'Corner Carvery'],
-                    ['AURA BAR', 'Aura Bar'],
-                    ['VIETNAM HOUSE FORTITUDE', 'Vietnam House'],
-                    ['RED LOTUS VIET', 'Red Lotus'],
-                    ['GOOD MORNING SUSHI', 'Good Morning Sushi'],
-                    ['SUSHI ON THE RUN', 'Sushi on the run'],
-                    [' TARA F & B ', 'Tara Thai'],
-                ],
-                'Petrol' => [
-                    ['WW PETROL', 'Petrol'],
-                    ['FREEDOM FUELS', 'Petrol'],
-                    [' BP ', 'Petrol'],
-                    ['FREEDOM FUELS', 'Petrol'],
-                    ['FIFTY FIVE TRADING', 'Petrol'],
-                    ['CALTEX', 'Petrol'],
-                ],
-                'Electricity' => [
-                    ['Click Energy', 'Electricity']
-                ],
-                'Internet' => [
-                    ['IINET LIMITED PERTH', 'Internet Iinet']
-                ],
-                'Car Loan' => [
-                    ['INTERNET TRANSFER Car Repay', 'Car Repayment']
-                ],
-                'Car Maintenance' => [
-                    ['REPCO', 'Repco']
-                ],
-                'Google Play' => [
-                    ['GOOGLE *Music', 'Google Play Music']
-                ],
-                'Bank Account Transfer' => [
-                    ['INTERNET TRANSFER Fortnight Cash T S White', 'Fortnight Cash'],
-                    ['INTERNET TRANSFER Regular Savings', 'Fortnight Savings'],
-                ],
-                'Tithe' => [
-                    ['INTERNET TRANSFER TITHE', 'Tithe']
-                ],
-                'World Vision' => [
-                    ['WORLD VISION AUSTRALIA', 'World Vision']
-                ],
-                'Stu and Jo' => [
-                    ['INTERNET TRANSFER SUPPORT', 'Stu & Jo Support']
-                ],
-                'Africa' => [
-                    ['OPERATION AFRICA', 'Operation Africa']
-                ],
-                'AOG WR' => [
-                    ['Winds ACC Inter', 'Kelvin AOG WR']
-                ],
-                'SU' => [
-                    ['SU QLD FORTITUDE', 'SU Support']
-                ],
-
-                'Mobile Phone' => [
-                    ['INTERNET TRANSFER Sara Phone', 'Sara Mobile']
-                ],
-                'Transport' => [
-                    ['TRANSLINK TRANSIT AU', 'Go Card'],
-                    ['QLD MOTORWAYS MANAGEMENT EIGHT MILE', 'Go Via']
-                ],
-
-                'Income Distribution' => [
-                    ['12366170889420 SCRIPTURE UNION', 'Tim Salary'],
-                    ['AUS GOV FAMILIES', 'Family Tax']
-
-                ],
-                'Lucy Rent' => [
-                    ['Rent Lucy Watson', 'Lucy Rent']
-                ],
-                'Groceries' => [
-                    ['ST IVES BAKERY', 'St Ives Bakery'],
-                    ['FOODWORKS VALLEY', 'Foodworks'],
-                    [' COLES ', 'Coles'],
-                    [' WOOLWORTHS ', 'Woolworths'],
-                    [' DRAKE SUPERMARKETS ', 'Drake Supermarkets'],
-                    ['BAKERS DELIGHT', 'Bakers Delight'],
-                    [' IGA ', 'IGA'],
-                    ['ALDI', 'ALDI']
-
-                ],
-                'Prescriptions' => [
-                    ['Goodna Day Night ', 'Pharmacy'],
-                    ['TERRY WHITE CHEMISTS', 'Pharmacy'],
-                    ['DISCOUNT DRUG STORE', 'Pharmacy'],
-
-                ]
-            ];
+        $yaml = new Parser();
+        try {
+            $budget_searches = $yaml->parse(file_get_contents('autocodesearches.yaml'));
+        } catch (ParseException $e) {
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
+            throw $e;
+        }
 
         foreach($budget_searches as $budget_name => $searches){
             $budget_account =  $manager->getRepository('EnvelopeBundle:BudgetAccount')

@@ -1,0 +1,34 @@
+Regular:
+    - Electricity
+    - 'Mobile Phone'
+    - 'House Insurance'
+    - Transport
+    - 'Google Play'
+    - Water/Rates
+    - Internet
+    - 'Car Loan'
+Cash:
+    - Groceries
+    - Petrol
+    - 'Family Day'
+    - 'Eat Out'
+    - 'Household Consumables'
+    - Clothing
+    - Prescriptions
+    - Medical
+    - Household
+Savings:
+    - Mortgage
+    - School
+    - Dentist
+    - 'Car Rego'
+    - 'Car Maintenance'
+    - 'Car Insurance'
+    - Holidays
+    - Emergency
+    - 'Home Maintenance'
+    - 'Car Savings'
+'Budget Special':
+    - Float
+    - 'Income Distribution'
+    - 'Bank Account Transfer'

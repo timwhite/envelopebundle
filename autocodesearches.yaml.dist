@@ -1,0 +1,13 @@
+'Eat Out':
+    - [' HJ ', HJ]
+    - [DOMINOS, Dominos]
+    - [MCDONALDS, McDonalds]
+    - [KFC, KFC]
+    - [SUBWAY, Subway]
+Petrol:
+    - ['WW PETROL', Petrol]
+    - ['FREEDOM FUELS', Petrol]
+    - [' BP ', Petrol]
+    - ['FREEDOM FUELS', Petrol]
+    - ['FIFTY FIVE TRADING', Petrol]
+    - [CALTEX, Petrol]
