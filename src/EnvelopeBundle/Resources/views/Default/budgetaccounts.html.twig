@@ -16,7 +16,7 @@
                     <table class="table table-striped">
                     {% for budget in budgetgroup.budgetaccounts %}
                         <tr>
-                            <td>{{ budget.budgetName }}</td>
+                            <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}">{{ budget.budgetName }}</a></td>
                             <td align="right">{{ budget.balance|localizedcurrency('AUD') }}</td>
                         </tr>
                     {% endfor %}

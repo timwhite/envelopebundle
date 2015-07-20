@@ -11,6 +11,25 @@ class DefaultController extends Controller
         return $this->render('EnvelopeBundle:Default:index.html.twig', array('name' => $name));
     }
 
+    public function budgetTransactionListAction($accountid = null)
+    {
+        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
+        $qb->select('a')
+           ->from('EnvelopeBundle:BudgetAccount', 'a');
+
+        if($accountid)
+        {
+            $qb->where('a.id = :id')
+               ->setParameter('id', $accountid);
+
+        }
+
+        return $this->render('EnvelopeBundle:Default:budgettransactions.html.twig',
+            [
+                'budgetaccounts' => $qb->getQuery()->getResult(),
+            ]);
+    }
+
     public function transactionListAction()
     {
         $query = $this->getDoctrine()->getManager()->createQuery(
