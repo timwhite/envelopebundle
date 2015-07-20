@@ -54,26 +54,37 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             $em->flush();
 
             while(($row = fgetcsv($handle)) !== FALSE) {
-                if(sizeof($row) < 5) {
-                    continue;
-                }
-                // date,amount,__,__,Type,Description,Balance,__
-                $date = new \DateTime($row[0]);
-                $amount = $row[1];
+
 
                 // ANZ and NAB differ for importing description
                 if($input->getOption('importANZ'))
                 {
                     // ANZ format is date,amount,description
+                    if(sizeof($row) < 3) {
+                        continue;
+                    }
                     $description = preg_replace("/ {2,}/", " ", $row[2]);
                     $fullDescription = $description;
+
+                    $dateparts = explode('/',$row[0],3);
+                    $date = new\DateTime($dateparts[2]."/".$dateparts[1]."/".$dateparts[0]);
+                    $output->writeln($description);
                 } else {
+                    //NAB format date,amount,__,__,Type,Description,Balance,__
+                    if(sizeof($row) < 5) {
+                        continue;
+                    }
                     $description = preg_replace("/ {2,}/", " ", $row[5]);
                     if ($description == "") {
                         $description = $row[4];
                     }
                     $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
+
+                    $date = new \DateTime($row[0]);
                 }
+
+
+                $amount = $row[1];
 
                 if(!$input->getOption('import_duplicates'))
                 {
