@@ -6,6 +6,14 @@ php app/console doctrine:fixtures:load
 for f in /home/tim/Downloads/TransactionHistory*.csv
 do
     echo $f
-    php app/console account:import "$1" "$f"
+    php app/console account:import "NAB Cash" "$f"
     sleep 2;
 done
+
+for f in /home/tim/Downloads/ANZ*.csv
+do
+    echo $f
+    php app/console account:import --importANZ "ANZ Offset" "$f"
+    sleep 2;
+done
+
