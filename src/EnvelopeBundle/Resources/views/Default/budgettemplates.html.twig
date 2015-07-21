@@ -1,0 +1,34 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block page_content %}
+    <div class="row">
+    {% for budgettemplate in budgettemplates %}
+
+        <div class="col-sm-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ budgettemplate.name }}</h3>
+                    <div class="box-tools pull-right">
+                        <span class="label label-info">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table table-striped">
+                    {% for templatetransaction in budgettemplate.templatetransactions %}
+                        <tr>
+                            <td><a href=" path('envelope_budgettransactions', {'accountid': budget.id}) ">
+                        {{ templatetransaction.description }}</a></td>
+                            <td>{{ templatetransaction.budgetaccount.budgetname }}</td>
+                            <td align="right">{{ templatetransaction.amount|localizedcurrency('AUD') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                <div class="box-footer">
+                </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div><!-- col -->
+
+    {% endfor %}
+    </div><!-- row -->
+{% endblock %}

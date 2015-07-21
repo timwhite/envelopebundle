@@ -13,3 +13,7 @@ envelope_budgets:
 envelope_budgettransactions:
     path:   /budgettransactions/{accountid}
     defaults: { _controller: EnvelopeBundle:Default:budgetTransactionList, accountid: null}
+
+envelope_budget_templates:
+    path:   /budgets/templates/
+    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateList}

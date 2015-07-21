@@ -68,4 +68,18 @@ class DefaultController extends Controller
         return $this->render('EnvelopeBundle:Default:budgetaccounts.html.twig',
             array('budgetgroups' => $query->getResult()));
     }
+
+    public function budgetTemplateListAction()
+    {
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT t
+            FROM EnvelopeBundle:Budget\Template t
+            '
+        );
+
+        return $this->render(
+            'EnvelopeBundle:Default:budgettemplates.html.twig',
+            array('budgettemplates' => $query->getResult())
+        );
+    }
 }

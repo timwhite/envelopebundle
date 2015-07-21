@@ -107,28 +107,6 @@ class TemplateTransaction
         return $this->amount;
     }
 
-    /**
-     * Set budgetaccount
-     *
-     * @param \stdClass $budgetAccount
-     * @return TemplateTransaction
-     */
-    public function setBudgetAccount(BudgetAccount $budgetAccount)
-    {
-        $this->budgetAccount = $budgetAccount;
-
-        return $this;
-    }
-
-    /**
-     * Get budgetaccount
-     *
-     * @return \stdClass 
-     */
-    public function getBudgetAccount()
-    {
-        return $this->budgetAccount;
-    }
 
     /**
      * Set template
@@ -151,5 +129,28 @@ class TemplateTransaction
     public function getTemplate()
     {
         return $this->template;
+    }
+
+    /**
+     * Set budgetAccount
+     *
+     * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccount
+     * @return TemplateTransaction
+     */
+    public function setBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccount)
+    {
+        $this->budgetAccount = $budgetAccount;
+
+        return $this;
+    }
+
+    /**
+     * Get budgetAccount
+     *
+     * @return \EnvelopeBundle\Entity\BudgetAccount 
+     */
+    public function getBudgetAccount()
+    {
+        return $this->budgetAccount;
     }
 }
