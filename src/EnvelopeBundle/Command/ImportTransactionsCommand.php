@@ -68,7 +68,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
 
                     $dateparts = explode('/',$row[0],3);
                     $date = new\DateTime($dateparts[2]."/".$dateparts[1]."/".$dateparts[0]);
-                    $output->writeln($description);
+                    //$output->writeln($description);
                 } else {
                     //NAB format date,amount,__,__,Type,Description,Balance,__
                     if(sizeof($row) < 5) {
@@ -83,6 +83,13 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                     $date = new \DateTime($row[0]);
                 }
 
+                // Limit to transactions new
+                if ($date < new \DateTime("2015-07-01 00:00:00"))
+                {
+                    $output->write('.');
+                    continue;
+                }
+                $output->write('#');
 
                 $amount = $row[1];
 
@@ -124,6 +131,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 $em->persist($transaction);
             }
             $em->flush();
+            $output->writeln("*");
         }
     }
 }
