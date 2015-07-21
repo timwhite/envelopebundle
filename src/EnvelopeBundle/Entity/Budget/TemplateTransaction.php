@@ -34,7 +34,7 @@ class TemplateTransaction
     /**
      * @var string
      *
-     * @ORM\Column(name="amount", type="decimal")
+     * @ORM\Column(name="amount", type="decimal", scale=2, nullable=false)
      */
     private $amount;
 

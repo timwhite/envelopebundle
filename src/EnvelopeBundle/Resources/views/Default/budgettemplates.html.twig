@@ -8,7 +8,12 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ budgettemplate.name }}</h3>
                     <div class="box-tools pull-right">
-                        <span class="label label-info">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
+                        <span class="label label-success">{{ budgettemplate.positivesum|localizedcurrency('AUD') }}</span>
+                        <span class="label label-default">{{ (budgettemplate.positivesum*12/26)|localizedcurrency('AUD') }}</span>
+                        <span class="label label-default">{{ (budgettemplate.positivesum*26/12)|localizedcurrency('AUD') }}</span>
+                        {% if budgettemplate.balance != 0 %}
+                            <span class="label label-warning">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
+                        {% endif %}
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->

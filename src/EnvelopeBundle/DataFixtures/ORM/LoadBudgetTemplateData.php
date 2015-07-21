@@ -50,6 +50,11 @@ class LoadBudgetTemplateData extends AbstractFixture implements OrderedFixtureIn
             $manager->persist($Template);
             foreach ($template['transactions'] as $budget => $transaction)
             {
+                if(!isset($transaction['description']))
+                {
+                    $transaction['description'] = $budget
+                    ;
+                }
                 $budgetAccount = $manager
                     ->getRepository('EnvelopeBundle:BudgetAccount')
                     ->findOneBy(['budget_name' => $budget]);
