@@ -17,3 +17,7 @@ envelope_budgettransactions:
 envelope_budget_templates:
     path:   /budgets/templates/
     defaults: { _controller: EnvelopeBundle:Default:budgetTemplateList}
+
+envelope_budget_apply_template:
+    path:   /budgets/templates/apply
+    defaults: { _controller: EnvelopeBundle:Default:applyBudgetTemplate}

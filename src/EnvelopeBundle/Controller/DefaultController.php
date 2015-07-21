@@ -2,7 +2,11 @@
 
 namespace EnvelopeBundle\Controller;
 
+use EnvelopeBundle\Entity\Budget\Template;
+use EnvelopeBundle\Entity\BudgetTransaction;
+use EnvelopeBundle\Entity\Transaction;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -81,5 +85,71 @@ class DefaultController extends Controller
             'EnvelopeBundle:Default:budgettemplates.html.twig',
             array('budgettemplates' => $query->getResult())
         );
+    }
+
+    public function applyBudgetTemplateAction(Request $request)
+    {
+        $form = $this->createFormBuilder(['date' => new \DateTime()])
+            ->add('template', 'entity', ['class' => 'EnvelopeBundle:Budget\Template'])
+            ->add('date', 'date', ['widget' => 'single_text'])
+            ->add('description')
+            ->add('save', 'submit', array('label' => 'Apply Budget Template'))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid())
+        {
+
+            $this->applyBudgetTemplate(
+                $form->get('template')->getData(),
+                $form->get('date')->getData(),
+                $form->get('description')->getData()
+            );
+
+            return $this->redirectToRoute('envelope_budget_apply_template');
+        }
+
+        return $this->render(
+            'EnvelopeBundle:Default:applybudgettemplate.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
+
+    private function applyBudgetTemplate(Template $template, $date, $description)
+    {
+        // Get Special bank account
+        $em = $this->getDoctrine()->getManager();
+        $budgetTransferAccount = $em
+            ->getRepository('EnvelopeBundle:Account')
+            ->findOneBy(['name' => 'Budget Transfer']);
+        // Create bank transaction for $0
+        $transferTransaction = new Transaction();
+        $transferTransaction->setDate($date)
+            ->setAccount($budgetTransferAccount)
+            ->setAmount(0)
+            ->setDescription($description)
+            ->setFullDescription("Budget Template Transaction - ". $template->getDescription())
+        ;
+        $em->persist($transferTransaction);
+
+        // Loop through template transactions
+        // For each transaction, create a budget transaction linked to bank transaction
+        foreach($template->getTemplateTransactions() as $templateTransaction)
+        {
+            $budgetTransaction = new BudgetTransaction();
+            $budgetTransaction->setAmount($templateTransaction->getAmount())
+                ->setBudgetAccount($templateTransaction->getBudgetAccount())
+                ->setTransaction($transferTransaction)
+            ;
+            $em->persist($budgetTransaction);
+        }
+        $em->flush();
+
+        $this->addFlash(
+            'notice',
+            'Budget Template Applied'
+        );
+
     }
 }
