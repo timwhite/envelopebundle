@@ -1,4 +1,14 @@
+parameters:
+    my_admin_bundle.menu_listener.class: EnvelopeBundle\EventListener\MyMenuItemListListener
+
+
 services:
 #    envelope.example:
 #        class: EnvelopeBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+    my_admin_bundle.menu_listener:
+        class: %my_admin_bundle.menu_listener.class%
+        tags:
+            - { name: kernel.event_listener, event: theme.sidebar_setup_menu, method: onSetupMenu }
+
+
