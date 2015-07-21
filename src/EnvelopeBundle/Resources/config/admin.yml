@@ -53,3 +53,25 @@ services:
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.budgettemplate:
+        class: EnvelopeBundle\Admin\TemplateAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Template", label: "Budget Templates" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\Budget\Template
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.budgettemplatetransaction:
+        class: EnvelopeBundle\Admin\TemplateTransactionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Template", label: "Budget Template Transactions" }
+        arguments:
+            - ~
+            - EnvelopeBundle\Entity\Budget\TemplateTransaction
+            - ~
+        calls:
+            - [ setTranslationDomain, [EnvelopeBundle]]

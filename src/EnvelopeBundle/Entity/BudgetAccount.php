@@ -34,6 +34,11 @@ class BudgetAccount
     private $budget_transactions;
 
     /**
+     * @ORM\OneToMany(targetEntity="EnvelopeBundle\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
+     */
+    private $template_transactions;
+
+    /**
      * @ORM\ManyToOne(targetEntity="BudgetGroup", inversedBy="group_accounts")
      * @ORM\JoinColumn(name="budget_group", referencedColumnName="id", nullable=false)
      */
@@ -153,5 +158,40 @@ class BudgetAccount
     public function getBudgetGroup()
     {
         return $this->budget_group;
+    }
+
+
+
+    /**
+     * Add template_transactions
+     *
+     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     * @return BudgetAccount
+     */
+    public function addTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    {
+        $this->template_transactions[] = $templateTransactions;
+
+        return $this;
+    }
+
+    /**
+     * Remove template_transactions
+     *
+     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     */
+    public function removeTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    {
+        $this->template_transactions->removeElement($templateTransactions);
+    }
+
+    /**
+     * Get template_transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTemplateTransactions()
+    {
+        return $this->template_transactions;
     }
 }
