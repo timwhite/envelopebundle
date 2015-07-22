@@ -18,12 +18,19 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Budget/Bank Amount</th>
+                            <th>Bank Unassigned</th>
+                        </tr>
+                        </thead>
                     {% for budgettransaction in budgetaccount.budgettransactions %}
                         <tr>
                             <td>{{ budgettransaction.transaction.date|localizeddate('short', 'none') }}</td>
                             <td>{{ budgettransaction.transaction.description }}</td>
-                            <td align="right">{{ budgettransaction.amount|localizedcurrency('AUD') }}</td>
-                            <td align="right">{{ budgettransaction.transaction.amount|localizedcurrency('AUD') }}</td>
+                            <td align="right">{{ budgettransaction.amount|localizedcurrency('AUD') }}/<small>{{ budgettransaction.transaction.amount|localizedcurrency('AUD') }}</small></td>
                             <td align="right">{{ budgettransaction.transaction.unassignedsum|localizedcurrency('AUD') }}</td>
                         </tr>
                     {% endfor %}

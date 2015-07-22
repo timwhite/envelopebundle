@@ -12,6 +12,14 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Unassigned Amount</th>
+                        </tr>
+                        </thead>
                         {% for transaction in unbalancedtransactions %}
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
@@ -40,6 +48,14 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Unassigned Amount</th>
+                        </tr>
+                        </thead>
                     {% for transaction in account.transactions %}
                         <tr>
                             <td>{{ transaction.date|localizeddate('short', 'none') }}</td>

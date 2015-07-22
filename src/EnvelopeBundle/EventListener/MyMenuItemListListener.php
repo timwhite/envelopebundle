@@ -22,9 +22,11 @@ class MyMenuItemListListener {
     protected function getMenu(Request $request) {
         // retrieve your menuItem models/entities here
         $items = [
-            'envelope_budget_templates' => "Budget Templates",
+
             'envelope_budgets' => "Budgets",
+            'envelope_budgettransactions' => "Budget Transactions",
             'envelope_transactions' => "Bank Transactions",
+            'envelope_budget_templates' => "Budget Templates",
             'envelope_budget_apply_template' => "Apply Budget Template",
         ];
         $menuItems = array();
