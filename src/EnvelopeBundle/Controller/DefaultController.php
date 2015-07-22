@@ -8,6 +8,7 @@ use EnvelopeBundle\Entity\Transaction;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+
 class DefaultController extends Controller
 {
     public function indexAction($name)
@@ -81,9 +82,32 @@ class DefaultController extends Controller
             '
         );
 
+        $group_sums_query = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT
+              t.id,
+              g.name,
+              SUM(a.amount) as total
+            FROM
+              EnvelopeBundle:Budget\Template t
+              JOIN t.template_transactions a
+              JOIN a.budgetAccount b
+              JOIN b.budget_group g
+            GROUP BY t.id, b.budget_group
+            ORDER by b.budget_group'
+        );
+
+        $template_groups = [];
+        foreach($group_sums_query->getResult() as $part)
+        {
+            $template_groups[$part['id']][] = $part;
+        }
+
         return $this->render(
             'EnvelopeBundle:Default:budgettemplates.html.twig',
-            array('budgettemplates' => $query->getResult())
+            [
+                'budgettemplates' => $query->getResult(),
+                'budgettemplates_groupsums' => $template_groups,
+            ]
         );
     }
 

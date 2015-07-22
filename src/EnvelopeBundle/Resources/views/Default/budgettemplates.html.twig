@@ -1,4 +1,5 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+
 {% block page_content %}
     <div class="row">
     {% for budgettemplate in budgettemplates %}
@@ -37,6 +38,10 @@
                     </table>
                 </div>
                 <div class="box-footer">
+
+                    {% for groupsum in budgettemplates_groupsums[budgettemplate.id] %}
+                        {{ groupsum.name }}: {{ groupsum.total }}
+                    {% endfor %}
                 </div><!-- box-footer -->
             </div><!-- /.box -->
         </div><!-- col -->

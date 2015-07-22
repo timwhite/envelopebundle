@@ -39,7 +39,7 @@ class BudgetAccount
     private $template_transactions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="BudgetGroup", inversedBy="group_accounts")
+     * @ORM\ManyToOne(targetEntity="BudgetGroup", inversedBy="budget_accounts")
      * @ORM\JoinColumn(name="budget_group", referencedColumnName="id", nullable=false)
      */
     private $budget_group;
