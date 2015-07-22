@@ -4,7 +4,16 @@ envelope_homepage:
 
 envelope_transactions:
     path:   /transactions/
+    defaults: { _controller: EnvelopeBundle:Default:transactionsList}
+
+envelope_transaction:
+    path:   /transaction/{id}
     defaults: { _controller: EnvelopeBundle:Default:transactionList}
+
+envelope_transactionAddBudgetTransaction:
+    path:   /transaction/{id}/addbudgettransaction/
+    defaults: { _controller: EnvelopeBundle:Default:transactionAddBudgetTransaction}
+
 
 envelope_budgets:
     path:   /budgetaccounts/

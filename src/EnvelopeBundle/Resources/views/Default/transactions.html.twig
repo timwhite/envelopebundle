@@ -23,7 +23,7 @@
                         {% for transaction in unbalancedtransactions %}
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                <td>{{ transaction.description }}</td>
+                                <td><a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a></td>
                                 <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
                                 <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
                             </tr>
@@ -59,7 +59,7 @@
                     {% for transaction in account.transactions %}
                         <tr>
                             <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                            <td>{{ transaction.description }}</td>
+                            <td><a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a></td>
                             <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
                             <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
                         </tr>

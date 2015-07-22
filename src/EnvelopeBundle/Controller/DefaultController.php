@@ -35,7 +35,7 @@ class DefaultController extends Controller
             ]);
     }
 
-    public function transactionListAction()
+    public function transactionsListAction()
     {
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT a
@@ -60,6 +60,70 @@ class DefaultController extends Controller
                 'accounts' => $query->getResult(),
                 'unbalancedtransactions' => $query2->getResult()
             ]);
+    }
+
+    public function transactionListAction($id)
+    {
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT t
+            FROM EnvelopeBundle:Transaction t
+            WHERE t.id = :id
+            '
+        );
+
+        $query->setParameters([
+            "id" => $id
+        ]);
+
+        return $this->render('EnvelopeBundle:Default:transaction.html.twig',
+            [
+                'transaction' => $query->getSingleResult(),
+                'addform' => $this->transactionAddBudgetTransactionForm($id)->createView()
+            ]);
+    }
+
+    private function transactionAddBudgetTransactionForm($transactionid)
+    {
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('envelope_transactionAddBudgetTransaction', ['id' => $transactionid]))
+            ->add('budgetaccount', 'entity', ['class' => 'EnvelopeBundle:BudgetAccount'])
+            ->add('amount', 'money')
+            ->add('save', 'submit', array('label' => 'Add budget transaction'))
+            ->getForm();
+        return $form;
+    }
+
+    public function transactionAddBudgetTransactionAction(Request $request, $id)
+    {
+        $form = $this->transactionAddBudgetTransactionForm($id);
+        $form->handleRequest($request);
+
+        if ($form->isValid())
+        {
+
+/*            $this->applyBudgetTemplate(
+                $form->get('template')->getData(),
+                $form->get('date')->getData(),
+                $form->get('description')->getData()
+            );*/
+
+            $this->addFlash(
+                'notice',
+                'Budget Transaction Added'
+            );
+
+
+        } else {
+
+            $this->addFlash(
+                'error',
+                'Problem adding budget transaction'
+            );
+        }
+
+        return $this->redirectToRoute('envelope_transaction', ['id' => $id]);
+
+
     }
 
     public function budgetAccountListAction()
