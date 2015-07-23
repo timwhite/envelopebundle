@@ -1,7 +1,7 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block page_content %}
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Unbalanced Transactions ({{ unbalancedtransactions|length }})</h3>
@@ -37,12 +37,12 @@
 
 
         {%  for account in accounts %}
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
                     <div class="box-tools pull-right">
-                        <span class="label label-info"></span>
+                        <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|localizedcurrency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
