@@ -56,7 +56,7 @@ class Transaction
     private $amount;
 
     /**
-     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction")
+     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist")
      */
     private $budget_transactions;
 
@@ -234,6 +234,7 @@ class Transaction
     public function addBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
+        $budgetTransactions->setTransaction($this);
 
         return $this;
     }

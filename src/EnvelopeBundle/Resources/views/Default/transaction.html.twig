@@ -14,6 +14,9 @@
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
+                    {% form_theme addform 'bootstrap_3_layout.html.twig' %}
+                    {{ form_start(addform) }}
+
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -26,32 +29,37 @@
                         </thead>
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                <td>{{ transaction.description }}</td>
+                                <td>{{ form_row(addform.description) }}</td>
                                 <td><small>{{ transaction.fulldescription }}</small></td>
                                 <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
                                 <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
                             </tr>
-                        {% if transaction.budgettransactions|length > 0 %}
+
                             <thead>
                                 <th></th>
                                 <th colspan="2">Budget Account</th>
-                                <th>Amount</th>
+                                <th colspan="2">Amount</th>
                             </thead>
                             <tbody>
-                            {% for budgettransaction in transaction.budgettransactions %}
+                            {% for budgettransaction in addform.budget_transactions %}
                                 <tr>
                                     <td></td>
-                                    <td colspan="2">{{ budgettransaction.budgetaccount.budgetname }}</td>
-                                    <td align="right">{{ budgettransaction.amount|localizedcurrency('AUD') }}</td>
-                                    <td></td>
+                                    <td colspan="2">{{ form_widget(budgettransaction.budgetaccount) }}</td>
+                                    <td colspan="2">{{ form_widget(budgettransaction.amount) }}</td>
                                 </tr>
                             {% endfor %}
+                            <tr>
+                                {% set formindex = addform.budget_transactions|length %}
+                                <td></td>
+                                <td colspan="2">{{ form_widget(addform.budget_transactions.vars.prototype.budgetaccount)|replace({'__name__': formindex})|raw }}</td>
+                                <td colspan="2">{{ form_widget(addform.budget_transactions.vars.prototype.amount)|replace({'__name__': formindex})|raw }}</td>
+
+
+                            </tr>
                             </tbody>
-                        {% endif %}
+
                     </table>
-                    {% form_theme addform 'bootstrap_3_layout.html.twig' %}
-                    {{ form_start(addform) }}
-                    {{ form_widget(addform) }}
+
                     {{ form_end(addform) }}
                 </div>
                 <div class="box-footer">

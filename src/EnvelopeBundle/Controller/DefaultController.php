@@ -5,6 +5,7 @@ namespace EnvelopeBundle\Controller;
 use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
+use EnvelopeBundle\Form\Type\TransactionType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -62,9 +63,10 @@ class DefaultController extends Controller
             ]);
     }
 
-    public function transactionListAction($id)
+    public function transactionListAction(Request $request, $id)
     {
-        $query = $this->getDoctrine()->getManager()->createQuery(
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             WHERE t.id = :id
@@ -75,10 +77,34 @@ class DefaultController extends Controller
             "id" => $id
         ]);
 
+        $transaction = $query->getSingleResult();
+
+        $form = $this->createForm(new TransactionType(), $transaction);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            // ... maybe do some form processing, like saving the Task and Tag objects
+            foreach($transaction->getBudgetTransactions() as $budgetTransaction)
+            {
+                if($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null)
+                {
+                    $transaction->removeBudgetTransaction($budgetTransaction);
+                    $budgetTransaction->setTransaction(null);
+                    $em->remove($budgetTransaction);
+                }
+            }
+
+
+            $em->persist($transaction);
+            $em->flush();
+            $form = $this->createForm(new TransactionType(), $transaction);
+        }
+
         return $this->render('EnvelopeBundle:Default:transaction.html.twig',
             [
-                'transaction' => $query->getSingleResult(),
-                'addform' => $this->transactionAddBudgetTransactionForm($id)->createView()
+                'transaction' => $transaction,
+                'addform'  => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
             ]);
     }
 
