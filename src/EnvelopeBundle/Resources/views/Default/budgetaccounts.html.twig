@@ -16,8 +16,8 @@
                     <table class="table table-striped">
                     {% for budget in budgetgroup.budgetaccounts %}
                         <tr>
-                            <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}">{{ budget.budgetName }}</a></td>
-                            <td align="right">{{ budget.balance|localizedcurrency('AUD') }}</td>
+                            <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}"  data-toggle="tooltip" data-html="true" title="{{ budget.TemplateTransactionsDescriptionsTooltip }}">{{ budget.budgetName }}</a></td>
+                            <td align="right" {% if budget.balance < 0 %}class="text-danger"{% endif %}>{{ budget.balance|localizedcurrency('AUD') }}</td>
                         </tr>
                     {% endfor %}
                     </table>
