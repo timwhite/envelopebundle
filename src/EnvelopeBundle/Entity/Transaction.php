@@ -206,6 +206,30 @@ class Transaction
         return $balance;
     }
 
+    public function getPositiveBudgetSum()
+    {
+        $sum = 0;
+        foreach($this->getBudgetTransactions() as $transaction)
+        {
+            if($transaction->getAmount() > 0) {
+                $sum += $transaction->getAmount();
+            }
+        }
+        return $sum;
+    }
+
+    public function getNegativeBudgetSum()
+    {
+        $sum = 0;
+        foreach($this->getBudgetTransactions() as $transaction)
+        {
+            if($transaction->getAmount() < 0) {
+                $sum += $transaction->getAmount();
+            }
+        }
+        return $sum;
+    }
+
     public function getUnassignedSum()
     {
         return $this->getAmount() - $this->getBudgetSum();
