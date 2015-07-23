@@ -100,12 +100,16 @@ class DefaultController extends Controller
 
         if ($form->isValid())
         {
+            $em = $this->getDoctrine()->getManager();
+            $transaction = $em->find('EnvelopeBundle:Transaction', $id);
 
-/*            $this->applyBudgetTemplate(
-                $form->get('template')->getData(),
-                $form->get('date')->getData(),
-                $form->get('description')->getData()
-            );*/
+            $budgetTransaction = new BudgetTransaction();
+            $budgetTransaction->setAmount($form->get('amount')->getData())
+                ->setBudgetAccount($form->get('budgetaccount')->getData())
+                ->setTransaction($transaction);
+
+            $em->persist($budgetTransaction);
+            $em->flush();
 
             $this->addFlash(
                 'notice',

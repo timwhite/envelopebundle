@@ -42,13 +42,14 @@
                                 <tr>
                                     <td></td>
                                     <td colspan="2">{{ budgettransaction.budgetaccount.budgetname }}</td>
-                                    <td>{{ budgettransaction.amount|localizedcurrency('AUD') }}</td>
+                                    <td align="right">{{ budgettransaction.amount|localizedcurrency('AUD') }}</td>
                                     <td></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
                         {% endif %}
                     </table>
+                    {% form_theme addform 'bootstrap_3_layout.html.twig' %}
                     {{ form_start(addform) }}
                     {{ form_widget(addform) }}
                     {{ form_end(addform) }}
