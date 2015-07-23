@@ -22,16 +22,16 @@
                         <tr>
                             <th>Date</th>
                             <th>Description</th>
-                            <th>Budget/Bank Amount</th>
-                            <th>Bank Unassigned</th>
+                            <th>Budget</th>
+
                         </tr>
                         </thead>
                     {% for budgettransaction in budgetaccount.budgettransactions %}
                         <tr>
-                            <td>{{ budgettransaction.transaction.date|localizeddate('short', 'none') }}</td>
+                            <td><a href="{{ path('envelope_transaction', {'id': budgettransaction.transaction.id}) }}">{{ budgettransaction.transaction.date|localizeddate('short', 'none') }}</a></td>
                             <td>{{ budgettransaction.transaction.description }}</td>
-                            <td align="right">{{ budgettransaction.amount|localizedcurrency('AUD') }}/<small>{{ budgettransaction.transaction.amount|localizedcurrency('AUD') }}</small></td>
-                            <td align="right">{{ budgettransaction.transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                            <td align="right" {% if budgettransaction.amount < 0 %}class="text-danger"{% endif %} ><span data-toggle="tooltip" title="{{ budgettransaction.transaction.account }}: {{ budgettransaction.transaction.amount|localizedcurrency('AUD') }} / {{ budgettransaction.transaction.unassignedsum|localizedcurrency('AUD') }}">{{ budgettransaction.amount|localizedcurrency('AUD') }}</span></td>
+
                         </tr>
                     {% endfor %}
                     </table>
