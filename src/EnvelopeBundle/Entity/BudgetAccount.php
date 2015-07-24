@@ -194,4 +194,16 @@ class BudgetAccount
     {
         return $this->template_transactions;
     }
+
+    public function getTemplateTransactionsDescriptionsTooltip()
+    {
+        // NB: This should probably be handled by the view, instead of hard coding a locale here
+        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
+        $desc = [];
+        foreach($this->getTemplateTransactions() as $trans)
+        {
+            $desc[] = $trans->getDescription(). " (". numfmt_format_currency($fmt, $trans->getAmount(), 'AUD').")";
+        }
+        return implode("<br/>", $desc);
+    }
 }

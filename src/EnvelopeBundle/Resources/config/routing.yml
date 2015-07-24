@@ -2,6 +2,10 @@ envelope_homepage:
     path:     /hello/{name}
     defaults: { _controller: EnvelopeBundle:Default:index }
 
+envelope_import:
+    path:   /import/
+    defaults: { _controller: EnvelopeBundle:Default:import }
+
 envelope_transactions:
     path:   /transactions/
     defaults: { _controller: EnvelopeBundle:Default:transactionsList}
