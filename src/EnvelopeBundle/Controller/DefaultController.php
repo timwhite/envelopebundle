@@ -6,6 +6,7 @@ use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
 use EnvelopeBundle\Form\Type\TransactionType;
+use EnvelopeBundle\Shared\importBankTransactions;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -33,6 +34,56 @@ class DefaultController extends Controller
         return $this->render('EnvelopeBundle:Default:budgettransactions.html.twig',
             [
                 'budgetaccounts' => $qb->getQuery()->getResult(),
+            ]);
+    }
+
+    private function importForm()
+    {
+        return $form = $this->createFormBuilder()
+            ->add('account', 'entity', ['class' => 'EnvelopeBundle:Account'])
+            ->add('accountType', 'choice', ['choices' => ['NAB' => 'NAB', 'ANZ' => 'ANZ']])
+            ->add('bankExport', 'file')
+            ->add('save', 'submit', array('label' => 'Import transactions'))
+            ->getForm();
+    }
+
+    public function importAction(Request $request)
+    {
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT i FROM EnvelopeBundle:Import i'
+        );
+
+        $form = $this->importForm();
+
+        $form->handleRequest($request);
+
+        $dups = [];
+        $import = null;
+
+        if($form->isValid() && $form->isSubmitted())
+        {
+            $bankImport = new importBankTransactions();
+            $bankImport->importBankFile(
+                $this->getDoctrine()->getManager(),
+                $form['bankExport']->getData()->getPathname(),
+                $form['account']->getData(),
+                $form['accountType']->getData()
+            );
+            $dups = $bankImport->getDuplicates();
+            $import = $bankImport->getImport();
+
+
+        }
+
+
+
+        return $this->render('EnvelopeBundle:Default:imports.html.twig',
+            [
+                'imports' => $query->getResult(),
+                'importform' => $form->createView(),
+                'lastimport' => $import,
+                'lastimportaccount' => $form['account']->getData(),
+                'dups' => $dups,
             ]);
     }
 
@@ -98,6 +149,12 @@ class DefaultController extends Controller
 
             $em->persist($transaction);
             $em->flush();
+
+            $this->addFlash(
+                'notice',
+                'Budget Transaction Added'
+            );
+
             $form = $this->createForm(new TransactionType(), $transaction);
         }
 

@@ -297,6 +297,7 @@ class Transaction
     public function setImport(\EnvelopeBundle\Entity\Import $import = null)
     {
         $this->import = $import;
+        $this->import->addTransaction($this);
 
         return $this;
     }
