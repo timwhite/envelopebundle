@@ -6,6 +6,7 @@ use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
 use EnvelopeBundle\Form\Type\TransactionType;
+use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\importBankTransactions;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,19 +23,20 @@ class DefaultController extends Controller
     {
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('a')
-           ->from('EnvelopeBundle:BudgetAccount', 'a');
+            ->from('EnvelopeBundle:BudgetAccount', 'a');
 
-        if($accountid)
-        {
+        if ($accountid) {
             $qb->where('a.id = :id')
-               ->setParameter('id', $accountid);
+                ->setParameter('id', $accountid);
 
         }
 
-        return $this->render('EnvelopeBundle:Default:budgettransactions.html.twig',
+        return $this->render(
+            'EnvelopeBundle:Default:budgettransactions.html.twig',
             [
                 'budgetaccounts' => $qb->getQuery()->getResult(),
-            ]);
+            ]
+        );
     }
 
     private function importForm()
@@ -60,8 +62,7 @@ class DefaultController extends Controller
         $dups = [];
         $import = null;
 
-        if($form->isValid() && $form->isSubmitted())
-        {
+        if ($form->isValid() && $form->isSubmitted()) {
             $bankImport = new importBankTransactions();
             $bankImport->importBankFile(
                 $this->getDoctrine()->getManager(),
@@ -76,15 +77,16 @@ class DefaultController extends Controller
         }
 
 
-
-        return $this->render('EnvelopeBundle:Default:imports.html.twig',
+        return $this->render(
+            'EnvelopeBundle:Default:imports.html.twig',
             [
                 'imports' => $query->getResult(),
                 'importform' => $form->createView(),
                 'lastimport' => $import,
                 'lastimportaccount' => $form['account']->getData(),
                 'dups' => $dups,
-            ]);
+            ]
+        );
     }
 
     public function transactionsListAction()
@@ -107,11 +109,13 @@ class DefaultController extends Controller
         );
 
 
-        return $this->render('EnvelopeBundle:Default:transactions.html.twig',
+        return $this->render(
+            'EnvelopeBundle:Default:transactions.html.twig',
             [
                 'accounts' => $query->getResult(),
                 'unbalancedtransactions' => $query2->getResult()
-            ]);
+            ]
+        );
     }
 
     public function transactionListAction(Request $request, $id)
@@ -124,9 +128,11 @@ class DefaultController extends Controller
             '
         );
 
-        $query->setParameters([
-            "id" => $id
-        ]);
+        $query->setParameters(
+            [
+                "id" => $id
+            ]
+        );
 
         $transaction = $query->getSingleResult();
 
@@ -136,10 +142,8 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             // ... maybe do some form processing, like saving the Task and Tag objects
-            foreach($transaction->getBudgetTransactions() as $budgetTransaction)
-            {
-                if($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null)
-                {
+            foreach ($transaction->getBudgetTransactions() as $budgetTransaction) {
+                if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
                     $budgetTransaction->setTransaction(null);
                     $em->remove($budgetTransaction);
@@ -158,59 +162,41 @@ class DefaultController extends Controller
             $form = $this->createForm(new TransactionType(), $transaction);
         }
 
-        return $this->render('EnvelopeBundle:Default:transaction.html.twig',
+        return $this->render(
+            'EnvelopeBundle:Default:transaction.html.twig',
             [
                 'transaction' => $transaction,
-                'addform'  => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
-            ]);
+                'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
+            ]
+        );
     }
 
-    private function transactionAddBudgetTransactionForm($transactionid)
+    public function autoCodeAction(Request $request)
     {
         $form = $this->createFormBuilder()
-            ->setAction($this->generateUrl('envelope_transactionAddBudgetTransaction', ['id' => $transactionid]))
-            ->add('budgetaccount', 'entity', ['class' => 'EnvelopeBundle:BudgetAccount'])
-            ->add('amount', 'money')
-            ->add('save', 'submit', array('label' => 'Add budget transaction'))
+            ->add('save', 'submit', array('label' => 'Auto code transactions'))
             ->getForm();
-        return $form;
-    }
 
-    public function transactionAddBudgetTransactionAction(Request $request, $id)
-    {
-        $form = $this->transactionAddBudgetTransactionForm($id);
         $form->handleRequest($request);
 
-        if ($form->isValid())
-        {
-            $em = $this->getDoctrine()->getManager();
-            $transaction = $em->find('EnvelopeBundle:Transaction', $id);
+        $autoCodeResults = [];
+        $actionRun = false;
 
-            $budgetTransaction = new BudgetTransaction();
-            $budgetTransaction->setAmount($form->get('amount')->getData())
-                ->setBudgetAccount($form->get('budgetaccount')->getData())
-                ->setTransaction($transaction);
-
-            $em->persist($budgetTransaction);
-            $em->flush();
-
-            $this->addFlash(
-                'notice',
-                'Budget Transaction Added'
-            );
-
-
-        } else {
-
-            $this->addFlash(
-                'error',
-                'Problem adding budget transaction'
-            );
+        if ($form->isValid() && $form->isSubmitted()) {
+            $autoCode = new autoCodeTransactions();
+            $autoCode->codeTransactions($this->getDoctrine()->getManager());
+            $autoCodeResults = $autoCode->getResults();
+            $actionRun = true;
         }
 
-        return $this->redirectToRoute('envelope_transaction', ['id' => $id]);
-
-
+        return $this->render(
+            'EnvelopeBundle:Default:autoCodeAction.html.twig',
+            [
+                'actionrun' => $actionRun,
+                'results' => $autoCodeResults,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     public function budgetAccountListAction()
@@ -221,8 +207,10 @@ class DefaultController extends Controller
             '
         );
 
-        return $this->render('EnvelopeBundle:Default:budgetaccounts.html.twig',
-            array('budgetgroups' => $query->getResult()));
+        return $this->render(
+            'EnvelopeBundle:Default:budgetaccounts.html.twig',
+            array('budgetgroups' => $query->getResult())
+        );
     }
 
     public function budgetTemplateListAction()
@@ -248,8 +236,7 @@ class DefaultController extends Controller
         );
 
         $template_groups = [];
-        foreach($group_sums_query->getResult() as $part)
-        {
+        foreach ($group_sums_query->getResult() as $part) {
             $template_groups[$part['id']][] = $part;
         }
 
@@ -273,8 +260,7 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid())
-        {
+        if ($form->isValid()) {
 
             $this->applyBudgetTemplate(
                 $form->get('template')->getData(),
@@ -304,19 +290,16 @@ class DefaultController extends Controller
             ->setAccount($budgetTransferAccount)
             ->setAmount(0)
             ->setDescription($description)
-            ->setFullDescription("Budget Template Transaction - ". $template->getDescription())
-        ;
+            ->setFullDescription("Budget Template Transaction - " . $template->getDescription());
         $em->persist($transferTransaction);
 
         // Loop through template transactions
         // For each transaction, create a budget transaction linked to bank transaction
-        foreach($template->getTemplateTransactions() as $templateTransaction)
-        {
+        foreach ($template->getTemplateTransactions() as $templateTransaction) {
             $budgetTransaction = new BudgetTransaction();
             $budgetTransaction->setAmount($templateTransaction->getAmount())
                 ->setBudgetAccount($templateTransaction->getBudgetAccount())
-                ->setTransaction($transferTransaction)
-            ;
+                ->setTransaction($transferTransaction);
             $em->persist($budgetTransaction);
         }
         $em->flush();

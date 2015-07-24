@@ -29,6 +29,7 @@ class MyMenuItemListListener {
             'envelope_budget_templates' => "Budget Templates",
             'envelope_budget_apply_template' => "Apply Budget Template",
             'envelope_import' => "Import",
+            'envelope_autocode' => 'Auto Code Transactions',
         ];
         $menuItems = array();
         foreach($items as $key => $label)

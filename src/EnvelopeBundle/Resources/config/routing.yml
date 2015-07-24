@@ -2,6 +2,10 @@ envelope_homepage:
     path:     /hello/{name}
     defaults: { _controller: EnvelopeBundle:Default:index }
 
+envelope_autocode:
+    path:   /autocode/
+    defaults: { _controller: EnvelopeBundle:Default:autoCode }
+
 envelope_import:
     path:   /import/
     defaults: { _controller: EnvelopeBundle:Default:import }
