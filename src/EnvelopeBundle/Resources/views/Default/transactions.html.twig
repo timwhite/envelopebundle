@@ -6,11 +6,15 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Unbalanced Transactions ({{ unbalancedtransactions|length }})</h3>
+
                     <div class="box-tools pull-right">
                         <span class="label label-info"></span>
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
                         <thead>
@@ -24,9 +28,12 @@
                         {% for transaction in unbalancedtransactions %}
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                <td><a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a></td>
+                                <td>
+                                    <a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a>
+                                </td>
                                 <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
-                                    <span  data-toggle="tooltip" title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
+                                    <span data-toggle="tooltip"
+                                          title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
                                     {{ transaction.amount|localizedcurrency('AUD') }}
                                     </span>
                                 </td>
@@ -36,73 +43,86 @@
                     </table>
                 </div>
                 <div class="box-footer">
-                </div><!-- box-footer -->
-            </div><!-- /.box -->
-        </div><!-- col -->
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- col -->
 
 
-        {%  for account in accounts %}
-        <div class="col-sm-4">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
-                    <div class="box-tools pull-right">
-                        <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|localizedcurrency('AUD') }}</span>
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Unassigned Amount</th>
-                        </tr>
-                        </thead>
-                        {% set offset = (app.request.get('p_' ~ account.id) - 1)*page_size %}
-                        {% set currentpage = app.request.get('p_' ~ account.id) %}
-                        {% if currentpage is null %}
-                            {% set currentpage = 1 %}
-                        {% endif %}
-                    {% for transaction in account.transactions|slice(offset,page_size) %}
-                        <tr>
-                            <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                            <td><a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a></td>
-                            <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
-                                <span  data-toggle="tooltip" title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
+        {% for account in accounts %}
+            <div class="col-sm-4">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
+
+                        <div class="box-tools pull-right">
+                            <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|localizedcurrency('AUD') }}</span>
+                            <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                    title="Collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                        <!-- /.box-tools -->
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Unassigned Amount</th>
+                            </tr>
+                            </thead>
+                            {% set offset = (app.request.get('p_' ~ account.id) - 1)*page_size %}
+                            {% set currentpage = app.request.get('p_' ~ account.id) %}
+                            {% if currentpage is null %}
+                                {% set currentpage = 1 %}
+                            {% endif %}
+                            {% for transaction in account.transactions|slice(offset,page_size) %}
+                                <tr>
+                                    <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                    <td>
+                                        <a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a>
+                                    </td>
+                                    <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
+                                <span data-toggle="tooltip"
+                                      title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
                                 {{ transaction.amount|localizedcurrency('AUD') }}
                                 </span>
-                            </td>
-                            <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
-                        </tr>
-                    {% endfor %}
-                    </table>
+                                    </td>
+                                    <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-                    <nav>
-                        <ul class="pagination pagination-sm">
+                        <nav>
+                            <ul class="pagination pagination-sm">
 
 
-                    {% set numbertransactions = account.transactions|length %}
-                    {% if numbertransactions > page_size %}
-                        {% set numberofpages = numbertransactions/page_size|round(1, 'ceil') + 1 %}
-                        {% for page in 1..numberofpages %}
-                            <li {% if currentpage == page  %}class="active"{% endif %}><a href="{{ path(app.request.attributes.get('_route'),
-                            app.request.query.all|merge({('p_' ~ account.id): page})) }}"
+                                {% set numbertransactions = account.transactions|length %}
+                                {% if numbertransactions > page_size %}
+                                    {% set numberofpages = numbertransactions/page_size|round(1, 'ceil') + 1 %}
+                                    {% for page in 1..numberofpages %}
+                                        <li {% if currentpage == page %}class="active"{% endif %}><a
+                                                    href="{{ path(app.request.attributes.get('_route'),
+                                                    app.request.query.all|merge({('p_' ~ account.id): page})) }}"
 
-                                        >{{ page }}</a></li>
+                                                    >{{ page }}</a></li>
 
-                        {% endfor %}
-                    {% endif %}
-                        </ul>
-                    </nav>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </nav>
 
+                    </div>
+                    <div class="box-footer">
+                    </div>
+                    <!-- box-footer -->
                 </div>
-                <div class="box-footer">
-                </div><!-- box-footer -->
-            </div><!-- /.box -->
-        </div><!-- col -->
+                <!-- /.box -->
+            </div><!-- col -->
         {% endfor %}
     </div><!-- row -->
 
