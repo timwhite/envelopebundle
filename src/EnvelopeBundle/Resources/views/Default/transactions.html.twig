@@ -1,5 +1,6 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block page_content %}
+    {% set page_size=10 %}
     <div class="row">
         <div class="col-sm-4">
             <div class="box">
@@ -60,7 +61,12 @@
                             <th>Unassigned Amount</th>
                         </tr>
                         </thead>
-                    {% for transaction in account.transactions %}
+                        {% set offset = (app.request.get('p_' ~ account.id) - 1)*page_size %}
+                        {% set currentpage = app.request.get('p_' ~ account.id) %}
+                        {% if currentpage is null %}
+                            {% set currentpage = 1 %}
+                        {% endif %}
+                    {% for transaction in account.transactions|slice(offset,page_size) %}
                         <tr>
                             <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
                             <td><a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a></td>
@@ -73,6 +79,25 @@
                         </tr>
                     {% endfor %}
                     </table>
+
+                    <nav>
+                        <ul class="pagination pagination-sm">
+
+
+                    {% set numbertransactions = account.transactions|length %}
+                    {% if numbertransactions > page_size %}
+                        {% set numberofpages = numbertransactions/page_size|round(1, 'ceil') + 1 %}
+                        {% for page in 1..numberofpages %}
+                            <li {% if currentpage == page  %}class="active"{% endif %}><a href="{{ path(app.request.attributes.get('_route'),
+                            app.request.query.all|merge({('p_' ~ account.id): page})) }}"
+
+                                        >{{ page }}</a></li>
+
+                        {% endfor %}
+                    {% endif %}
+                        </ul>
+                    </nav>
+
                 </div>
                 <div class="box-footer">
                 </div><!-- box-footer -->
