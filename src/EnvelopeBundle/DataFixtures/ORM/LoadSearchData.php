@@ -24,6 +24,12 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
             throw $e;
         }
 
+        if($budget_searches == null)
+        {
+            $budget_searches = [];
+        }
+
+
         foreach($budget_searches as $budget_name => $searches){
             $budget_account =  $manager->getRepository('EnvelopeBundle:BudgetAccount')
                 ->findOneBy(['budget_name' => $budget_name]);
@@ -31,6 +37,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
             if($budget_account == null)
             {
                 echo "Can't find budget $budget_name";
+                continue;
             }
 
             foreach($searches as $search_text) {
