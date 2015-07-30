@@ -5,9 +5,12 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Imports</h3>
+
                     <div class="box-tools pull-right">
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
                         <thead>
@@ -18,47 +21,59 @@
                             <th># Transactions</th>
                         </tr>
                         </thead>
-                    {% for import in imports %}
-                        <tr>
-                            <td>
-                                {{ import.id }}
-                            </td>
-                            <td>{{ import.importtime|localizeddate('short', 'medium') }}</td>
-                            <td>{% if import.transactions|length > 0 %}{{ import.transactions[0].account }}{% endif %}</td>
-                            <td>{{ import.transactions|length }}</td>
+                        {% for import in imports %}
+                            <tr>
+                                <td>
+                                    {{ import.id }}
+                                </td>
+                                <td>{{ import.importtime|localizeddate('short', 'medium') }}</td>
+                                <td>{% if import.transactions|length > 0 %}{{ import.transactions[0].account }}{% endif %}</td>
+                                <td>{{ import.transactions|length }}</td>
 
-                        </tr>
-                    {% endfor %}
+                            </tr>
+                        {% endfor %}
                     </table>
                 </div>
                 <div class="box-footer">
-                </div><!-- box-footer -->
-            </div><!-- /.box -->
-        </div><!-- col -->
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- col -->
 
         <div class="col-sm-6">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Import Transactions</h3>
+
                     <div class="box-tools pull-right">
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
                 <div class="box-body">
-{{ form(importform) }}
+                    {{ form(importform) }}
                 </div>
                 <div class="box-footer">
-                </div><!-- box-footer -->
-            </div><!-- /.box -->
-        </div><!-- col -->
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- col -->
 
         {% if lastimport != null %}
             <div class="col-sm-6">
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">Import into {{ lastimportaccount }}</h3>
+
                         <div class="box-tools pull-right">
-                        </div><!-- /.box-tools -->
-                    </div><!-- /.box-header -->
+                        </div>
+                        <!-- /.box-tools -->
+                    </div>
+                    <!-- /.box-header -->
                     <div class="box-body">
                         <table class="table table-striped">
                             <thead>
@@ -69,61 +84,69 @@
                             </tr>
                             </thead>
 
-                        {% if dups|length %}
-                            <tr><th colspan="3">Duplicate Transactions</th></tr>
-                        {% for duplicate in dups %}
-                            <tr class="danger">
-                                <td>{{ duplicate.date|localizeddate('short', 'none') }}</td>
-                                <td>{{ duplicate.fullDescription }}</td>
-                                <td>{{ duplicate.amount|localizedcurrency('AUD') }}</td>
-
-                            </tr>
-
-                        {% endfor %}
-                        {% endif %}
-
-                        {% if ignored|length > 0 %}
-                            <tr><th colspan="3">Skipped Transactions (Probably uncleared)</th></tr>
-                            {% for transaction in ignored %}
-                                <tr class="danger">
-                                    <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                    <td>{{ transaction.fullDescription }}</td>
-                                    <td>{{ transaction.amount|localizedcurrency('AUD') }}</td>
-
+                            {% if dups|length %}
+                                <tr>
+                                    <th colspan="3">Duplicate Transactions</th>
                                 </tr>
+                                {% for duplicate in dups %}
+                                    <tr class="danger">
+                                        <td>{{ duplicate.date|localizeddate('short', 'none') }}</td>
+                                        <td>{{ duplicate.fullDescription }}</td>
+                                        <td>{{ duplicate.amount|localizedcurrency('AUD') }}</td>
 
-                            {% endfor %}
-                        {% endif %}
+                                    </tr>
+
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if ignored|length > 0 %}
+                                <tr>
+                                    <th colspan="3">Skipped Transactions (Probably uncleared)</th>
+                                </tr>
+                                {% for transaction in ignored %}
+                                    <tr class="danger">
+                                        <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                        <td>{{ transaction.fullDescription }}</td>
+                                        <td>{{ transaction.amount|localizedcurrency('AUD') }}</td>
+
+                                    </tr>
+
+                                {% endfor %}
+                            {% endif %}
 
 
                             {% if unknown|length > 0 %}
-                            <tr><th colspan="3">Unknown Rows</th></tr>
-                            {% for row in unknown %}
-                                <tr class="danger">
-                                    <td colspan="3">{{ row }}</td>
+                                <tr>
+                                    <th colspan="3">Unknown Rows</th>
                                 </tr>
+                                {% for row in unknown %}
+                                    <tr class="danger">
+                                        <td colspan="3">{{ row }}</td>
+                                    </tr>
 
-                            {% endfor %}
+                                {% endfor %}
                             {% endif %}
 
-                        {% if lastimport.transactions|length %}
+                            {% if lastimport.transactions|length %}
 
-                            <tr>
-                                <th colspan="3">Imported Transactions</th>
-                            </tr>
-                            {% for transaction in lastimport.transactions %}
                                 <tr>
-                                    <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                    <td>{{ transaction.description }}</td>
-                                    <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
+                                    <th colspan="3">Imported Transactions</th>
                                 </tr>
-                            {% endfor %}
-                        {% endif %}
+                                {% for transaction in lastimport.transactions %}
+                                    <tr>
+                                        <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                        <td>{{ transaction.description }}</td>
+                                        <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
                         </table>
                     </div>
                     <div class="box-footer">
-                    </div><!-- box-footer -->
-                </div><!-- /.box -->
+                    </div>
+                    <!-- box-footer -->
+                </div>
+                <!-- /.box -->
             </div><!-- col -->
         {% endif %}
 
