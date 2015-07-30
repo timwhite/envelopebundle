@@ -30,7 +30,7 @@ class Account
 
     /**
      * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account")
-     * @ORM\OrderBy({"date" = "ASC"})
+     * @ORM\OrderBy({"date" = "DESC"})
      */
     private $transactions;
 
