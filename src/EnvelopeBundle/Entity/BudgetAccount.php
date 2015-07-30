@@ -133,7 +133,11 @@ class BudgetAccount
 
     public function __toString()
     {
-        return $this->getBudgetName() . ': ' . $this->getBalance();
+        // NB: This should probably be handled by the view, instead of hard coding a locale here
+        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
+            ;
+
+        return $this->getBudgetName() . ": ". numfmt_format_currency($fmt, $this->getBalance(), 'AUD')."";
     }
 
 

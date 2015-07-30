@@ -1,12 +1,20 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+
 {% block page_content %}
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+            {{ flashMessage }}
+        </div>
+    {% endfor %}
     <div class="row">
         <div class="col-sm-12">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Transactions {{ transaction.id }} details</h3>
                     <div class="box-tools pull-right">
+                        {% if transactionid != 'new' %}
                         <span class="label label-info">{{ transaction.account.name }}</span>
+                        {% endif %}
                         {% if transaction.unassignedsum != 0 %}
                         <span class="label label-warning">Unbalanced Transaction</span>
                         {% endif %}
@@ -17,23 +25,50 @@
                     {% form_theme addform 'bootstrap_3_layout.html.twig' %}
                     {{ form_start(addform) }}
 
+
+                    {% if addform.account is defined %}
+                        <table class="table table-striped" style="width: 50%">
+                            <thead>
+                            <th colspan="5">Bank Account</th>
+                            </thead>
+                            <tr><Td>{{ form_row(addform.account) }}</Td><td colspan="4"></td></tr>
+                        </table>
+                    {% endif %}
+
                     <table class="table table-striped">
+
                         <thead>
                         <tr>
                             <th>Date</th>
                             <th colspan="2">Description</th>
 
                             <th>Amount</th>
-                            <th>Unassigned Amount</th>
+                            {% if transactionid != 'new' %}<th>Unassigned Amount</th>{% endif %}
                         </tr>
                         </thead>
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
                                 <td>{{ form_row(addform.description) }}</td>
-                                <td><small>{{ transaction.fulldescription }}</small></td>
-                                <td align="right">{{ transaction.amount|localizedcurrency('AUD') }}</td>
-                                <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                <td><small>
+                                        {% if addform.fulldescription is defined %}
+                                            {{ form_row(addform.fulldescription) }}
+
+                                        {% else %}
+                                            {{ transaction.fulldescription }}
+                                        {% endif %}</small></td>
+                                <td align="right">
+                                    {% if addform.amount is defined %}
+                                        {{ form_row(addform.amount) }}
+                                    {% else %}
+                                        {{ transaction.amount|localizedcurrency('AUD') }}
+                                    {% endif %}
+                                </td>
+                                <td align="right">
+                                    {% if addform.amount is not defined %}
+                                        {{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                    {% endif %}
                             </tr>
+
 
                             <thead>
                                 <th></th>

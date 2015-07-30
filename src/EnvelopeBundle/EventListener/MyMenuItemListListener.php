@@ -25,19 +25,57 @@ class MyMenuItemListListener {
 
             'envelope_budgets' => "Budgets",
             'envelope_budgettransactions' => "Budget Transactions",
-            'envelope_transactions' => "Bank Transactions",
+            'bank_transactions' => [
+                "label" => "Bank Transactions",
+                'children' => [
+                    'envelope_transactions' => [
+                        'label' => 'View Transactions',
+                        'children' => [
+                            'envelope_transaction' => ['label' => 'A']
+                        ],
+                    ],
+                    'envelope_transaction_new' => [
+                        'label' => 'New Transaction',
+                        'route_args' => ['id' => 'new']
+                    ]
+                ],
+            ],
             'envelope_budget_templates' => "Budget Templates",
             'envelope_budget_apply_template' => "Apply Budget Template",
             'envelope_import' => "Import",
+            'envelope_autocode' => 'Auto Code Transactions',
         ];
         $menuItems = array();
         foreach($items as $key => $label)
         {
-            $menuItems[] = new MenuItemModel($key, $label, $key);
+            if(is_array($label))
+            {
+                $menuItems[] = $this->buildMenuItem($key, $label);
+            } else {
+                $menuItems[] = new MenuItemModel($key, $label, $key);
+            }
         }
 
 
         return $this->activateByRoute($request->get('_route'), $menuItems);
+    }
+
+    protected function buildMenuItem($route, $item)
+    {
+        $menuitem = new MenuItemModel($route, $item['label'], $route);
+        if(isset($item['route_args']))
+        {
+            $menuitem->setRouteArgs($item['route_args']);
+        }
+        if(isset($item['children']))
+        {
+            foreach($item['children'] as $child_route => $child_item)
+            {
+                $childitem = $this->buildMenuItem($child_route, $child_item);
+                $menuitem->addChild($childitem);
+            }
+        }
+        return $menuitem;
     }
 
     protected function activateByRoute($route, $items) {
@@ -46,11 +84,11 @@ class MyMenuItemListListener {
             if($item->hasChildren()) {
                 $this->activateByRoute($route, $item->getChildren());
             }
-            else {
+            //else {
                 if($item->getRoute() == $route) {
                     $item->setIsActive(true);
                 }
-            }
+            //}
         }
 
         return $items;
