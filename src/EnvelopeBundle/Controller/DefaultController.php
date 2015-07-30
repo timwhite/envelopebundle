@@ -121,27 +121,35 @@ class DefaultController extends Controller
     public function transactionListAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Transaction t
-            WHERE t.id = :id
-            '
-        );
+        if ($id == 'new') {
+            $existing = false;
+            $transaction = new Transaction();
+            $transaction->setDate(new \DateTime());
+        } else {
+            $existing = true;
 
-        $query->setParameters(
-            [
-                "id" => $id
-            ]
-        );
+            $query = $em->createQuery(
+                'SELECT t
+                    FROM EnvelopeBundle:Transaction t
+                    WHERE t.id = :id
+                    '
+            );
 
-        $transaction = $query->getSingleResult();
+            $query->setParameters(
+                [
+                    "id" => $id
+                ]
+            );
 
-        $form = $this->createForm(new TransactionType(), $transaction);
+            $transaction = $query->getSingleResult();
+        }
+
+        $form = $this->createForm(new TransactionType(), $transaction, ['existing_entity' => $existing]);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            // ... maybe do some form processing, like saving the Task and Tag objects
+
             foreach ($transaction->getBudgetTransactions() as $budgetTransaction) {
                 if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
@@ -150,14 +158,25 @@ class DefaultController extends Controller
                 }
             }
 
+            if($id == 'new')
+            {
+                $transaction->setFullDescription($transaction->getDescription());
+            }
+
 
             $em->persist($transaction);
             $em->flush();
 
             $this->addFlash(
                 'notice',
-                'Budget Transaction Added'
+                'Transaction Updated'
             );
+
+            if($transaction->getId() != $id)
+            {
+                return $this->redirectToRoute('envelope_transaction', ['id' => $transaction->getId()]);
+            }
+
 
             $form = $this->createForm(new TransactionType(), $transaction);
         }
@@ -167,6 +186,7 @@ class DefaultController extends Controller
             [
                 'transaction' => $transaction,
                 'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
+                'transactionid' => $id,
             ]
         );
     }
