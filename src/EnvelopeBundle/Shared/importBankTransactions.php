@@ -8,7 +8,13 @@ use EnvelopeBundle\Entity\Transaction;
 class importBankTransactions
 {
     private $duplicates = [];
+    private $ignored = [];
+    private $unknown = [];
     private $import;
+
+    private $uncleared_searches = [
+        'OUTSTANDING TRANS'
+    ];
 
     public function importBankFile($em, $inputFile, $account, $accountType, $importDuplicates = false)
     {
@@ -20,22 +26,24 @@ class importBankTransactions
 
             while (($row = fgetcsv($handle)) !== FALSE) {
 
-
                 // ANZ and NAB differ for importing description
                 if ($accountType == 'ANZ') {
                     // ANZ format is date,amount,description
-                    if (sizeof($row) < 3) {
+                    if (sizeof($row) != 3) {
+                        $this->unknown[] = implode(',', $row);
                         continue;
                     }
                     $description = preg_replace("/ {2,}/", " ", $row[2]);
                     $fullDescription = $description;
+
 
                     $dateparts = explode('/', $row[0], 3);
                     $date = new\DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
                     //$output->writeln($description);
                 } elseif ($accountType == 'NAB') {
                     //NAB format date,amount,__,__,Type,Description,Balance,__
-                    if (sizeof($row) < 5) {
+                    if (sizeof($row) != 8) {
+                        $this->unknown[] = implode(',', $row);
                         continue;
                     }
                     $description = preg_replace("/ {2,}/", " ", $row[5]);
@@ -49,13 +57,27 @@ class importBankTransactions
                     throw new \Exception('Invalid Account Type');
                 }
 
+                $amount = $row[1];
 
-                // Limit to transactions new
-                if ($date < new \DateTime("2015-07-01 00:00:00")) {
+                if($this->checkUnclearedTransaction($fullDescription))
+                {
+                    $this->ignored[] = [
+                        'date' => $date,
+                        'fullDescription' => $fullDescription,
+                        'amount' =>$amount
+                    ];
                     continue;
                 }
 
-                $amount = $row[1];
+                // Limit to transactions in this financial year //TODO remove this?
+                if ($date < new \DateTime("2015-07-01 00:00:00")) {
+                    $this->ignored[] = [
+                        'date' => $date,
+                        'fullDescription' => $fullDescription,
+                        'amount' =>$amount
+                    ];
+                    continue;
+                }
 
                 if (!$importDuplicates) {
                     // Attempt to detect duplicate transaction
@@ -104,11 +126,35 @@ class importBankTransactions
 
     public function getDuplicates()
     {
-        return $this->duplicates;
+        return array_filter($this->duplicates);
+    }
+
+    // Returns transaction we skipped due to it matching a uncleared transaction filter
+    public function getIgnored()
+    {
+        return array_filter($this->ignored);
+    }
+
+    // Returns rows that we don't know
+    public  function getUnknown()
+    {
+        return array_filter($this->unknown);
     }
 
     public function getImport()
     {
         return $this->import;
+    }
+
+    private function checkUnclearedTransaction($fullDescription) {
+        foreach($this->uncleared_searches as $search) {
+            if(strpos($fullDescription, $search) !== false) return true; // stop on first true result
+        }
+        // Check for a Debit transaction with no description, this is uncleared
+        if($fullDescription == 'EFTPOS DEBIT:')
+        {
+            return true;
+        }
+        return false;
     }
 }

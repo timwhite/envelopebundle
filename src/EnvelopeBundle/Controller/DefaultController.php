@@ -60,6 +60,8 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         $dups = [];
+        $ignored = [];
+        $unknown = null;
         $import = null;
 
         if ($form->isValid() && $form->isSubmitted()) {
@@ -71,6 +73,8 @@ class DefaultController extends Controller
                 $form['accountType']->getData()
             );
             $dups = $bankImport->getDuplicates();
+            $ignored = $bankImport->getIgnored();
+            $unknown = $bankImport->getUnknown();
             $import = $bankImport->getImport();
 
 
@@ -85,6 +89,8 @@ class DefaultController extends Controller
                 'lastimport' => $import,
                 'lastimportaccount' => $form['account']->getData(),
                 'dups' => $dups,
+                'ignored' => $ignored,
+                'unknown' => $unknown,
             ]
         );
     }
