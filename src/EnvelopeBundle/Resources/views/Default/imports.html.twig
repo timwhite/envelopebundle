@@ -84,20 +84,7 @@
                             </tr>
                             </thead>
 
-                            {% if dups|length %}
-                                <tr>
-                                    <th colspan="3">Duplicate Transactions</th>
-                                </tr>
-                                {% for duplicate in dups %}
-                                    <tr class="danger">
-                                        <td>{{ duplicate.date|localizeddate('short', 'none') }}</td>
-                                        <td>{{ duplicate.fullDescription }}</td>
-                                        <td>{{ duplicate.amount|localizedcurrency('AUD') }}</td>
 
-                                    </tr>
-
-                                {% endfor %}
-                            {% endif %}
 
                             {% if ignored|length > 0 %}
                                 <tr>
@@ -122,6 +109,21 @@
                                 {% for row in unknown %}
                                     <tr class="danger">
                                         <td colspan="3">{{ row }}</td>
+                                    </tr>
+
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if dups|length %}
+                                <tr>
+                                    <th colspan="3">Duplicate Transactions</th>
+                                </tr>
+                                {% for duplicate in dups %}
+                                    <tr class="danger">
+                                        <td>{{ duplicate.date|localizeddate('short', 'none') }}</td>
+                                        <td>{{ duplicate.fullDescription }}</td>
+                                        <td>{{ duplicate.amount|localizedcurrency('AUD') }}</td>
+
                                     </tr>
 
                                 {% endfor %}
