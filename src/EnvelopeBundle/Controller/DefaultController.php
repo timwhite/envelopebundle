@@ -14,11 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
-    public function indexAction($name)
-    {
-        return $this->render('EnvelopeBundle:Default:index.html.twig', array('name' => $name));
-    }
-
     public function budgetTransactionListAction($accountid = null)
     {
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();

@@ -1,6 +1,10 @@
-envelope_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: EnvelopeBundle:Default:index }
+# redirecting the admin home
+root:
+    path: /
+    defaults:
+        _controller: FrameworkBundle:Redirect:redirect
+        route: envelope_transactions
+        permanent: true
 
 envelope_autocode:
     path:   /autocode/
