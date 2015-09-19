@@ -43,6 +43,12 @@ class LoadBudgetTemplateData extends AbstractFixture implements OrderedFixtureIn
             ]
         ];*/
 
+        if($budgetTemplates == null)
+        {
+            $budgetTemplates = [];
+        }
+
+
         foreach ($budgetTemplates as $name => $template) {
             $Template = new Template();
             $Template->setName($name);
