@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "hash": "38738cbd8cdf1da2780facc1e95bcd96",
     "packages": [
         {
             "name": "avanzu/admin-theme-bundle",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avanzu/AdminThemeBundle.git",
-                "reference": "41fc37c4f7a5616f475b5db39e48b1f085a0aa72"
+                "reference": "4d6cd1410be8cb69f79ba76cb69c52730e68c71f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avanzu/AdminThemeBundle/zipball/41fc37c4f7a5616f475b5db39e48b1f085a0aa72",
-                "reference": "41fc37c4f7a5616f475b5db39e48b1f085a0aa72",
+                "url": "https://api.github.com/repos/avanzu/AdminThemeBundle/zipball/4d6cd1410be8cb69f79ba76cb69c52730e68c71f",
+                "reference": "4d6cd1410be8cb69f79ba76cb69c52730e68c71f",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 }
             ],
             "description": "Admin Theme based on the AdminLTE Template for easy integration into symfony",
-            "time": "2015-03-21 14:47:51"
+            "time": "2015-08-29 06:58:15"
         },
         {
             "name": "cocur/slugify",
@@ -2417,6 +2417,7 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.9"
     },
