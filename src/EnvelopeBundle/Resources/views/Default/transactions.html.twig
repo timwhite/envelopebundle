@@ -75,11 +75,13 @@
                                 <th>Unassigned Amount</th>
                             </tr>
                             </thead>
-                            {% set offset = (app.request.get('p_' ~ account.id) - 1)*page_size %}
+
                             {% set currentpage = app.request.get('p_' ~ account.id) %}
                             {% if currentpage is null %}
                                 {% set currentpage = 1 %}
                             {% endif %}
+                            {% set offset = (currentpage - 1)*page_size %}
+
                             {% for transaction in account.transactions|slice(offset,page_size) %}
                                 <tr>
                                     <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
