@@ -24,14 +24,22 @@
                         <tr>
                             <th>Description</th>
                             <th>Budget</th>
+                            <th></th>
                             <th>Amount</th>
                         </tr>
                         </thead>
                     {% for templatetransaction in budgettemplate.templatetransactions %}
                         <tr>
-                            <td><a href=" path('envelope_budgettransactions', {'accountid': budget.id}) ">
-                        {{ templatetransaction.description }}</a></td>
-                            <td>{{ templatetransaction.budgetaccount.budgetname }}</td>
+                            <td>{{ templatetransaction.description }}</td>
+                            <td><a href="{{ path('envelope_budgettransactions', {'accountid': templatetransaction.budgetaccount.id}) }}">{{ templatetransaction.budgetaccount.budgetname }}</a></td>
+                            <td>
+                                {% if templatetransaction.budgetaccount.balance <= 0 %}
+                                    <span class="label label-warning">
+                                {% else %}
+                                    <span class="label label-default">
+                                {% endif %}
+                                {{ templatetransaction.budgetaccount.balance|localizedcurrency('AUD') }}</span>
+                            </td>
                             <td align="right">{{ templatetransaction.amount|localizedcurrency('AUD') }}</td>
                         </tr>
                     {% endfor %}
