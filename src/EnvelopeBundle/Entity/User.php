@@ -199,4 +199,13 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     {
         return '';
     }
+
+    public function getRoles()
+    {
+        if ($this->email == "")
+        {
+            return ['ROLE_USER'];
+        }
+        return [];
+    }
 }

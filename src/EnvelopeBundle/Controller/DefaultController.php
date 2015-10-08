@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
+    public function dashboardAction()
+    {
+        return $this->render(
+            'EnvelopeBundle:Default:dashboard.html.twig'
+        );
+    }
+
     public function budgetTransactionListAction($accountid = null)
     {
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();

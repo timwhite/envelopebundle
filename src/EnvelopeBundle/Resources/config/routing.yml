@@ -6,10 +6,11 @@ avanzu_admin_logout:
 # redirecting the admin home
 root:
     path: /
-    defaults:
-        _controller: FrameworkBundle:Redirect:redirect
-        route: envelope_transactions
-        permanent: true
+    defaults: { _controller: EnvelopeBundle:Default:dashboard }
+    #defaults:
+    #    _controller: FrameworkBundle:Redirect:redirect
+    #    route: envelope_transactions
+    #    permanent: true
 
 envelope_autocode:
     path:   /autocode/
