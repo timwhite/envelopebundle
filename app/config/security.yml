@@ -1,6 +1,8 @@
 security:
 
     providers:
+        hwi:
+            id: hwi_oauth.user.provider
         in_memory:
             memory: ~
 
@@ -9,5 +11,24 @@ security:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
             security: false
 
-        main:
+        secured_area:
             anonymous: ~
+            logout: true
+            logout:
+                path:   /logout
+                target: /
+            oauth:
+                resource_owners:
+                    google:             "/login/check-google"
+                login_path:        /login
+                use_forward:       false
+                failure_path:      /login
+
+                oauth_user_provider:
+                    service: hwi_oauth.user.provider
+
+
+
+
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
