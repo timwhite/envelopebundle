@@ -3,6 +3,8 @@ security:
     providers:
         hwi:
             id: hwi_oauth.user.provider
+        my_custom_hwi_provider:
+                    id: ib_user.oauth_user_provider
         in_memory:
             memory: ~
 
@@ -25,7 +27,7 @@ security:
                 failure_path:      /login
 
                 oauth_user_provider:
-                    service: hwi_oauth.user.provider
+                    service: ib_user.oauth_user_provider
 
 
 

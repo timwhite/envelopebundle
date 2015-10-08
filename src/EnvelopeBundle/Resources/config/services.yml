@@ -12,3 +12,6 @@ services:
             - { name: kernel.event_listener, event: theme.sidebar_setup_menu, method: onSetupMenu }
 
 
+    ib_user.oauth_user_provider:
+        class: EnvelopeBundle\Auth\OAuthProvider
+        arguments: [@session, @doctrine, @service_container]
