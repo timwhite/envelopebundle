@@ -7,13 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
 
 /**
  * Class User
  * @ORM\Entity
  */
 
-class User extends OAuthUser implements EquatableInterface
+class User extends OAuthUser implements EquatableInterface,ThemeUser
 {
 
     /**
@@ -167,5 +168,35 @@ class User extends OAuthUser implements EquatableInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getIdentifier()
+    {
+        return $this->getUsername();
+    }
+
+    public function isOnline()
+    {
+        return true;
+    }
+
+    public function getMemberSince()
+    {
+        return new \DateTime();
+    }
+
+    public function getTitle()
+    {
+        return '';
+    }
+
+    public function getName()
+    {
+        return $this->getFirstname() . " " . $this->getLastname();
+    }
+
+    public function getAvatar()
+    {
+        return '';
     }
 }

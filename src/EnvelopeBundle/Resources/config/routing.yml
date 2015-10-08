@@ -1,3 +1,8 @@
+avanzu_admin_profile:
+    path: /profile/{userid}/
+avanzu_admin_logout:
+    path: /logout
+
 # redirecting the admin home
 root:
     path: /

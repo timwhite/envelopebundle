@@ -1,6 +1,6 @@
 parameters:
     my_admin_bundle.menu_listener.class: EnvelopeBundle\EventListener\MyMenuItemListListener
-
+    my_admin_bundle.show_user_listener.class: EnvelopeBundle\EventListener\MyShowUserListener
 
 services:
 #    envelope.example:
@@ -11,6 +11,11 @@ services:
         tags:
             - { name: kernel.event_listener, event: theme.sidebar_setup_menu, method: onSetupMenu }
 
+    my_admin_bundle.show_user_listener:
+        class: %my_admin_bundle.show_user_listener.class%
+        tags:
+           - { name: kernel.event_listener, event: theme.navbar_user, method: onShowUser }
+        arguments: [@session, @doctrine, @service_container]
 
     ib_user.oauth_user_provider:
         class: EnvelopeBundle\Auth\OAuthProvider
