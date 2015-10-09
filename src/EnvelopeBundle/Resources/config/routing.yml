@@ -1,5 +1,7 @@
 avanzu_admin_profile:
     path: /profile/{userid}/
+    defaults: { _controller: EnvelopeBundle:Default:profile }
+
 avanzu_admin_logout:
     path: /logout
 

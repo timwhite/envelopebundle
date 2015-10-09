@@ -26,6 +26,23 @@ class DefaultController extends Controller
         );
     }
 
+    public function profileAction($userid)
+    {
+        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
+        $qb->select('u')
+            ->from('EnvelopeBundle:User', 'u');
+
+        $qb->where('u.username = :username')
+            ->setParameter('username', $userid);
+
+        return $this->render(
+            'EnvelopeBundle:Default:profile.html.twig',
+            [
+                'user' => $qb->getQuery()->getResult()[0],
+            ]
+        );
+    }
+
     public function budgetTransactionListAction($accountid = null)
     {
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
