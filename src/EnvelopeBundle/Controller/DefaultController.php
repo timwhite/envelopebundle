@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
@@ -43,14 +44,20 @@ class DefaultController extends Controller
         );
     }
 
-    public function budgetTransactionListAction($accountid = null)
+    public function budgetTransactionListAction(Request $request, $accountid = null)
     {
+        $session = $request->getSession();
+
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('a')
-            ->from('EnvelopeBundle:BudgetAccount', 'a');
+            ->from('EnvelopeBundle:BudgetAccount', 'a')
+            ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
+            ->andWhere('g.access_group = :accessgroup')
+            ->setParameter('accessgroup', $session->get('accessgroupid'))
+        ;
 
         if ($accountid) {
-            $qb->where('a.id = :id')
+            $qb->andWhere('a.id = :id')
                 ->setParameter('id', $accountid);
 
         }
@@ -156,6 +163,7 @@ class DefaultController extends Controller
 
     public function transactionListAction(Request $request, $id)
     {
+        $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
         if ($id == 'new') {
             $existing = false;
@@ -167,17 +175,27 @@ class DefaultController extends Controller
             $query = $em->createQuery(
                 'SELECT t
                     FROM EnvelopeBundle:Transaction t
+                    JOIN EnvelopeBundle:Account a
+                    WITH t.account = a
                     WHERE t.id = :id
+                    AND a.access_group = :accessgroup
                     '
             );
 
             $query->setParameters(
                 [
-                    "id" => $id
+                    "id" => $id,
+                    "accessgroup" => $session->get('accessgroupid')
                 ]
             );
 
-            $transaction = $query->getSingleResult();
+            try {
+                $transaction = $query->getSingleResult();
+            } catch(NoResultException $e) {
+                $this->addFlash('warning', "No transaction with that ID available to you");
+                return $this->render(
+                    'EnvelopeBundle:Default:dashboard.html.twig');
+            }
         }
 
         $form = $this->createForm(new TransactionType(), $transaction, ['existing_entity' => $existing]);
@@ -255,13 +273,16 @@ class DefaultController extends Controller
         );
     }
 
-    public function budgetAccountListAction()
+    public function budgetAccountListAction(Request $request)
     {
+        $session = $request->getSession();
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT b
             FROM EnvelopeBundle:BudgetGroup b
-            '
-        );
+            JOIN EnvelopeBundle:AccessGroup a
+            WITH b.access_group = a
+            WHERE a.id  = :accessgroup'
+        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
 
         return $this->render(
             'EnvelopeBundle:Default:budgetaccounts.html.twig',
