@@ -71,6 +71,7 @@ class OAuthProvider extends OAuthUserProvider
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setEmail($email);
+            $user->setAvatar($avatar);
 
             $em = $this->doctrine->getManager();
             $em->persist($user);
@@ -81,6 +82,7 @@ class OAuthProvider extends OAuthUserProvider
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setEmail($email);
+            $user->setAvatar($avatar);
             $em->persist($user);
             $em->flush();
             $this->session->set('id', $user->getId());

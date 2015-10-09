@@ -43,6 +43,17 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     protected $username = null;
 
     /**
+     * @ORM\Column(name="avatar", type="string", length=255, nullable=TRUE)
+     */
+    protected $avatar;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AccessGroup")
+     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=TRUE)
+     */
+    private $access_group = null;
+
+    /**
      * @see \Serializable::serialize()
      */
     public function serialize()
@@ -195,17 +206,60 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
         return $this->getFirstname() . " " . $this->getLastname();
     }
 
-    public function getAvatar()
-    {
-        return '';
-    }
 
     public function getRoles()
     {
-        if ($this->email == "")
+        if ($this->access_group != null)
         {
             return ['ROLE_USER'];
         }
         return [];
+    }
+
+    /**
+     * Set avatar
+     *
+     * @param string $avatar
+     * @return User
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+
+    /**
+     * Get avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * Set access_group
+     *
+     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @return User
+     */
+    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup = null)
+    {
+        $this->access_group = $accessGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get access_group
+     *
+     * @return \EnvelopeBundle\Entity\AccessGroup 
+     */
+    public function getAccessGroup()
+    {
+        return $this->access_group;
     }
 }

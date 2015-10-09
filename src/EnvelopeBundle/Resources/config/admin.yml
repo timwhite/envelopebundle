@@ -75,3 +75,9 @@ services:
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
+
+    sonata.admin.access_group:
+        class: EnvelopeBundle\Admin\AccessGroupAdmin
+        arguments: [~, EnvelopeBundle\Entity\AccessGroup, EnvelopeBundle:AccessGroupAdmin]
+        tags:
+            - {name: sonata.admin, manager_type: orm, group: admin, label: AccessGroup}
