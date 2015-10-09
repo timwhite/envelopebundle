@@ -88,6 +88,8 @@ class OAuthProvider extends OAuthUserProvider
             $this->session->set('id', $user->getId());
         }
 
+        $this->session->set('accessgroupid', $user->getAccessGroup()->getId());
+
         //set id
 
 

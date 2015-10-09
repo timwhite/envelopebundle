@@ -119,25 +119,31 @@ class DefaultController extends Controller
         );
     }
 
-    public function transactionsListAction()
+    public function transactionsListAction(Request $request)
     {
+        $session = $request->getSession();
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT a
             FROM EnvelopeBundle:Account a
+            WHERE a.access_group = :accessgroup
             '
-        );
+        )->setParameters(['accessgroup' => $session->get('accessgroupid')])
+        ;
 
         $query2 = $this->getDoctrine()->getManager()->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             LEFT JOIN EnvelopeBundle:BudgetTransaction b
-            WHERE b.transaction = t
+            WITH b.transaction = t
+            LEFT JOIN EnvelopeBundle:Account a
+            WITH t.account = a
+            WHERE a.access_group = :accessgroup
             GROUP BY t.id
             HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
             ORDER BY t.date
             '
-        );
-
+        )->setParameters(['accessgroup' => $session->get('accessgroupid')])
+        ;
 
         return $this->render(
             'EnvelopeBundle:Default:transactions.html.twig',

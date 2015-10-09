@@ -78,6 +78,12 @@ services:
 
     sonata.admin.access_group:
         class: EnvelopeBundle\Admin\AccessGroupAdmin
-        arguments: [~, EnvelopeBundle\Entity\AccessGroup, EnvelopeBundle:AccessGroupAdmin]
+        arguments: [~, EnvelopeBundle\Entity\AccessGroup, SonataAdminBundle:CRUD]
         tags:
             - {name: sonata.admin, manager_type: orm, group: admin, label: AccessGroup}
+
+    sonata.admin.user:
+        class: EnvelopeBundle\Admin\UserAdmin
+        arguments: [~, EnvelopeBundle\Entity\User, SonataAdminBundle:CRUD]
+        tags:
+            - {name: sonata.admin, manager_type: orm, group: admin, label: User}
