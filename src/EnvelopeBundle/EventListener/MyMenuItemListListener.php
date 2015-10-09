@@ -4,10 +4,16 @@ namespace EnvelopeBundle\EventListener;
 use Avanzu\AdminThemeBundle\Model\MenuItemModel;
 use Avanzu\AdminThemeBundle\Event\SidebarMenuEvent;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class MyMenuItemListListener {
 
-    // ...
+    private $securityChecker;
+
+    public function __construct(AuthorizationChecker $securityChecker)
+    {
+        $this->securityChecker = $securityChecker;
+    }
 
     public function onSetupMenu(SidebarMenuEvent $event) {
 
@@ -21,30 +27,35 @@ class MyMenuItemListListener {
 
     protected function getMenu(Request $request) {
         // retrieve your menuItem models/entities here
-        $items = [
+        $items = [];
+        if ($this->securityChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
 
-            'envelope_budgets' => "Budgets",
-            'envelope_budgettransactions' => "Budget Transactions",
-            'bank_transactions' => [
-                "label" => "Bank Transactions",
-                'children' => [
-                    'envelope_transactions' => [
-                        'label' => 'View Transactions',
-                        'children' => [
-                            'envelope_transaction' => ['label' => 'A']
+
+            $items = [
+
+                'envelope_budgets' => "Budgets",
+                'envelope_budgettransactions' => "Budget Transactions",
+                'bank_transactions' => [
+                    "label" => "Bank Transactions",
+                    'children' => [
+                        'envelope_transactions' => [
+                            'label' => 'View Transactions',
+                            'children' => [
+                                'envelope_transaction' => ['label' => 'A']
+                            ],
                         ],
+                        'envelope_transaction_new' => [
+                            'label' => 'New Transaction',
+                            'route_args' => ['id' => 'new']
+                        ]
                     ],
-                    'envelope_transaction_new' => [
-                        'label' => 'New Transaction',
-                        'route_args' => ['id' => 'new']
-                    ]
                 ],
-            ],
-            'envelope_budget_templates' => "Budget Templates",
-            'envelope_budget_apply_template' => "Apply Budget Template",
-            'envelope_import' => "Import",
-            'envelope_autocode' => 'Auto Code Transactions',
-        ];
+                'envelope_budget_templates' => "Budget Templates",
+                'envelope_budget_apply_template' => "Apply Budget Template",
+                'envelope_import' => "Import",
+                'envelope_autocode' => 'Auto Code Transactions',
+            ];
+        }
         $menuItems = array();
         foreach($items as $key => $label)
         {

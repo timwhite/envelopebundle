@@ -10,6 +10,7 @@ services:
         class: %my_admin_bundle.menu_listener.class%
         tags:
             - { name: kernel.event_listener, event: theme.sidebar_setup_menu, method: onSetupMenu }
+        arguments: [@security.authorization_checker]
 
     my_admin_bundle.show_user_listener:
         class: %my_admin_bundle.show_user_listener.class%

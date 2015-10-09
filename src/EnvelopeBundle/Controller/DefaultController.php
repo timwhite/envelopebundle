@@ -16,6 +16,11 @@ class DefaultController extends Controller
 {
     public function dashboardAction()
     {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->render(
+                'EnvelopeBundle:Default:welcome.html.twig'
+            );
+        }
         return $this->render(
             'EnvelopeBundle:Default:dashboard.html.twig'
         );
