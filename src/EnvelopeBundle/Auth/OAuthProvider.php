@@ -67,13 +67,17 @@ class OAuthProvider extends OAuthUserProvider
 
         //add to database if doesn't exists
         if (!count($result)) {
+            $em = $this->doctrine->getManager();
             $user = new User($google_id);
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setEmail($email);
             $user->setAvatar($avatar);
 
-            $em = $this->doctrine->getManager();
+            $accessgroup = $em->getRepository('EnvelopeBundle:AccessGroup')->findByName("No Access");
+            $user->setAccessGroup($accessgroup[0]);
+
+
             $em->persist($user);
             $em->flush();
         } else {

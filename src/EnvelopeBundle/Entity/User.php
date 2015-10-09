@@ -49,9 +49,9 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
 
     /**
      * @ORM\ManyToOne(targetEntity="AccessGroup")
-     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=TRUE)
+     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FAlSE)
      */
-    private $access_group = null;
+    private $access_group;
 
     /**
      * @see \Serializable::serialize()
