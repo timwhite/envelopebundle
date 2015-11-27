@@ -379,6 +379,10 @@ class DefaultController extends Controller
                 ->setTransaction($transferTransaction);
             $em->persist($budgetTransaction);
         }
+
+        // Update last applied date
+        $template->setLastAppliedDate($date);
+        $em->persist($template);
         $em->flush();
 
         $this->addFlash(

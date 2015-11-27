@@ -19,6 +19,7 @@
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
+                    {% if budgettemplate.lastapplieddate %}Last applied {{ budgettemplate.lastapplieddate|date('Y-m-d') }}{% endif %}
                     <table class="table table-striped">
                         <thead>
                         <tr>
