@@ -65,8 +65,10 @@
                                 </td>
                                 <td align="right">
                                     {% if addform.amount is not defined %}
-                                        {{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                        {{ transaction.unassignedsum|localizedcurrency('AUD') }}
+                                        <span id="unassignedamount" data-unassignedamount="{{ transaction.unassignedsum }}"></span>
                                     {% endif %}
+                                </td>
                             </tr>
 
 
@@ -96,6 +98,7 @@
                     </table>
 
                     {{ form_end(addform) }}
+
                 </div>
                 <div class="box-footer">
                 </div><!-- box-footer -->
@@ -105,4 +108,16 @@
 
     </div><!-- row -->
 
+{% endblock %}
+
+{% block javascripts_inline %}
+<script>
+    $('.budgetransactionamount').focus(function () {
+        var $unassigned=$('#unassignedamount').data('unassignedamount');
+            if (!this.value && $unassigned != 0) {
+                this.value = $unassigned;
+            }
+        }
+    )
+</script>
 {% endblock %}

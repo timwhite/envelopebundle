@@ -18,6 +18,7 @@ class TransactionType extends AbstractType
             'by_reference' => false,
             'allow_delete' => true,
             'label' => false,
+
         ));
 
         if(!$options['existing_entity']) {
