@@ -35,6 +35,12 @@ class Account
     private $transactions;
 
     /**
+     * @ORM\ManyToOne(targetEntity="AccessGroup")
+     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
+     */
+    private $access_group;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -124,5 +130,28 @@ class Account
     public function getTransactions()
     {
         return $this->transactions;
+    }
+
+    /**
+     * Set access_group
+     *
+     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @return Account
+     */
+    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    {
+        $this->access_group = $accessGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get access_group
+     *
+     * @return \EnvelopeBundle\Entity\AccessGroup 
+     */
+    public function getAccessGroup()
+    {
+        return $this->access_group;
     }
 }

@@ -1,10 +1,18 @@
+avanzu_admin_profile:
+    path: /profile/{userid}/
+    defaults: { _controller: EnvelopeBundle:Default:profile }
+
+avanzu_admin_logout:
+    path: /logout
+
 # redirecting the admin home
 root:
     path: /
-    defaults:
-        _controller: FrameworkBundle:Redirect:redirect
-        route: envelope_transactions
-        permanent: true
+    defaults: { _controller: EnvelopeBundle:Default:dashboard }
+    #defaults:
+    #    _controller: FrameworkBundle:Redirect:redirect
+    #    route: envelope_transactions
+    #    permanent: true
 
 envelope_autocode:
     path:   /autocode/

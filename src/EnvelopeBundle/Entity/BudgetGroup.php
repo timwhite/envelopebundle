@@ -33,6 +33,12 @@ class BudgetGroup
      */
     private $budget_accounts;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="AccessGroup")
+     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
+     */
+    private $access_group;
+
 
 
     /**
@@ -121,5 +127,28 @@ class BudgetGroup
             $balance += $account->getBalance();
         }
         return $balance;
+    }
+
+    /**
+     * Set access_group
+     *
+     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @return BudgetGroup
+     */
+    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    {
+        $this->access_group = $accessGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get access_group
+     *
+     * @return \EnvelopeBundle\Entity\AccessGroup 
+     */
+    public function getAccessGroup()
+    {
+        return $this->access_group;
     }
 }

@@ -11,7 +11,7 @@ class BudgetTransactionType extends AbstractType
     {
         $builder
             ->add('budgetaccount', 'entity', ['class' => 'EnvelopeBundle:BudgetAccount', 'required' => false])
-            ->add('amount', 'money', ['required' => false, 'currency' => 'AUD'])
+            ->add('amount', 'money', ['required' => false, 'currency' => 'AUD', 'attr' => ['class'   => 'budgetransactionamount']])
         ;
 
     }

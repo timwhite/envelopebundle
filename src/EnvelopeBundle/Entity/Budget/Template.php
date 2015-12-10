@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Entity\Budget;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Entity\Budget\TemplateTransaction;
 
@@ -35,6 +36,13 @@ class Template
      * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="last_applied_date", type="date", nullable=True)
+     */
+    private $last_applied_date;
 
     /**
      * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template")
@@ -142,7 +150,12 @@ class Template
 
     public function __toString()
     {
-        return $this->getName() .": " .  $this->getDescription() ." (" . $this->getBalance() . ")";
+        $lastDate = "";
+        if($this->getLastAppliedDate())
+        {
+            $lastDate =  " - " . $this->getLastAppliedDate()->format('Y-m-d');
+        }
+        return $this->getName() .": " .  $this->getDescription() ." (" . $this->getBalance() . ")$lastDate";
     }
 
     /**
@@ -176,5 +189,28 @@ class Template
     public function getTemplateTransactions()
     {
         return $this->template_transactions;
+    }
+
+    /**
+     * Set last_applied_date
+     *
+     * @param \DateTime $lastAppliedDate
+     * @return Template
+     */
+    public function setLastAppliedDate($lastAppliedDate)
+    {
+        $this->last_applied_date = $lastAppliedDate;
+
+        return $this;
+    }
+
+    /**
+     * Get last_applied_date
+     *
+     * @return \DateTime 
+     */
+    public function getLastAppliedDate()
+    {
+        return $this->last_applied_date;
     }
 }
