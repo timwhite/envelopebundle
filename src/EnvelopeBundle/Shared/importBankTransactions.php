@@ -18,7 +18,6 @@ class importBankTransactions
 
     public function importBankFile($em, $inputFile, $account, $accountType, $importDuplicates = false)
     {
-        dump($accountType);
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
             $this->import = new Import();
             $em->persist($this->import);
