@@ -6,6 +6,7 @@
             {{ flashMessage }}
         </div>
     {% endfor %}
+
     <div class="row">
         <div class="col-sm-6">
             <div class="box">
@@ -80,7 +81,7 @@
                             {% for budgettransaction in addform.budget_transactions %}
                                 <li>
                                     <span class="col-sm-8 col-xs-7">
-                                    {{ form_widget(budgettransaction.budgetaccount) }}
+                                    {{ form_widget(budgettransaction.budgetaccount, { 'attr': {'class': 'combobox'} }) }}
                                     </span>
                                     <span class="col-sm-4 col-xs-5">
                                     {{ form_widget(budgettransaction.amount) }}
@@ -90,7 +91,7 @@
                             <li>
                                 {% set formindex = addform.budget_transactions|length %}
                                 <span class="col-sm-8 col-xs-7">
-                                {{ form_widget(addform.budget_transactions.vars.prototype.budgetaccount)|replace({'__name__': formindex})|raw }}
+                                {{ form_widget(addform.budget_transactions.vars.prototype.budgetaccount, { 'attr': {'class': 'combobox'} })|replace({'__name__': formindex})|raw }}
                                 </span>
                                 <span class="col-sm-4 col-xs-5">
                                 {{ form_widget(addform.budget_transactions.vars.prototype.amount)|replace({'__name__': formindex})|raw }}
@@ -130,5 +131,20 @@
             }
         }
     )
+
+    $(document).ready(function(){
+        $('.combobox').combobox();
+    });
 </script>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ asset('assets/vendor/bootstrap-combobox/js/bootstrap-combobox.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet"
+      href="{{ asset('assets/vendor/bootstrap-combobox/css/bootstrap-combobox.css') }}">
 {% endblock %}
