@@ -290,6 +290,27 @@ class DefaultController extends Controller
         );
     }
 
+    public function budgetTemplateCloneAction($templateid)
+    {
+        $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository('EnvelopeBundle:Budget\Template');
+        $budgetTemplate = $budgetTemplateRepo->find($templateid);
+        if($budgetTemplate) {
+            $newBudgetTemplate = clone $budgetTemplate;
+            $this->getDoctrine()->getManager()->persist($newBudgetTemplate);
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash(
+                'success',
+                'Budget Template ' . $budgetTemplate->getName() . ' cloned'
+            );
+        }else{
+            $this->addFlash(
+                'error',
+                "Budget Template $templateid doesn't exist to clone"
+            );
+        }
+        return $this->redirectToRoute('envelope_budget_templates');
+    }
+
     public function budgetTemplateListAction()
     {
         $query = $this->getDoctrine()->getManager()->createQuery(

@@ -16,6 +16,7 @@
                             <span class="label label-warning">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
                         {% endif %}
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
@@ -51,6 +52,10 @@
                     {% for groupsum in budgettemplates_groupsums[budgettemplate.id] %}
                         {{ groupsum.name }}: {{ groupsum.total }}
                     {% endfor %}
+
+                    <form action="{{ path('envelope_budget_template_clone', {'templateid': budgettemplate.id}) }}" method="post">
+                        <button class="btn btn-box-tool">Clone Template</button>
+                    </form>
                 </div><!-- box-footer -->
             </div><!-- /.box -->
         </div><!-- col -->

@@ -3,6 +3,7 @@
 namespace EnvelopeBundle\Entity\Budget;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Entity\Budget\TemplateTransaction;
 
@@ -45,7 +46,7 @@ class Template
     private $last_applied_date;
 
     /**
-     * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template")
+     * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template", cascade="persist")
      */
     private $template_transactions;
 
@@ -144,7 +145,7 @@ class Template
      */
     public function __construct()
     {
-        $this->template_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->template_transactions = new ArrayCollection();
     }
 
 
@@ -212,5 +213,23 @@ class Template
     public function getLastAppliedDate()
     {
         return $this->last_applied_date;
+    }
+
+    public function __clone() {
+        if ($this->id) {
+            $this->id = null;
+            $this->last_applied_date = null;
+            $this->setDescription("Cloned - ". $this->getDescription());
+            $this->setName("Cloned - ". $this->getName());
+
+            // cloning the relation M which is a OneToMany
+            $cloned_transactions = new ArrayCollection();
+            foreach ($this->getTemplateTransactions() as $templateTransaction) {
+                $clonedTransaction = clone $templateTransaction;
+                $clonedTransaction->setTemplate($this);
+                $cloned_transactions->add($clonedTransaction);
+            }
+            $this->template_transactions = $cloned_transactions;
+        }
     }
 }
