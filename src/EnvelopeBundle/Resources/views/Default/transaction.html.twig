@@ -7,7 +7,7 @@
         </div>
     {% endfor %}
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-6">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Transactions {{ transaction.id }} details</h3>
@@ -25,77 +25,88 @@
                     {% form_theme addform 'bootstrap_3_layout.html.twig' %}
                     {{ form_start(addform) }}
 
+                    <strong>Date</strong> {{ transaction.date|localizeddate('short', 'none') }}<br/>
 
                     {% if addform.account is defined %}
-                        <table class="table table-striped" style="width: 50%">
-                            <thead>
-                            <th colspan="5">Bank Account</th>
-                            </thead>
-                            <tr><Td>{{ form_row(addform.account) }}</Td><td colspan="4"></td></tr>
-                        </table>
+                            <label>Bank Account</label>
+                            {{ form_row(addform.account) }}
                     {% endif %}
 
-                    <table class="table table-striped">
 
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th colspan="2">Description</th>
+                    <strong>Description</strong>
+                    <small>
+                        {% if addform.fulldescription is defined %}
+                            {{ form_row(addform.fulldescription) }}
 
-                            <th>Amount</th>
-                            {% if transactionid != 'new' %}<th>Unassigned Amount</th>{% endif %}
-                        </tr>
-                        </thead>
-                            <tr>
-                                <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
-                                <td>{{ form_row(addform.description) }}</td>
-                                <td><small>
-                                        {% if addform.fulldescription is defined %}
-                                            {{ form_row(addform.fulldescription) }}
+                        {% else %}
+                            {{ transaction.fulldescription }}
+                        {% endif %}</small>
+                    <br/>
 
-                                        {% else %}
-                                            {{ transaction.fulldescription }}
-                                        {% endif %}</small></td>
-                                <td align="right">
-                                    {% if addform.amount is defined %}
-                                        {{ form_row(addform.amount) }}
-                                    {% else %}
-                                        {{ transaction.amount|localizedcurrency('AUD') }}
-                                    {% endif %}
-                                </td>
-                                <td align="right">
-                                    {% if addform.amount is not defined %}
-                                        {{ transaction.unassignedsum|localizedcurrency('AUD') }}
-                                        <span id="unassignedamount" data-unassignedamount="{{ transaction.unassignedsum }}"></span>
-                                    {% endif %}
-                                </td>
-                            </tr>
+                    {{ form_row(addform.description) }}
+<style>
+    form legend {
+        padding: 0 2px;
+        font-weight: bold;
+    }
+    form label {
+        display: inline-block;
+        line-height: 1.8;
+        vertical-align: top;
+    }
+    form ol {
+        margin: 0;
+        padding: 0;
+    }
+    form li {
+        list-style: none;
+        padding: 5px;
+        margin: 0;
+    }
 
-
-                            <thead>
-                                <th></th>
-                                <th colspan="2">Budget Account</th>
-                                <th colspan="2">Amount</th>
-                            </thead>
-                            <tbody>
+</style>
+                    <label>Assign budget transactions</label>
+                    <ol>
+                        <li><strong class="col-sm-8 col-xs-7" style="text-align: right">Total Amount</strong>
+                                <span style="text-align: center" class="col-sm-4 col-xs-5">
+                            {% if addform.amount is defined %}
+                                {{ form_row(addform.amount) }}
+                            {% else %}
+                                {{ transaction.amount|localizedcurrency('AUD') }}
+                            {% endif %}
+                                </span>
+                        </li>
+                        <li style="border-bottom: 2px solid black" class="clearfix"></li>
                             {% for budgettransaction in addform.budget_transactions %}
-                                <tr>
-                                    <td></td>
-                                    <td colspan="2">{{ form_widget(budgettransaction.budgetaccount) }}</td>
-                                    <td colspan="2">{{ form_widget(budgettransaction.amount) }}</td>
-                                </tr>
+                                <li>
+                                    <span class="col-sm-8 col-xs-7">
+                                    {{ form_widget(budgettransaction.budgetaccount) }}
+                                    </span>
+                                    <span class="col-sm-4 col-xs-5">
+                                    {{ form_widget(budgettransaction.amount) }}
+                                    </span>
+                                </li>
                             {% endfor %}
-                            <tr>
+                            <li>
                                 {% set formindex = addform.budget_transactions|length %}
-                                <td></td>
-                                <td colspan="2">{{ form_widget(addform.budget_transactions.vars.prototype.budgetaccount)|replace({'__name__': formindex})|raw }}</td>
-                                <td colspan="2">{{ form_widget(addform.budget_transactions.vars.prototype.amount)|replace({'__name__': formindex})|raw }}</td>
+                                <span class="col-sm-8 col-xs-7">
+                                {{ form_widget(addform.budget_transactions.vars.prototype.budgetaccount)|replace({'__name__': formindex})|raw }}
+                                </span>
+                                <span class="col-sm-4 col-xs-5">
+                                {{ form_widget(addform.budget_transactions.vars.prototype.amount)|replace({'__name__': formindex})|raw }}
+                                </span>
 
 
-                            </tr>
-                            </tbody>
+                            </li>
+                            {% if addform.amount is not defined %}
+                        <li>
+                                <strong class="col-sm-8 col-xs-7" style="text-align: right">Unassigned Amount</strong>
+                                <span id="unassignedamount" data-unassignedamount="{{ transaction.unassignedsum }}" style="text-align: center" class="col-sm-4 col-xs-5"> {{ transaction.unassignedsum|localizedcurrency('AUD') }}</span>
+                        </li>
+                            {% endif %}
 
-                    </table>
+
+                    </ol>
 
                     {{ form_end(addform) }}
 
