@@ -227,6 +227,11 @@ class DefaultController extends Controller
                 'Transaction Updated'
             );
 
+            if($request->query->get('return') == 'transactions' && $transaction->getUnassignedSum() == 0)
+            {
+                return $this->redirectToRoute('envelope_transactions');
+            }
+
             if($transaction->getId() != $id)
             {
                 return $this->redirectToRoute('envelope_transaction', ['id' => $transaction->getId()]);

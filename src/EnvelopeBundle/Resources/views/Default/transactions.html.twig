@@ -29,7 +29,7 @@
                             <tr>
                                 <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
                                 <td>
-                                    <a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a>
+                                    <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'transactions'}) }}">{{ transaction.description }}</a>
                                 </td>
                                 <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
                                     <span data-toggle="tooltip"
