@@ -3,6 +3,7 @@
 namespace EnvelopeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use EnvelopeBundle\Shared\BudgetAccountStats;
 
 /**
  * Account
@@ -45,6 +46,24 @@ class BudgetAccount
     private $budget_group;
 
 
+    /** @var  BudgetAccountStats $budgetStats */
+    private $budgetStats;
+
+    /**
+     * @return BudgetAccountStats
+     */
+    public function getBudgetStats()
+    {
+        return $this->budgetStats;
+    }
+
+    /**
+     * @param BudgetAccountStats $budgetStats
+     */
+    public function setBudgetStats($budgetStats)
+    {
+        $this->budgetStats = $budgetStats;
+    }
 
     /**
      * Get id
@@ -86,6 +105,7 @@ class BudgetAccount
     public function __construct()
     {
         $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budgetStats = new BudgetAccountStats();
     }
 
     /**
@@ -130,6 +150,7 @@ class BudgetAccount
         }
         return $balance;
     }
+
 
     public function __toString()
     {

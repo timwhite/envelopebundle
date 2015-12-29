@@ -9,6 +9,7 @@ use EnvelopeBundle\Entity\Transaction;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
 use EnvelopeBundle\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
+use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,10 +64,16 @@ class DefaultController extends Controller
 
         }
 
+        $budgetaccounts = $qb->getQuery()->getResult();
+
+        // Load Stats and inject into entity
+        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager());
+        $budgetAccountStatsLoader->loadBudgetAccountStats();
+
         return $this->render(
             'EnvelopeBundle:Default:budgettransactions.html.twig',
             [
-                'budgetaccounts' => $qb->getQuery()->getResult(),
+                'budgetaccounts' => $budgetaccounts,
             ]
         );
     }
@@ -289,10 +296,11 @@ class DefaultController extends Controller
             WITH b.access_group = a
             WHERE a.id  = :accessgroup'
         )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
+        $budgetgroups = $query->getResult();
 
         return $this->render(
             'EnvelopeBundle:Default:budgetaccounts.html.twig',
-            array('budgetgroups' => $query->getResult())
+            array('budgetgroups' => $budgetgroups)
         );
     }
 

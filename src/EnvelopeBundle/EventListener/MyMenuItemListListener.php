@@ -54,6 +54,7 @@ class MyMenuItemListListener {
                 'envelope_budget_apply_template' => "Apply Budget Template",
                 'envelope_import' => "Import",
                 'envelope_autocode' => 'Auto Code Transactions',
+                'envelope_budget_stats'=> 'Stats',
             ];
         }
         $menuItems = array();

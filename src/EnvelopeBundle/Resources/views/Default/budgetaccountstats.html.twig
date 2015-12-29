@@ -1,0 +1,26 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-sm-6">
+            <table>
+                <thead>
+                <tr>
+                    <th>Budget Area</th>
+                    <th>Templates</th>
+                    <th>Average Fortnightly Spend</th>
+                    <th>Current Balance</th>
+                </tr>
+                </thead>
+                {%  for budget in budgetaccounts %}
+                    <tr>
+                        <td>{{ budget.budgetname }}</td>
+                        <td>{{ budget.TemplateTransactionsDescriptionsTooltip|raw }}</td>
+                        <td>{% if budget.budgetstats %}{{ budget.budgetstats.AverageFortnightlySpend |localizedcurrency('AUD')}}{% endif %}</td>
+                        <td><span class="label {% if budget.balance < 0 %}label-danger{% elseif budget.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budget.balance|localizedcurrency('AUD') }}</span></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div><!-- row -->
+
+{% endblock %}

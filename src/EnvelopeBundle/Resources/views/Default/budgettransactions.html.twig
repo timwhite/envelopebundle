@@ -10,7 +10,9 @@
         <div class="col-sm-6">
             <div class="box {% if collapsed %}collapsed-box{% endif %}">
                 <div class="box-header with-border">
-                    <h3 class="box-title">{{ budgetaccount.budgetname }} Transactions ({{ budgetaccount.budgettransactions|length }})</h3>
+                    <h3 class="box-title">{{ budgetaccount.budgetname }} Transactions ({{ budgetaccount.budgettransactions|length }})
+                        {% if budgetaccount.budgetstats %}<span class="label label-warning">{{ budgetaccount.budgetstats.AverageFortnightlySpend|localizedcurrency('AUD') }}</span>{% endif %}
+                    </h3>
                     <div class="box-tools pull-right">
                         <span class="label {% if budgetaccount.balance < 0 %}label-danger{% elseif budgetaccount.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budgetaccount.balance|localizedcurrency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa {% if collapsed %}fa-plus{% else %}fa-minus{% endif %}"></i></button>
