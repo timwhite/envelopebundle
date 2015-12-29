@@ -55,7 +55,7 @@ class Template
         $balance = 0;
         foreach($this->getTemplateTransactions() as $transaction)
         {
-            $balance += $transaction->getAmount();
+            $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
         return $balance;
     }
@@ -66,7 +66,7 @@ class Template
         foreach($this->getTemplateTransactions() as $transaction)
         {
             if($transaction->getAmount() > 0) {
-                $sum += $transaction->getAmount();
+                $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
         return $sum;
@@ -78,7 +78,7 @@ class Template
         foreach($this->getTemplateTransactions() as $transaction)
         {
             if($transaction->getAmount() < 0) {
-                $sum += $transaction->getAmount();
+                $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
         return $sum;

@@ -86,7 +86,7 @@ class Account
         $balance = 0;
         foreach($this->transactions as $transaction)
         {
-            $balance += $transaction->getAmount();
+            $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
         return $balance;
     }

@@ -1,12 +1,6 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 {% block page_content %}
-
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flashMessage }}
-        </div>
-    {% endfor %}
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}

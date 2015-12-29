@@ -201,7 +201,7 @@ class Transaction
         $balance = 0;
         foreach($this->budget_transactions as $transaction)
         {
-            $balance += $transaction->getAmount();
+            $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
         return $balance;
     }
@@ -212,7 +212,7 @@ class Transaction
         foreach($this->getBudgetTransactions() as $transaction)
         {
             if($transaction->getAmount() > 0) {
-                $sum += $transaction->getAmount();
+                $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
         return $sum;
@@ -224,7 +224,7 @@ class Transaction
         foreach($this->getBudgetTransactions() as $transaction)
         {
             if($transaction->getAmount() < 0) {
-                $sum += $transaction->getAmount();
+                $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
         return $sum;
@@ -232,7 +232,7 @@ class Transaction
 
     public function getUnassignedSum()
     {
-        return $this->getAmount() - $this->getBudgetSum();
+        return bcsub($this->getAmount(), $this->getBudgetSum(), 2);
     }
 
     public function getUnassignedSumFormatted()

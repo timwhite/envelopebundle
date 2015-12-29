@@ -124,7 +124,7 @@ class BudgetGroup
         $balance = 0;
         foreach($this->getBudgetAccounts() as $account)
         {
-            $balance += $account->getBalance();
+            $balance = bcadd($balance, $account->getBalance(), 2);
         }
         return $balance;
     }

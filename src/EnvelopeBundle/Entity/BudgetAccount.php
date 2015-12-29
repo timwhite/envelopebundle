@@ -126,7 +126,7 @@ class BudgetAccount
         $balance = 0;
         foreach($this->budget_transactions as $transaction)
         {
-            $balance += $transaction->getAmount();
+            $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
         return $balance;
     }
