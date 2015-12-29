@@ -58,3 +58,7 @@ envelope_budget_template_clone:
 envelope_budget_apply_template:
     path:   /budgets/templates/apply
     defaults: { _controller: EnvelopeBundle:Default:applyBudgetTemplate}
+
+envelope_budget_template_edit:
+    path:   /budgets/template/edit/{id}
+    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateEdit}

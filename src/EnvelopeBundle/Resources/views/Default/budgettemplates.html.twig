@@ -53,9 +53,11 @@
                         {{ groupsum.name }}: {{ groupsum.total }}
                     {% endfor %}
 
+
                     <form action="{{ path('envelope_budget_template_clone', {'templateid': budgettemplate.id}) }}" method="post">
-                        <button class="btn btn-box-tool">Clone Template</button>
+                        <a href="{{ path('envelope_budget_template_edit', {'id': budgettemplate.id}) }}" class="btn btn-default btn-box-tool">Edit Template</a> <button class="btn btn-default btn-box-tool">Clone Template</button>
                     </form>
+
                 </div><!-- box-footer -->
             </div><!-- /.box -->
         </div><!-- col -->

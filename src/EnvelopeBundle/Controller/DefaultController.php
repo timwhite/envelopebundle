@@ -6,6 +6,7 @@ use Doctrine\ORM\NoResultException;
 use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
+use EnvelopeBundle\Form\Type\BudgetTemplateType;
 use EnvelopeBundle\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\importBankTransactions;
@@ -222,7 +223,7 @@ class DefaultController extends Controller
             $em->flush();
 
             $this->addFlash(
-                'notice',
+                'success',
                 'Transaction Updated'
             );
 
@@ -407,9 +408,95 @@ class DefaultController extends Controller
         $em->flush();
 
         $this->addFlash(
-            'notice',
+            'success',
             'Budget Template Applied'
         );
 
+    }
+
+
+
+    public function budgetTemplateEditAction(Request $request, $id)
+    {
+        $session = $request->getSession();
+        $em = $this->getDoctrine()->getManager();
+        if ($id == 'new') {
+            $existing = false;
+            $budgetTemplate = new Template();
+        } else {
+            $existing = true;
+
+            $query = $em->createQuery(
+                'SELECT t
+                    FROM EnvelopeBundle:Budget\Template t
+                    WHERE t.id = :id
+                    '
+            );
+
+            $query->setParameters(
+                [
+                    "id" => $id
+                ]
+            );
+
+            try {
+                $budgetTemplate = $query->getSingleResult();
+            } catch(NoResultException $e) {
+                $this->addFlash('warning', "No budget template with that ID available to you");
+                return $this->render(
+                    'EnvelopeBundle:Default:dashboard.html.twig');
+            }
+        }
+
+        $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate, ['existing_entity' => $existing]);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            foreach ($budgetTemplate->getTemplateTransactions() as $templateTransaction) {
+                if ($templateTransaction->getBudgetAccount() == null || $templateTransaction->getAmount() == null || $templateTransaction->getDescription() == null) {
+                    $budgetTemplate->removeTemplateTransaction($templateTransaction);
+                    //$templateTransaction->setTemplate(null);
+                    $em->remove($templateTransaction);
+                }
+                // Ensure that transactions are correctly linked to the template (not sure why this is needed in this case)
+                elseif ($templateTransaction->getTemplate() == null) {
+                    $templateTransaction->setTemplate($budgetTemplate);
+                    $em->persist($templateTransaction);
+                }
+            }
+
+/*            if($id == 'new')
+            {
+                $budgetTemplate->setFullDescription($budgetTemplate->getDescription());
+            }*/
+
+
+            $em->persist($budgetTemplate);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Budget Template Updated'
+            );
+
+            if($budgetTemplate->getId() != $id)
+            {
+                return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
+            }
+
+
+            $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate);
+        }
+
+        return $this->render(
+            'EnvelopeBundle:Default:editbudgettemplate.html.twig',
+            [
+                'template' => $budgetTemplate,
+                'addform' => $form->createView(),
+                'templateid' => $id,
+            ]
+        );
     }
 }
