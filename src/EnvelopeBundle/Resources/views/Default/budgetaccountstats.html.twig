@@ -1,26 +1,50 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block page_content %}
     <div class="row">
-        <div class="col-sm-6">
-            <table>
+
+        <div class="col-sm-12">
+            <div class="box">
+            <table class="table table-condensed">
                 <thead>
                 <tr>
                     <th>Budget Area</th>
                     <th>Templates</th>
                     <th>Average Fortnightly Spend</th>
+                    <th>Average Fortnightly Positive</th>
+                    <th>Average Fortnightly Income</th>
                     <th>Current Balance</th>
+                    <th>Trend</th>
                 </tr>
                 </thead>
                 {%  for budget in budgetaccounts %}
-                    <tr>
+                    <tr {% if budget.budgetstats.overspend %}class="danger"{% endif %}>
                         <td>{{ budget.budgetname }}</td>
                         <td>{{ budget.TemplateTransactionsDescriptionsTooltip|raw }}</td>
-                        <td>{% if budget.budgetstats %}{{ budget.budgetstats.AverageFortnightlySpend |localizedcurrency('AUD')}}{% endif %}</td>
+                        <td>{{ budget.budgetstats.AverageFortnightlySpend |localizedcurrency('AUD')}}</td>
+                        <td>{% if budget.budgetstats.AverageFortnightlyPositive %}{{ budget.budgetstats.AverageFortnightlyPositive |localizedcurrency('AUD')}}{% endif %}</td>
+                        <td>{% if budget.budgetstats.AverageFortnightlyIncome %}{{ budget.budgetstats.AverageFortnightlyIncome |localizedcurrency('AUD')}}{% endif %}</td>
                         <td><span class="label {% if budget.balance < 0 %}label-danger{% elseif budget.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budget.balance|localizedcurrency('AUD') }}</span></td>
+                        <td>
+                            <span class="sparkline" values="{{ budget.budgetstats.RunningTotalSparklineData }}"></span>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
         </div>
+        </div>
     </div><!-- row -->
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/sparkline/jquery.sparkline.js') }}"></script>
+
+{% endblock %}
+
+
+{% block javascripts_inline %}
+<script>
+    $('.sparkline').sparkline('html', {valueSpots : {'1:': 'green', ':-1': 'red'}, height: '4em', width: '15em'});
+</script>
 {% endblock %}

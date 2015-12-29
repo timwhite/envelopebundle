@@ -10,6 +10,7 @@ use EnvelopeBundle\Shared\BudgetAccountStats;
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class BudgetAccount
 {
@@ -105,7 +106,16 @@ class BudgetAccount
     public function __construct()
     {
         $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->budgetStats = new BudgetAccountStats();
+        $this->budgetStats = new BudgetAccountStats($this->id);
+    }
+
+    /** @ORM\PostLoad */
+    public function postLoad()
+    {
+        if(!$this->budgetStats)
+        {
+            $this->budgetStats = new BudgetAccountStats($this->id);
+        }
     }
 
     /**
