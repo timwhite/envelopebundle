@@ -87,3 +87,9 @@ services:
         arguments: [~, EnvelopeBundle\Entity\User, SonataAdminBundle:CRUD]
         tags:
             - {name: sonata.admin, manager_type: orm, group: admin, label: User}
+
+    envelope.admin.budget_group:
+        class: EnvelopeBundle\Admin\BudgetGroupAdmin
+        arguments: [~, EnvelopeBundle\Entity\BudgetGroup, SonataAdminBundle:CRUD]
+        tags:
+            - {name: sonata.admin, manager_type: orm, group: "Accounts", label: "Budget Group" }
