@@ -153,4 +153,11 @@ class TemplateTransaction
     {
         return $this->budgetAccount;
     }
+
+    public function __toString()
+    {
+        $string = "Empty Account";
+        if($this->budgetAccount) $string = $this->budgetAccount->getBudgetName();
+        return $string . ": " . $this->description . ": "  . $this->amount;
+    }
 }

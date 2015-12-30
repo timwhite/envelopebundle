@@ -495,7 +495,19 @@ class DefaultController extends Controller
         if ($form->isValid()) {
 
             foreach ($budgetTemplate->getTemplateTransactions() as $templateTransaction) {
-                if ($templateTransaction->getBudgetAccount() == null || $templateTransaction->getAmount() == null || $templateTransaction->getDescription() == null) {
+                if (
+                        $templateTransaction->getBudgetAccount() == null
+                        || $templateTransaction->getAmount() == null
+                        || $templateTransaction->getDescription() == null
+                ) {
+                    if($templateTransaction->getId())
+                    {
+                        $em->refresh($templateTransaction);
+                        $this->addFlash(
+                            'warning',
+                            'Removing Template Transaction - ' . $templateTransaction
+                        );
+                    }
                     $budgetTemplate->removeTemplateTransaction($templateTransaction);
                     //$templateTransaction->setTemplate(null);
                     $em->remove($templateTransaction);
