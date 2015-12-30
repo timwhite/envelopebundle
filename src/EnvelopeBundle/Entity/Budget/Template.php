@@ -46,7 +46,7 @@ class Template
     private $last_applied_date;
 
     /**
-     * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template", cascade="persist")
+     * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template", cascade={"persist","remove"})
      */
     private $template_transactions;
 

@@ -428,6 +428,33 @@ class DefaultController extends Controller
     }
 
 
+    public function budgetTemplateDeleteAction($id) {
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT t
+                    FROM EnvelopeBundle:Budget\Template t
+                    WHERE t.id = :id
+                    '
+        );
+
+        $query->setParameters(
+            [
+                "id" => $id
+            ]
+        );
+
+        try {
+            $budgetTemplate = $query->getSingleResult();
+        } catch(NoResultException $e) {
+            $this->addFlash('warning', "No budget template with that ID available to you");
+            return $this->redirectToRoute('envelope_budget_templates');
+        }
+        $this->addFlash('success', "Budget " . $budgetTemplate->getName() . " Deleted");
+        $em->remove($budgetTemplate);
+        $em->flush();
+        return $this->redirectToRoute('envelope_budget_templates');
+
+    }
 
     public function budgetTemplateEditAction(Request $request, $id)
     {

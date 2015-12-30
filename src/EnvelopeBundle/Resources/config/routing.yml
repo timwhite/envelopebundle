@@ -63,6 +63,11 @@ envelope_budget_template_edit:
     path:   /budgets/template/edit/{id}
     defaults: { _controller: EnvelopeBundle:Default:budgetTemplateEdit}
 
+envelope_budget_template_delete:
+    path:     /budgets/template/delete/{id}
+    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateDelete }
+    methods:  [POST]
+
 envelope_budget_stats:
     path:   /stats/
     defaults: { _controller: EnvelopeBundle:Stats:budgetStats}
