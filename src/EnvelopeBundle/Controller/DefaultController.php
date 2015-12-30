@@ -528,6 +528,9 @@ class DefaultController extends Controller
             $em->persist($budgetTemplate);
             $em->flush();
 
+            // Now that we have removed some transactions, we need a complete reload to get the ID's correct in the form, strange bug
+            $em->refresh($budgetTemplate);
+
             $this->addFlash(
                 'success',
                 'Budget Template Updated'
