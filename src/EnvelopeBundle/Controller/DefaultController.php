@@ -528,21 +528,17 @@ class DefaultController extends Controller
             $em->persist($budgetTemplate);
             $em->flush();
 
-            // Now that we have removed some transactions, we need a complete reload to get the ID's correct in the form, strange bug
-            $em->refresh($budgetTemplate);
-
             $this->addFlash(
                 'success',
                 'Budget Template Updated'
             );
 
-            if($budgetTemplate->getId() != $id)
-            {
-                return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
-            }
-
-
-            $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate);
+            /*
+             * Now that we have removed some transactions, we need a complete reload to get the ID's correct in the
+             * form, correct solution is to redirect back to this page afresh, also ensures we don't have duplicate POST
+             * issues if they try to refresh the page
+             */
+            return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
         }
 
         return $this->render(
