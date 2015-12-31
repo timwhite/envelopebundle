@@ -27,7 +27,7 @@ class StatsController extends Controller
 
         $budgetaccounts = $qb->getQuery()->getResult();
 
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager());
+        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(

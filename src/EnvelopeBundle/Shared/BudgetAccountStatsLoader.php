@@ -12,13 +12,17 @@ class BudgetAccountStatsLoader
     /** @var  EntityManager $em */
     private $em;
 
+    /** @var Request $request */
+    private $request;
+
     private $firstTransactionDate;
     private $lastTransactionDate;
     private $totalFortnights;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, Request $request)
     {
         $this->em = $em;
+        $this->request = $request;
     }
 
     private function loadDateRange()
@@ -35,6 +39,13 @@ class BudgetAccountStatsLoader
             $this->firstTransactionDate = new \DateTime($result['mindate']);
             $this->lastTransactionDate = new \DateTime($result['maxdate']);
             $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days/14;
+        }
+
+        if($this->request->query->get('startdate')) {
+            $this->firstTransactionDate = new \DateTime($this->request->query->get('startdate'));
+        }
+        if($this->request->query->get('enddate')) {
+            $this->lastTransactionDate = new \DateTime($this->request->query->get('enddate'));;
         }
 
         // Load all Budget Accounts to set common data
@@ -144,8 +155,8 @@ class BudgetAccountStatsLoader
     private function loadWeeklySums()
     {
         $query = $this->em->getConnection()->prepare("
-          SELECT YEAR(transaction.date) as year,
-            WEEKOFYEAR(transaction.date) as weeknum,
+          SELECT
+           YEARWEEK(transaction.date, 3) AS yearweeknum,
             budgetName,
             budget_account_id,
             SUM(budget_transaction.amount) as weeksum
@@ -153,8 +164,8 @@ class BudgetAccountStatsLoader
             JOIN transaction ON transaction_id = transaction.id
             JOIN budget_account on budget_account_id = budget_account.id
 
-            GROUP BY budget_account_id, year, weeknum
-ORDER BY year, weeknum, budget_account_id");
+            GROUP BY budget_account_id, yearweeknum
+ORDER BY yearweeknum, budget_account_id");
         $query->execute();
         foreach($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
@@ -162,7 +173,7 @@ ORDER BY year, weeknum, budget_account_id");
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
-                $stats->appendWeekRunningTotal($result['year'], $result['weeknum'], $result['weeksum']);
+                $stats->appendWeekRunningTotal($result['yearweeknum'], $result['weeksum']);
             }
         }
     }

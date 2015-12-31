@@ -228,8 +228,10 @@ class BudgetAccountStats
         $this->averageFortnightlyPositive = $averageFortnightlyPositive;
     }
 
-    public function appendWeekRunningTotal($year, $week, $sum)
+    public function appendWeekRunningTotal($yearweek, $sum)
     {
+        $year = substr($yearweek, 0, 4);
+        $week = substr($yearweek, 4, 2);
         list($lastYear, $lastWeek, $lastSum, $lastTotal) = end($this->runningTotal);
         $total = bcadd($lastTotal, $sum, 2);
 
@@ -242,39 +244,43 @@ class BudgetAccountStats
 
     public function getRunningTotalSparklineData()
     {
+        $start = clone $this->firstTransactionDate;
+        $end = clone $this->lastTransactionDate;
         $sparkline = [];
+
+        if(sizeof($this->runningTotal) == 0) return implode(',', $sparkline);
+
+        // Load first available transaction
         list($lastYear, $lastWeek, $lastSum, $lastTotal) = $this->runningTotal[0];
         $lastDate = new \DateTime($lastYear . "W" . $lastWeek);
 
-        $firstDate = clone $this->firstTransactionDate;
-        /* We end up with negative due to the week conversion not exactly matching the first transaction,
-         * this forces an initial 0 point
-         **/
-        /*if($firstDate->diff($lastDate)->format("%r%a") <= 7) {
-            $sparkline[] = 0;
-        }*/
-
-        while($firstDate->diff($lastDate)->format("%r%a") > 7)
+        // Pad start of sparkline if first transaction is after our starting point
+        while($start->diff($lastDate)->format("%r%a") > 7)
         {
-            $firstDate->add(new \DateInterval("P1W"));
+            $start->add(new \DateInterval("P1W"));
             $sparkline[] = 0;
         }
 
+        // Process our transactions
         foreach($this->runningTotal as $weekData)
         {
             list($year, $week, $sum, $total) = $weekData;
             $date = new \DateTime($year . "W" . $week);
-            while($lastDate->diff($date)->days > 7) {
-                $lastDate->add(new \DateInterval("P1W"));
-                $sparkline[] = $lastTotal;
+
+            // If date is after our starting range we process it and before our end date
+            if($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
+                while ($lastDate->diff($date)->format("%r%a") > 7 && $lastDate->diff($end)->format("%r%a") > 7) {
+                    $lastDate->add(new \DateInterval("P1W"));
+                    $sparkline[] = $lastTotal;
+                }
+                $sparkline[] = $total;
             }
-            $sparkline[] = $total;
             $lastTotal = $total;
             $lastDate = $date;
         }
 
-        $endDate = clone $this->lastTransactionDate;
-        while ($lastDate->diff($endDate)->days > 7) {
+        // Pad end of sparkline if last transaction is before our end point
+        while ($lastDate->diff($end)->format("%r%a") > 7) {
             $lastDate->add(new \DateInterval("P1W"));
             $sparkline[] = $lastTotal;
         }
