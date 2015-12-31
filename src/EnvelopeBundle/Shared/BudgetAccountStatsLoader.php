@@ -34,17 +34,17 @@ class BudgetAccountStatsLoader
             WHERE
               transaction.amount != 0
               AND budget_transaction.amount < 0");
-        if($query->execute()) {
+        if ($query->execute()) {
             $result = $query->fetch();
             $this->firstTransactionDate = new \DateTime($result['mindate']);
             $this->lastTransactionDate = new \DateTime($result['maxdate']);
-            $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days/14;
+            $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days / 14;
         }
 
-        if($this->request->query->get('startdate')) {
+        if ($this->request->query->get('startdate')) {
             $this->firstTransactionDate = new \DateTime($this->request->query->get('startdate'));
         }
-        if($this->request->query->get('enddate')) {
+        if ($this->request->query->get('enddate')) {
             $this->lastTransactionDate = new \DateTime($this->request->query->get('enddate'));;
         }
 
@@ -53,7 +53,7 @@ class BudgetAccountStatsLoader
         /** @var BudgetAccount $budgetAccounts */
         $budgetAccounts = $budgetAccountRepo->findAll();
         /** @var BudgetAccountStats $stats */
-        foreach($budgetAccounts as $budgetAccount) {
+        foreach ($budgetAccounts as $budgetAccount) {
             $stats = $budgetAccount->getBudgetStats();
             $stats->setFirstTransactionDate($this->firstTransactionDate);
             $stats->setLastTransactionDate($this->lastTransactionDate);
@@ -74,15 +74,14 @@ class BudgetAccountStatsLoader
               AND budget_transaction.amount < 0
             GROUP BY budget_account_id");
         $query->execute();
-        foreach($query as $result)
-        {
+        foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
-            if($budgetAccount) {
+            if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setNegativeSum($result['negativesum']);
-                $stats->setAverageFortnightlySpend($result['negativesum']/$this->totalFortnights);
+                $stats->setAverageFortnightlySpend($result['negativesum'] / $this->totalFortnights);
                 $stats->setFirstSpendTransactionDate(new \DateTime($result['mindate']));
                 $stats->setLastSpendTransactionDate(new \DateTime($result['maxdate']));
             }
@@ -106,15 +105,14 @@ class BudgetAccountStatsLoader
               AND budget_transaction.amount > 0
             GROUP BY budget_account_id");
         $query->execute();
-        foreach($query as $result)
-        {
+        foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
-            if($budgetAccount) {
+            if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setPositiveSum($result['positivesum']);
-                $stats->setAverageFortnightlyPositive($result['positivesum']/$this->totalFortnights);
+                $stats->setAverageFortnightlyPositive($result['positivesum'] / $this->totalFortnights);
                 $stats->setFirstIncomeTransactionDate(new \DateTime($result['mindate']));
                 $stats->setLastIncomeTransactionDate(new \DateTime($result['maxdate']));
             }
@@ -138,14 +136,13 @@ class BudgetAccountStatsLoader
               AND budget_transaction.amount > 0
             GROUP BY budget_account_id");
         $query->execute();
-        foreach($query as $result)
-        {
+        foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
-            if($budgetAccount) {
+            if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
-                $stats->setAverageFortnightlyIncome($result['positivesum']/$this->totalFortnights);
+                $stats->setAverageFortnightlyIncome($result['positivesum'] / $this->totalFortnights);
                 $stats->setFirstIncomeTransactionDate(new \DateTime($result['mindate']));
                 $stats->setLastIncomeTransactionDate(new \DateTime($result['maxdate']));
             }
@@ -167,11 +164,11 @@ class BudgetAccountStatsLoader
             GROUP BY budget_account_id, yearweeknum
 ORDER BY yearweeknum, budget_account_id");
         $query->execute();
-        foreach($query as $result) {
+        foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
-            if($budgetAccount) {
+            if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->appendWeekRunningTotal($result['yearweeknum'], $result['weeksum']);
             }
@@ -181,7 +178,8 @@ ORDER BY yearweeknum, budget_account_id");
     /**
      * Loads Stats and Injects them into BudgetAccount objects (which can be retrieved through normal methods)
      */
-    public function loadBudgetAccountStats(){
+    public function loadBudgetAccountStats()
+    {
         $this->loadDateRange();
         $this->loadPositiveSums();
         $this->loadNegativeSums();

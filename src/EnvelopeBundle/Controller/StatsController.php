@@ -22,8 +22,7 @@ class StatsController extends Controller
             ->from('EnvelopeBundle:BudgetAccount', 'a')
             ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
             ->andWhere('g.access_group = :accessgroup')
-            ->setParameter('accessgroup', $session->get('accessgroupid'))
-        ;
+            ->setParameter('accessgroup', $session->get('accessgroupid'));
 
         $budgetaccounts = $qb->getQuery()->getResult();
 

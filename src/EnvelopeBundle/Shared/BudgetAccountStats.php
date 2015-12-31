@@ -83,7 +83,6 @@ class BudgetAccountStats
     }
 
 
-
     /**
      * @return mixed
      */
@@ -248,27 +247,25 @@ class BudgetAccountStats
         $end = clone $this->lastTransactionDate;
         $sparkline = [];
 
-        if(sizeof($this->runningTotal) == 0) return implode(',', $sparkline);
+        if (sizeof($this->runningTotal) == 0) return implode(',', $sparkline);
 
         // Load first available transaction
         list($lastYear, $lastWeek, $lastSum, $lastTotal) = $this->runningTotal[0];
         $lastDate = new \DateTime($lastYear . "W" . $lastWeek);
 
         // Pad start of sparkline if first transaction is after our starting point
-        while($start->diff($lastDate)->format("%r%a") > 7)
-        {
+        while ($start->diff($lastDate)->format("%r%a") > 7) {
             $start->add(new \DateInterval("P1W"));
             $sparkline[] = 0;
         }
 
         // Process our transactions
-        foreach($this->runningTotal as $weekData)
-        {
+        foreach ($this->runningTotal as $weekData) {
             list($year, $week, $sum, $total) = $weekData;
             $date = new \DateTime($year . "W" . $week);
 
             // If date is after our starting range we process it and before our end date
-            if($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
+            if ($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
                 while ($lastDate->diff($date)->format("%r%a") > 7 && $lastDate->diff($end)->format("%r%a") > 7) {
                     $lastDate->add(new \DateInterval("P1W"));
                     $sparkline[] = $lastTotal;
@@ -289,8 +286,7 @@ class BudgetAccountStats
 
     public function getOverspend()
     {
-        if (abs($this->averageFortnightlySpend) > $this->averageFortnightlyPositive)
-        {
+        if (abs($this->averageFortnightlySpend) > $this->averageFortnightlyPositive) {
             return true;
         }
         return false;
