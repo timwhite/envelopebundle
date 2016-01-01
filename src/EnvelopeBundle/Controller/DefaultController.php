@@ -67,7 +67,7 @@ class DefaultController extends Controller
         $budgetaccounts = $qb->getQuery()->getResult();
 
         // Load Stats and inject into entity
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager());
+        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
