@@ -206,7 +206,10 @@ class DefaultController extends Controller
             }
         }
 
-        $form = $this->createForm(new TransactionType(), $transaction, ['existing_entity' => $existing]);
+        $form = $this->createForm(new TransactionType(), $transaction, [
+            'existing_entity' => $existing,
+            "accessgroup" => $session->get('accessgroupid')
+        ]);
 
         $form->handleRequest($request);
 
@@ -239,13 +242,8 @@ class DefaultController extends Controller
                 return $this->redirectToRoute('envelope_transactions');
             }
 
-            if($transaction->getId() != $id)
-            {
-                return $this->redirectToRoute('envelope_transaction', ['id' => $transaction->getId()]);
-            }
-
-
-            $form = $this->createForm(new TransactionType(), $transaction);
+            // Redirecting ensures form is rebuilt completely with refreshed objects
+            return $this->redirectToRoute('envelope_transaction', ['id' => $transaction->getId()]);
         }
 
         return $this->render(
