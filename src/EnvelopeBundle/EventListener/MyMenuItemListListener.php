@@ -54,7 +54,14 @@ class MyMenuItemListListener {
                 'envelope_budget_apply_template' => "Apply Budget Template",
                 'envelope_import' => "Import",
                 'envelope_autocode' => 'Auto Code Transactions',
-                'envelope_budget_stats'=> 'Stats',
+                'stats' => [
+                    'label' => "Statistics",
+                     'children' => [
+                         'envelope_budget_stats'=> ['label'=>'Fortnight Trends'],
+                         'envelope_budget_stats_spending'=> ['label'=>'Spending Breakdown'],
+                     ]
+                ]
+
             ];
         }
         $menuItems = array();

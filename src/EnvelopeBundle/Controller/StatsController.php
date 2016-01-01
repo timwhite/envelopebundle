@@ -40,6 +40,10 @@ class StatsController extends Controller
     public function spendingStatsAction(Request $request) {
         $session = $request->getSession();
 
+        $excludeDescriptions = [
+            'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings'
+        ];
+
         $query = $this->getDoctrine()->getManager()->getConnection()->prepare("
             SELECT
               COUNT(SUBSTRING_INDEX( `Description` , '-', 1 )) AS numtransactions,
@@ -50,10 +54,11 @@ class StatsController extends Controller
               JOIN `account` ON `transaction`.`account_id` = `account`.`id`
             WHERE `amount` < 0
               AND `account`.`accessgroup_id` = :accessgroup
-              AND `Description` NOT IN ('Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer')
+              AND `Description` NOT IN ('". implode("','", $excludeDescriptions) ."')
               GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
               ORDER BY SUM(`amount`) ASC");
 
+        $total = 0;
         $results = [];
         $excluded_transactions = [];
         if ($query->execute(
@@ -69,7 +74,12 @@ class StatsController extends Controller
                 }else{
                     $excluded_transactions[] = $result;
                 }
+                $total = bcadd($total, $result['sumamount'], 2);
             }
+        }
+
+        foreach($results as $key => $result) {
+            $results[$key]['label'] .= " - " . round($result['value'] / $total * 100) . "%";
         }
 
         return $this->render(
