@@ -258,6 +258,8 @@ class DefaultController extends Controller
 
     public function autoCodeAction(Request $request)
     {
+        $session = $request->getSession();
+
         $form = $this->createFormBuilder()
             ->add('save', 'submit', array('label' => 'Auto code transactions'))
             ->getForm();
@@ -269,7 +271,7 @@ class DefaultController extends Controller
 
         if ($form->isValid() && $form->isSubmitted()) {
             $autoCode = new autoCodeTransactions();
-            $autoCode->codeTransactions($this->getDoctrine()->getManager());
+            $autoCode->codeTransactions($this->getDoctrine()->getManager(), $session->get('accessgroupid'));
             $autoCodeResults = $autoCode->getResults();
             $actionRun = true;
         }
