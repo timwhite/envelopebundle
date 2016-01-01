@@ -37,4 +37,61 @@ class StatsController extends Controller
         );
     }
 
+    public function spendingStatsAction(Request $request) {
+        $session = $request->getSession();
+
+        $query = $this->getDoctrine()->getManager()->getConnection()->prepare("
+            SELECT
+              COUNT(SUBSTRING_INDEX( `Description` , '-', 1 )) AS numtransactions,
+              SUBSTRING_INDEX( `Description` , '-', 1 ) AS description,
+              SUM(`amount`) as sumamount,
+              AVG(`amount`) as avgamount
+            FROM `transaction`
+              JOIN `account` ON `transaction`.`account_id` = `account`.`id`
+            WHERE `amount` < 0
+              AND `account`.`accessgroup_id` = :accessgroup
+              AND `Description` NOT IN ('Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer')
+              GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
+              ORDER BY SUM(`amount`) ASC");
+
+        $results = [];
+        $excluded_transactions = [];
+        if ($query->execute(
+            ['accessgroup' => $session->get('accessgroupid')]
+        )) {
+
+            foreach($query as $result) {
+                if($result['numtransactions'] > 1) {
+                    $results[] = [
+                        'value' => $result['sumamount'],
+                        'label' => "${result['description']} (${result['avgamount']} / ${result['numtransactions']})"
+                    ];
+                }else{
+                    $excluded_transactions[] = $result;
+                }
+            }
+        }
+
+        return $this->render(
+            'EnvelopeBundle:Stats:spendingStats.html.twig',
+            [
+                'piechartvalues' => json_encode($results),
+                'excludedtransactions' => $excluded_transactions,
+            ]
+        );
+
+
+    }
+
+    /* Spending location Query
+    SELECT COUNT(SUBSTRING_INDEX( `Description` , '-', 1 )), SUBSTRING_INDEX( `Description` , '-', 1 ), SUM(`amount`), AVG(`amount`)
+FROM `transaction`
+JOIN `account` ON `transaction`.`account_id` = `account`.`id`
+WHERE `amount` < 0
+AND `account`.`accessgroup_id` = 1
+AND `Description` NOT IN ('Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer')
+GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
+ORDER BY SUM(`amount`) ASC
+    */
+
 }

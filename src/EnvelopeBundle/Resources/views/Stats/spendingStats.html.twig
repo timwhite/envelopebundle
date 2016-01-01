@@ -1,0 +1,47 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-lg-6 col-sm-12" id="doughnut-chart">
+          <div class="panel panel-default">
+            <div class="panel-heading">Spending Doughnut</div>
+            <div class="panel-body">
+              <canvas id="spendingPie"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table>
+                        {% for transaction in excludedtransactions %}
+                            <tr>
+                                <td>{{ transaction.description  }}</td>
+                                <td>{{ transaction.sumamount|localizedcurrency('AUD') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div><!-- row -->
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/chartjs/Chart.js') }}"></script>
+
+{% endblock %}
+
+
+{% block javascripts_inline %}
+    <script>
+
+        var pieData = {{ piechartvalues|raw }}
+
+        // Get context with jQuery - using jQuery's .get() method.
+        var ctx = $("#spendingPie").get(0).getContext("2d");
+        // This will get the first returned node in the jQuery collection.
+        var myDoughnutChart = new Chart(ctx).Doughnut(pieData, {responsive: true});
+    </script>
+{% endblock %}
