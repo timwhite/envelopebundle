@@ -36,6 +36,7 @@ class BudgetAccountStats
 
     // Array[Year, Week, Sum, RunningTotal]
     private $runningTotal = [];
+    private $weeklySpend = [];
 
     public function __construct($budgetID)
     {
@@ -239,6 +240,55 @@ class BudgetAccountStats
             $this->runningTotal = [[$year, $week - 1, 0, 0]];
         }*/
         $this->runningTotal[] = [$year, $week, $sum, $total];
+    }
+
+    public function appendWeekSpend($yearweek, $spend)
+    {
+        $year = substr($yearweek, 0, 4);
+        $week = substr($yearweek, 4, 2);
+        $this->weeklySpend[] = [$year, $week, $spend];
+    }
+
+    public function getWeekSpendSparklineData()
+    {
+        $start = clone $this->firstTransactionDate;
+        $end = clone $this->lastTransactionDate;
+        $sparkline = [];
+
+        if (sizeof($this->weeklySpend) == 0) return implode(',', $sparkline);
+
+        // Load first available transaction
+        list($lastYear, $lastWeek, $spend) = $this->weeklySpend[0];
+        $lastDate = new \DateTime($lastYear . "W" . $lastWeek);
+
+        // Pad start of sparkline if first transaction is after our starting point
+        while ($start->diff($lastDate)->format("%r%a") > 7) {
+            $start->add(new \DateInterval("P1W"));
+            $sparkline[] = 0;
+        }
+
+        // Process our transactions
+        foreach ($this->weeklySpend as $weekData) {
+            list($year, $week, $spend) = $weekData;
+            $date = new \DateTime($year . "W" . $week);
+
+            // If date is after our starting range we process it and before our end date
+            if ($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
+                while ($lastDate->diff($date)->format("%r%a") > 7 && $lastDate->diff($end)->format("%r%a") > 7) {
+                    $lastDate->add(new \DateInterval("P1W"));
+                    $sparkline[] = 0;
+                }
+                $sparkline[] = $spend;
+            }
+            $lastDate = $date;
+        }
+
+        // Pad end of sparkline if last transaction is before our end point
+        while ($lastDate->diff($end)->format("%r%a") > 7) {
+            $lastDate->add(new \DateInterval("P1W"));
+            $sparkline[] = 0;
+        }
+        return implode(',', $sparkline);
     }
 
     public function getRunningTotalSparklineData()

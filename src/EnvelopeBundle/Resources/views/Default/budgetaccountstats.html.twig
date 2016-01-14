@@ -14,6 +14,7 @@
                         <th>Average Fortnightly Income</th>
                         <th>Current Balance</th>
                         <th>Trend</th>
+                        <th>Spend</th>
                     </tr>
                     </thead>
                     {% for budget in budgetaccounts %}
@@ -30,6 +31,11 @@
                                 <span class="sparkline"
                                       values="{{ budget.budgetstats.RunningTotalSparklineData }}"></span>
                             </td>
+                            <td>
+                                <span class="sparkline"
+                                      values="{{ budget.budgetstats.WeekSpendSparklineData }}"></span>
+                            </td>
+
                         </tr>
                     {% endfor %}
                 </table>

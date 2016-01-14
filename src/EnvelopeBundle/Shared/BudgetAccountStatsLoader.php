@@ -175,6 +175,32 @@ ORDER BY yearweeknum, budget_account_id");
         }
     }
 
+    private function loadWeeklySpends()
+    {
+        $query = $this->em->getConnection()->prepare("
+          SELECT
+           YEARWEEK(transaction.date, 3) AS yearweeknum,
+            budgetName,
+            budget_account_id,
+            SUM(budget_transaction.amount) as weekspend
+          FROM budget_transaction
+            JOIN transaction ON transaction_id = transaction.id
+            JOIN budget_account on budget_account_id = budget_account.id
+            WHERE budget_transaction.amount < 0
+            GROUP BY budget_account_id, yearweeknum
+            ORDER BY yearweeknum, budget_account_id");
+        $query->execute();
+        foreach ($query as $result) {
+            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            /** @var BudgetAccount $budgetAccount */
+            $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
+            if ($budgetAccount) {
+                $stats = $budgetAccount->getBudgetStats();
+                $stats->appendWeekSpend($result['yearweeknum'], $result['weekspend']);
+            }
+        }
+    }
+
     /**
      * Loads Stats and Injects them into BudgetAccount objects (which can be retrieved through normal methods)
      */
@@ -185,6 +211,7 @@ ORDER BY yearweeknum, budget_account_id");
         $this->loadNegativeSums();
         $this->loadIncomeSums();
         $this->loadWeeklySums();
+        $this->loadWeeklySpends();
 
     }
 }
