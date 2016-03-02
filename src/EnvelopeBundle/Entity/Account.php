@@ -41,6 +41,12 @@ class Account
     private $access_group;
 
     /**
+     * @ORM\Column(name="budget_transfer", type="boolean", )
+     * @var boolean
+     */
+    private $budgetTransfer = false;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -153,5 +159,28 @@ class Account
     public function getAccessGroup()
     {
         return $this->access_group;
+    }
+
+    /**
+     * Set budgetTransfer
+     *
+     * @param boolean $budgetTransfer
+     * @return Account
+     */
+    public function setBudgetTransfer($budgetTransfer)
+    {
+        $this->budgetTransfer = $budgetTransfer;
+
+        return $this;
+    }
+
+    /**
+     * Get budgetTransfer
+     *
+     * @return boolean 
+     */
+    public function getBudgetTransfer()
+    {
+        return $this->budgetTransfer;
     }
 }

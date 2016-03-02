@@ -375,6 +375,7 @@ class DefaultController extends Controller
         if ($form->isValid()) {
 
             $this->applyBudgetTemplate(
+                $request,
                 $form->get('template')->getData(),
                 $form->get('date')->getData(),
                 $form->get('description')->getData()
@@ -389,13 +390,14 @@ class DefaultController extends Controller
         );
     }
 
-    private function applyBudgetTemplate(Template $template, $date, $description)
+    private function applyBudgetTemplate(Request $request, Template $template, $date, $description)
     {
         // Get Special bank account
         $em = $this->getDoctrine()->getManager();
+        $session = $request->getSession();
         $budgetTransferAccount = $em
             ->getRepository('EnvelopeBundle:Account')
-            ->findOneBy(['name' => 'Budget Transfer']);
+            ->findOneBy(['access_group' => $session->get('accessgroupid'), 'budgetTransfer' => true]);
         // Create bank transaction for $0
         $transferTransaction = new Transaction();
         $transferTransaction->setDate($date)
