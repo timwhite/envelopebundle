@@ -15,6 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-combobox": "~1.1.6"
+    "bootstrap-combobox": "~1.1.6",
+    "datatables-sorting-datetime-moment": "~0.0.1"
   }
 }

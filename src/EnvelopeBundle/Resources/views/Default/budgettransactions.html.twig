@@ -50,8 +50,10 @@
 {% endblock %}
 
 {% block javascripts_inline %}
+    <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
     <script>
         $(function () {
+            $.fn.dataTable.moment( 'D/MM/YYYY' );
             $('.datatable').DataTable({
                 "paging": true,
                 "searching": true,
@@ -59,9 +61,6 @@
                 "info": true,
                 "autoWidth": true,
                 "order": [[ 0, "desc" ]],
-                "columnDefs": [
-                    { "type": "date-eu", targets: 0 }
-                ]
             });
         });
     </script>
