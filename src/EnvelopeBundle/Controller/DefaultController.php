@@ -188,7 +188,7 @@ class DefaultController extends Controller
         ;
 
         return $this->render(
-            'EnvelopeBundle:Default:transactionsUnbalanced.html.twig',
+            'EnvelopeBundle:Default:unbalancedTransactions.html.twig',
             [
                 'unbalancedtransactions' => $query->getResult()
             ]
