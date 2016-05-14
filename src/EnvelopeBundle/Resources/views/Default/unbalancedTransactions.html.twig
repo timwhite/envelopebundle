@@ -1,0 +1,74 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Unbalanced Transactions ({{ unbalancedtransactions|length }})</h3>
+
+                    <div class="box-tools pull-right">
+                        <span class="label label-info"></span>
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table table-striped datatable" data-order='[[ 0, "asc" ]]' data-page-length='25'>
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Unassigned Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for transaction in unbalancedtransactions %}
+                            <tr>
+                                <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                <td>
+                                    <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'unbalanced_transactions'}) }}">{{ transaction.description }}</a>
+                                </td>
+                                <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
+                                    <span data-toggle="tooltip"
+                                          title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
+                                    {{ transaction.amount|localizedcurrency('AUD') }}
+                                    </span>
+                                </td>
+                                <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer">
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- col -->
+        <span class="clearfix"></span>
+
+    </div><!-- row -->
+
+{% endblock %}
+
+{% block javascripts_inline %}
+    <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
+    <script>
+        $(function () {
+            $.fn.dataTable.moment( 'D/MM/YYYY' );
+            $('.datatable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "order": [[ 0, "desc" ]],
+            });
+        });
+    </script>
+{% endblock %}

@@ -142,10 +142,37 @@ class DefaultController extends Controller
             FROM EnvelopeBundle:Account a
             WHERE a.access_group = :accessgroup
             '
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')])
-        ;
+        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
 
         $query2 = $this->getDoctrine()->getManager()->createQuery(
+            'SELECT t
+            FROM EnvelopeBundle:Transaction t
+            LEFT JOIN EnvelopeBundle:BudgetTransaction b
+            WITH b.transaction = t
+            LEFT JOIN EnvelopeBundle:Account a
+            WITH t.account = a
+            WHERE a.access_group = :accessgroup
+            GROUP BY t.id
+            HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
+            ORDER BY t.date
+            '
+        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
+
+        return $this->render(
+            'EnvelopeBundle:Default:transactions.html.twig',
+            [
+                'accounts' => $query->getResult(),
+                'unbalancedtransactions' => $query2->getResult()
+            ]
+        );
+    }
+
+
+        public function transactionsListUnBalancedAction(Request $request)
+    {
+        $session = $request->getSession();
+
+        $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             LEFT JOIN EnvelopeBundle:BudgetTransaction b
@@ -161,10 +188,9 @@ class DefaultController extends Controller
         ;
 
         return $this->render(
-            'EnvelopeBundle:Default:transactions.html.twig',
+            'EnvelopeBundle:Default:transactionsUnbalanced.html.twig',
             [
-                'accounts' => $query->getResult(),
-                'unbalancedtransactions' => $query2->getResult()
+                'unbalancedtransactions' => $query->getResult()
             ]
         );
     }
@@ -240,6 +266,11 @@ class DefaultController extends Controller
             if($request->query->get('return') == 'transactions' && $transaction->getUnassignedSum() == 0)
             {
                 return $this->redirectToRoute('envelope_transactions');
+            }
+
+            if($request->query->get('return') == 'unbalanced_transactions' && $transaction->getUnassignedSum() == 0)
+            {
+                return $this->redirectToRoute('envelope_transactions_unbalanced');
             }
 
             // Redirecting ensures form is rebuilt completely with refreshed objects

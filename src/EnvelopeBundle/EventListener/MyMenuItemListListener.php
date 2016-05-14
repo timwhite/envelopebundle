@@ -38,6 +38,9 @@ class MyMenuItemListListener {
                 'bank_transactions' => [
                     "label" => "Bank Transactions",
                     'children' => [
+                        'envelope_transactions_unbalanced' => [
+                            'label' => 'Unbalanced Transactions',
+                        ],
                         'envelope_transactions' => [
                             'label' => 'View Transactions',
                             'children' => [
