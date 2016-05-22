@@ -151,12 +151,19 @@ class BudgetAccount
         return $this->budget_transactions;
     }
 
-    public function getBalance()
+    public function getBalance($startdate = null, $enddate = null)
     {
         $balance = 0;
+        /** @var BudgetTransaction $transaction */
         foreach($this->budget_transactions as $transaction)
         {
-            $balance = bcadd($balance, $transaction->getAmount(), 2);
+            if(
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
+                $startdate == null || $enddate == null
+            ) {
+                $balance = bcadd($balance, $transaction->getAmount(), 2);
+            }
+
         }
         return $balance;
     }

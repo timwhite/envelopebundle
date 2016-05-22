@@ -1,6 +1,16 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block page_content %}
     <div class="row">
+        <div class="col-sm-8">&nbsp;</div>
+        <div class="col-sm-4 ">
+            <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span></span> <b class="caret"></b>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
     {% for budgetgroup in budgetgroups %}
 
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -8,7 +18,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ budgetgroup.name }}</h3>
                     <div class="box-tools pull-right">
-                        <span class="label label-info">{{ budgetgroup.budgetsum|localizedcurrency('AUD') }}</span>
+                        <span class="label label-info">{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
@@ -17,7 +27,8 @@
                     {% for budget in budgetgroup.budgetaccounts %}
                         <tr>
                             <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}"  data-toggle="tooltip" data-html="true" title="{{ budget.TemplateTransactionsDescriptionsTooltip }}">{{ budget.budgetName }}</a></td>
-                            <td align="right" {% if budget.balance < 0 %}class="text-danger"{% endif %}>{{ budget.balance|localizedcurrency('AUD') }}</td>
+                            {% set balance = budget.getBalance(startdate, enddate) %}
+                            <td align="right" {% if balance < 0 %}class="text-danger"{% endif %}>{{ balance|localizedcurrency('AUD') }}</td>
                         </tr>
                     {% endfor %}
                     </table>
@@ -29,4 +40,11 @@
 
     {% endfor %}
     </div><!-- row -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
+    </script>
 {% endblock %}

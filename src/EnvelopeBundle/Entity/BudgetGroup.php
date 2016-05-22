@@ -119,12 +119,12 @@ class BudgetGroup
         return $this->budget_accounts;
     }
 
-    public function getBudgetSum()
+    public function getBudgetSum($startdate = null, $enddate = null)
     {
         $balance = 0;
         foreach($this->getBudgetAccounts() as $account)
         {
-            $balance = bcadd($balance, $account->getBalance(), 2);
+            $balance = bcadd($balance, $account->getBalance($startdate, $enddate), 2);
         }
         return $balance;
     }
