@@ -105,7 +105,7 @@ class StatsController extends Controller
             foreach($query as $result) {
                 if($result['numtransactions'] > 1) {
                     $results[] = [
-                        'value' => $result['sumamount'],
+                        'value' => abs($result['sumamount']),
                         'label' => "${result['description']} (${result['avgamount']} / ${result['numtransactions']})"
                     ];
                 }else{
@@ -116,7 +116,7 @@ class StatsController extends Controller
         }
 
         foreach($results as $key => $result) {
-            $results[$key]['label'] .= " - " . round($result['value'] / $total * 100) . "%";
+            $results[$key]['label'] .= " " . round($result['value'] / $total * 100) . "%";
         }
 
         return $this->render(
