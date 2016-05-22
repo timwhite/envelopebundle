@@ -37,8 +37,37 @@ class StatsController extends Controller
         );
     }
 
+    private function findFirstTransactionDate()
+    {
+        return $this->getDoctrine()->getManager()->createQueryBuilder()
+            ->select('MIN(t.date)')
+            ->from('EnvelopeBundle:Transaction', 't')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function findLastTransactionDate()
+    {
+        return $this->getDoctrine()->getManager()->createQueryBuilder()
+            ->select('MAX(t.date)')
+            ->from('EnvelopeBundle:Transaction', 't')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function spendingStatsAction(Request $request) {
         $session = $request->getSession();
+
+        if ($request->query->get('startdate')) {
+            $startdate = new \DateTime($request->query->get('startdate'));
+        } else {
+            $startdate = new \DateTime($this->findFirstTransactionDate());
+        }
+        if ($request->query->get('enddate')) {
+            $enddate = new \DateTime($request->query->get('enddate'));;
+        } else {
+            $enddate = new \DateTime($this->findLastTransactionDate());
+        }
 
         $excludeDescriptions = [
             'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings'
@@ -55,6 +84,8 @@ class StatsController extends Controller
             WHERE `amount` < 0
               AND `account`.`accessgroup_id` = :accessgroup
               AND `Description` NOT IN ('". implode("','", $excludeDescriptions) ."')
+              AND `transaction`.`date` >= :startdate
+              AND `transaction`.`date` <= :enddate
               GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
               ORDER BY SUM(`amount`) ASC");
 
@@ -62,7 +93,11 @@ class StatsController extends Controller
         $results = [];
         $excluded_transactions = [];
         if ($query->execute(
-            ['accessgroup' => $session->get('accessgroupid')]
+            [
+                'accessgroup' => $session->get('accessgroupid'),
+                'startdate' => $startdate->format('Y-m-d'),
+                'enddate' => $enddate->format('Y-m-d')
+            ]
         )) {
 
             foreach($query as $result) {
@@ -87,6 +122,8 @@ class StatsController extends Controller
             [
                 'piechartvalues' => json_encode($results),
                 'excludedtransactions' => $excluded_transactions,
+                'startdate' => $startdate,
+                'enddate' => $enddate,
             ]
         );
 

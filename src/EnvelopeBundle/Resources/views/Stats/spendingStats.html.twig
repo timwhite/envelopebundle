@@ -1,7 +1,19 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block page_content %}
     <div class="row">
+        <div class="col-sm-8">&nbsp;</div>
+        <div class="col-sm-4 ">
+            <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                <span></span> <b class="caret"></b>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-6 col-sm-12" id="doughnut-chart">
+
+
+
           <div class="panel panel-default">
             <div class="panel-heading">Spending Doughnut</div>
             <div class="panel-body">
@@ -30,7 +42,36 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/chartjs/Chart.js') }}"></script>
+<script type="text/javascript">
+$(function() {
 
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+    cb(moment('{{ startdate | date('Ymd') }}', 'YYYYMMDD'), moment('{{ enddate | date('Ymd') }}', 'YYYYMMDD'));
+
+    $('#reportrange').daterangepicker({
+        showDropdowns: true,
+        startDate: moment('{{ startdate | date('Ymd') }}', 'YYYYMMDD'),
+        endDate: moment('{{ enddate | date('Ymd') }}', 'YYYYMMDD'),
+
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        alwaysShowCalendars: true,
+    }, cb);
+
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        window.location = window.location.pathname + "?startdate=" + encodeURIComponent(picker.startDate.format('YYYY-MM-DD')) + '&enddate=' + encodeURIComponent(picker.endDate.format('YYYY-MM-DD'));
+    });
+
+});
+</script>
 {% endblock %}
 
 
