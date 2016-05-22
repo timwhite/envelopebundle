@@ -43,53 +43,9 @@
     {{ parent() }}
     <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/chartjs/Chart.js') }}"></script>
     <script type="text/javascript">
-
-        if (moment().quarter() == 4 || moment().quarter() == 3) {
-            var current_fiscal_year_start = moment().month('July').startOf('month');
-            var current_fiscal_year_end = moment().add('year', 1).month('June').endOf('month');
-            var last_fiscal_year_start = moment().subtract('year', 1).month('July').startOf('month');
-            var last_fiscal_year_end = moment().month('June').endOf('month');
-        } else {
-            var current_fiscal_year_start = moment().subtract('year', 1).month('July').startOf('month');
-            var current_fiscal_year_end = moment().month('June').endOf('month');
-            var last_fiscal_year_start = moment().subtract('year', 2).month('July').startOf('month');
-            var last_fiscal_year_end = moment().subtract('year', 1).month('June').endOf('month');
-        };
-
-    $(function() {
-
-        function cb(start, end) {
-            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-        }
-        cb(moment('{{ startdate | date('Ymd') }}', 'YYYYMMDD'), moment('{{ enddate | date('Ymd') }}', 'YYYYMMDD'));
-
-        $('#reportrange').daterangepicker({
-            showDropdowns: true,
-            startDate: moment('{{ startdate | date('Ymd') }}', 'YYYYMMDD'),
-            endDate: moment('{{ enddate | date('Ymd') }}', 'YYYYMMDD'),
-
-            ranges: {
-               'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-               'This Month': [moment().startOf('month'), moment().endOf('month')],
-               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-               'This Quarter': [moment().startOf('quarter'), moment().endOf('quarter')],
-               'Last Quarter': [moment().subtract(3, 'M').startOf('quarter'), moment().subtract(3, 'M').endOf('quarter')],
-               'This Year': [moment().startOf('year'), moment().endOf('year')],
-               'Last year': [moment().startOf('year').subtract(1, 'y'), moment().endOf('year').subtract(1, 'y')],
-               'This Financial Year': [current_fiscal_year_start, current_fiscal_year_end],
-               'Last Financial year': [last_fiscal_year_start, last_fiscal_year_end],
-
-            },
-            alwaysShowCalendars: true,
-        }, cb);
-
-        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-            window.location = window.location.pathname + "?startdate=" + encodeURIComponent(picker.startDate.format('YYYY-MM-DD')) + '&enddate=' + encodeURIComponent(picker.endDate.format('YYYY-MM-DD'));
-        });
-
-    });
+    {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
     </script>
+
 {% endblock %}
 
 
