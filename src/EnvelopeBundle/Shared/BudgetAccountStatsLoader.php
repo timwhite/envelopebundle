@@ -25,6 +25,16 @@ class BudgetAccountStatsLoader
         $this->request = $request;
     }
 
+    public function getFirstTransactionDate()
+    {
+        return $this->firstTransactionDate;
+    }
+
+    public function getLastTransactionDate()
+    {
+        return $this->lastTransactionDate;
+    }
+
     private function loadDateRange()
     {
         $query = $this->em->getConnection()->prepare("

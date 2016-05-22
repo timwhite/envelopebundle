@@ -33,6 +33,8 @@ class StatsController extends Controller
             'EnvelopeBundle:Default:budgetaccountstats.html.twig',
             [
                 'budgetaccounts' => $budgetaccounts,
+                'startdate' => $budgetAccountStatsLoader->getFirstTransactionDate(),
+                'enddate' => $budgetAccountStatsLoader->getLastTransactionDate(),
             ]
         );
     }
