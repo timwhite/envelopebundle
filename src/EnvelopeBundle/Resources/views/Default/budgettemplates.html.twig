@@ -1,6 +1,19 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 
+{% block page_title %}Budget Templates{% endblock %}
+{% block page_subtitle %}Preset templates for applying multiple budget transactions at once. Use to distribute your fortnightly income into the relevant budget areas{% endblock %}
+
 {% block page_content %}
+    <div class="row">
+        <div class="col-md-6">
+                <div class="box-tools pull-left">
+                    <a class="label label-success btn btn-box-tool btn-success" data-widget="collapse" data-toggle="tooltip" href="{{ path('envelope_budget_template_edit', {'id': 'new'}) }}"
+                            title="New Template"><i class="fa fa-plus"></i></a>
+                    <br/>
+                    <br/>
+                </div>
+        </div>
+    </div>
     <div class="row">
         {% for budgettemplate in budgettemplates %}
 
