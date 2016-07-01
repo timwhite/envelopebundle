@@ -336,8 +336,16 @@ class BudgetAccountStats
 
     public function getOverspend()
     {
+        // Check that Average Fortnightly Spend is greater than what's going in
         if (abs($this->averageFortnightlySpend) > $this->averageFortnightlyPositive) {
-            return true;
+            // If nothing is going in, then it's definitely an overspend.
+            if ($this->averageFortnightlyPositive <= 0) {
+                return true;
+            }
+            // Otherwise it's only an overspend if it's more than 2% over, to allow for funny fortnights
+            if((abs($this->averageFortnightlySpend))/$this->averageFortnightlyPositive > 1.02) {
+                return true;
+            }
         }
         return false;
     }
