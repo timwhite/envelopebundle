@@ -50,7 +50,6 @@ class BudgetAccountStatsLoader
             $result = $query->fetch();
             $this->firstTransactionDate = new \DateTime($result['mindate']);
             $this->lastTransactionDate = new \DateTime($result['maxdate']);
-            $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days / 14;
         }
 
         if ($this->request->query->get('startdate')) {
@@ -59,6 +58,9 @@ class BudgetAccountStatsLoader
         if ($this->request->query->get('enddate')) {
             $this->lastTransactionDate = new \DateTime($this->request->query->get('enddate'));;
         }
+
+        // Don't calculate the number of fortnights until we have established our date range
+        $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days / 14.0;
 
         // Load all Budget Accounts to set common data
         $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
