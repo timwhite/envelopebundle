@@ -195,15 +195,8 @@ class BudgetAccountStatsLoader
             JOIN budget_account on budget_account_id = budget_account.id
 
             GROUP BY budget_account_id, yearweeknum
-              AND date >= :startdate
-              AND date <= :enddate
               ORDER BY yearweeknum, budget_account_id");
-        $query->execute(
-            [
-                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
-                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
-            ]
-        );
+        $query->execute();
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
@@ -228,15 +221,8 @@ class BudgetAccountStatsLoader
             JOIN budget_account on budget_account_id = budget_account.id
             WHERE budget_transaction.amount < 0
             GROUP BY budget_account_id, yearweeknum
-              AND date >= :startdate
-              AND date <= :enddate
             ORDER BY yearweeknum, budget_account_id");
-        $query->execute(
-            [
-                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
-                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
-            ]
-        );
+        $query->execute();
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
