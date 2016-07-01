@@ -15,7 +15,9 @@ class BudgetAccountStatsLoader
     /** @var Request $request */
     private $request;
 
+    /** @var  \DateTime */
     private $firstTransactionDate;
+    /** @var  \DateTime */
     private $lastTransactionDate;
     private $totalFortnights;
 
@@ -82,8 +84,15 @@ class BudgetAccountStatsLoader
             WHERE
               transaction.amount != 0
               AND budget_transaction.amount < 0
+              AND date >= :startdate
+              AND date <= :enddate
             GROUP BY budget_account_id");
-        $query->execute();
+        $query->execute(
+            [
+                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+            ]
+        );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
@@ -113,8 +122,15 @@ class BudgetAccountStatsLoader
             WHERE
               transaction.amount = 0
               AND budget_transaction.amount > 0
+              AND date >= :startdate
+              AND date <= :enddate
             GROUP BY budget_account_id");
-        $query->execute();
+        $query->execute(
+            [
+                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+            ]
+        );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
@@ -144,8 +160,15 @@ class BudgetAccountStatsLoader
             WHERE
               transaction.amount != 0
               AND budget_transaction.amount > 0
+              AND date >= :startdate
+              AND date <= :enddate
             GROUP BY budget_account_id");
-        $query->execute();
+        $query->execute(
+            [
+                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+            ]
+        );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
@@ -172,8 +195,15 @@ class BudgetAccountStatsLoader
             JOIN budget_account on budget_account_id = budget_account.id
 
             GROUP BY budget_account_id, yearweeknum
-ORDER BY yearweeknum, budget_account_id");
-        $query->execute();
+              AND date >= :startdate
+              AND date <= :enddate
+              ORDER BY yearweeknum, budget_account_id");
+        $query->execute(
+            [
+                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+            ]
+        );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
@@ -198,8 +228,15 @@ ORDER BY yearweeknum, budget_account_id");
             JOIN budget_account on budget_account_id = budget_account.id
             WHERE budget_transaction.amount < 0
             GROUP BY budget_account_id, yearweeknum
+              AND date >= :startdate
+              AND date <= :enddate
             ORDER BY yearweeknum, budget_account_id");
-        $query->execute();
+        $query->execute(
+            [
+                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+            ]
+        );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
