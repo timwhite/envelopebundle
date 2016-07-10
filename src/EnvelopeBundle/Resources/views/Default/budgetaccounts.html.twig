@@ -17,24 +17,52 @@
     <div class="row">
     {% for budgetgroup in budgetgroups %}
 
-        <div class="col-sm-6 col-md-4 col-lg-3">
+        <div class="col-sm-6 col-md-4 col-lg-4">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ budgetgroup.name }}</h3>
                     <div class="box-tools pull-right">
-                        <span class="label label-info">{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</span>
+                        {%  set budgetgroupsum = budgetgroup.getBudgetSum(startdate, enddate) %}
+                        {%  set budgetgrouppossum = budgetgroup.getPositiveBudgetSum(startdate, enddate) %}
+                        {%  set budgetgroupnegsum = budgetgroup.getNegativeBudgetSum(startdate, enddate) %}
+                        <span class="label label-success" data-toggle="tooltip" title="Positive Transactions">{{ budgetgrouppossum|localizedcurrency('AUD') }}</span>
+                        <span class="label label-warning" data-toggle="tooltip" title="Negative Transactions">{{ budgetgroupnegsum|localizedcurrency('AUD') }}</span>
+
+                        <span class="label {%  if budgetgroupsum < 0 %}label-danger{% else %}label-default{% endif %}" data-toggle="tooltip" title="Balance">{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Positive</th>
+                            <th>Negative</th>
+                            <th>Balance</th>
+                        </tr>
+                        </thead>
+                        <tbody>
                     {% for budget in budgetgroup.budgetaccounts %}
                         <tr>
                             <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}"  data-toggle="tooltip" data-html="true" title="{{ budget.TemplateTransactionsDescriptionsTooltip }}">{{ budget.budgetName }}</a></td>
                             {% set balance = budget.getBalance(startdate, enddate) %}
-                            <td align="right" {% if balance < 0 %}class="text-danger"{% endif %}>{{ balance|localizedcurrency('AUD') }}</td>
+                            {% set posbalance = budget.getPositiveBalance(startdate, enddate) %}
+                            {% set negbalance = budget.getNegativeBalance(startdate, enddate) %}
+                            <td align="right" {% if posbalance < 0 %}class="text-danger"{% endif %}>{{ posbalance|localizedcurrency('AUD') }}</td>
+                            <td align="right" {% if negbalance < 0 %}class="text-danger"{% endif %}>{{ negbalance|localizedcurrency('AUD') }}</td>
+                            <td align="right" {% if balance < 0 %}class="text-danger"{% endif %}><strong>{{ balance|localizedcurrency('AUD') }}</strong></td>
                         </tr>
                     {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td></td>
+                            <td align="right" {% if budgetgrouppossum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getPositiveBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getNegativeBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <div class="box-footer">

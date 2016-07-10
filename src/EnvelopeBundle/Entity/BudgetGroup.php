@@ -129,6 +129,26 @@ class BudgetGroup
         return $balance;
     }
 
+    public function getPositiveBudgetSum($startdate = null, $enddate = null)
+    {
+        $balance = 0;
+        foreach($this->getBudgetAccounts() as $account)
+        {
+            $balance = bcadd($balance, $account->getPositiveBalance($startdate, $enddate), 2);
+        }
+        return $balance;
+    }
+
+    public function getNegativeBudgetSum($startdate = null, $enddate = null)
+    {
+        $balance = 0;
+        foreach($this->getBudgetAccounts() as $account)
+        {
+            $balance = bcadd($balance, $account->getNegativeBalance($startdate, $enddate), 2);
+        }
+        return $balance;
+    }
+
     /**
      * Set access_group
      *

@@ -168,6 +168,44 @@ class BudgetAccount
         return $balance;
     }
 
+    public function getPositiveBalance($startdate = null, $enddate = null)
+    {
+        $balance = 0;
+        /** @var BudgetTransaction $transaction */
+        foreach($this->budget_transactions as $transaction)
+        {
+            if(
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
+                $startdate == null || $enddate == null
+            ) {
+                if ($transaction->getAmount() > 0) {
+                    $balance = bcadd($balance, $transaction->getAmount(), 2);
+                }
+            }
+
+        }
+        return $balance;
+    }
+
+    public function getNegativeBalance($startdate = null, $enddate = null)
+    {
+        $balance = 0;
+        /** @var BudgetTransaction $transaction */
+        foreach($this->budget_transactions as $transaction)
+        {
+            if(
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
+                $startdate == null || $enddate == null
+            ) {
+                if ($transaction->getAmount() < 0) {
+                    $balance = bcadd($balance, $transaction->getAmount(), 2);
+                }
+            }
+
+        }
+        return $balance;
+    }
+
 
     public function __toString()
     {
