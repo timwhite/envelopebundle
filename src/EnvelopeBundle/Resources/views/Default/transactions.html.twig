@@ -55,7 +55,9 @@
         <!-- col -->
         <span class="clearfix"></span>
 
+        {% set networth=0 %}
         {% for account in accounts %}
+            {% set networth=networth+account.balance %}
             <div class="col-md-6">
                 <div class="box">
                     <div class="box-header with-border">
@@ -109,6 +111,30 @@
             </div><!-- col -->
         {% endfor %}
     </div><!-- row -->
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Net Position</h3>
+                    <div class="box-tools pull-right">
+                        <span class="label label-info"></span>
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-plus"></i></button>
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    Net Position: {{ networth |localizedcurrency('AUD') }}
+                </div>
+                <div class="box-footer">
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
 
 {% endblock %}
 

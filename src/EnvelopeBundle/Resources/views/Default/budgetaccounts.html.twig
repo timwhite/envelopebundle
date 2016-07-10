@@ -15,6 +15,9 @@
     </div>
 
     <div class="row">
+        {% set totalsum = 0 %}
+        {% set totalpossum = 0 %}
+        {% set totalnegsum = 0 %}
     {% for budgetgroup in budgetgroups %}
 
         <div class="col-sm-6 col-md-4 col-lg-4">
@@ -22,9 +25,12 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ budgetgroup.name }}</h3>
                     <div class="box-tools pull-right">
-                        {%  set budgetgroupsum = budgetgroup.getBudgetSum(startdate, enddate) %}
-                        {%  set budgetgrouppossum = budgetgroup.getPositiveBudgetSum(startdate, enddate) %}
-                        {%  set budgetgroupnegsum = budgetgroup.getNegativeBudgetSum(startdate, enddate) %}
+                        {% set budgetgroupsum = budgetgroup.getBudgetSum(startdate, enddate) %}
+                        {% set budgetgrouppossum = budgetgroup.getPositiveBudgetSum(startdate, enddate) %}
+                        {% set budgetgroupnegsum = budgetgroup.getNegativeBudgetSum(startdate, enddate) %}
+                        {% set totalsum = totalsum + budgetgroupsum %}
+                        {% set totalpossum = totalpossum + budgetgrouppossum %}
+                        {% set totalnegsum = totalnegsum + budgetgroupnegsum %}
                         <span class="label label-success" data-toggle="tooltip" title="Positive Transactions">{{ budgetgrouppossum|localizedcurrency('AUD') }}</span>
                         <span class="label label-warning" data-toggle="tooltip" title="Negative Transactions">{{ budgetgroupnegsum|localizedcurrency('AUD') }}</span>
 
@@ -58,9 +64,9 @@
                         <tfoot>
                         <tr>
                             <td></td>
-                            <td align="right" {% if budgetgrouppossum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getPositiveBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if budgetgroupnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getNegativeBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if budgetgroupsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgrouppossum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgrouppossum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupnegsum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupsum|localizedcurrency('AUD') }}</strong></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -72,6 +78,36 @@
 
     {% endfor %}
     </div><!-- row -->
+
+    <div class="row">
+        <div class="col-sm-6 col-md-3 col-lg-3">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Summary</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <span class="text-warning">The Budget summary gives an overview of all budget transactions for the selected period. If there are any unbalanced transactions in that period, the full amount of that transaction will not be reflected here and so this figure may be different to your Net Worth on the Bank transactions page.</span>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Positive</th>
+                            <th>Negative</th>
+                            <th>Balance</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <td align="right" {% if totalpossum < 0 %}class="text-danger"{% endif %}><strong>{{ totalpossum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if totalnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalnegsum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if totalsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalsum|localizedcurrency('AUD') }}</strong></td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
