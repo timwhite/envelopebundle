@@ -1,0 +1,24 @@
+{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% block page_title %}Autocode Search{% endblock %}
+{% block page_subtitle %}Search for bank transactions with no budget transactions, that match the SQL search string, and rename them and assign the entire value to a budget account.{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Search</h3>
+                    <div class="box-tools pull-right">
+                    </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    {{ form(form) }}
+                </div>
+                <div class="box-footer">
+                </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div><!-- col -->
+
+    </div><!-- row -->
+
+{% endblock %}

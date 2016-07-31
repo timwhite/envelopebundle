@@ -4,6 +4,7 @@ namespace EnvelopeBundle\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use EnvelopeBundle\Entity\AutoCodeSearch;
 use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
@@ -303,6 +304,8 @@ class DefaultController extends Controller
     public function autoCodeAction(Request $request)
     {
         $session = $request->getSession();
+        $accessGroup = $session->get('accessgroupid');
+        $em = $this->getDoctrine()->getManager();
 
         $form = $this->createFormBuilder()
             ->add('save', 'submit', array('label' => 'Auto code transactions'))
@@ -315,10 +318,23 @@ class DefaultController extends Controller
 
         if ($form->isValid() && $form->isSubmitted()) {
             $autoCode = new autoCodeTransactions();
-            $autoCode->codeTransactions($this->getDoctrine()->getManager(), $session->get('accessgroupid'));
+            $autoCode->codeTransactions($em, $accessGroup);
             $autoCodeResults = $autoCode->getResults();
             $actionRun = true;
         }
+
+        $searches = $em->createQuery('
+          SELECT s
+          FROM EnvelopeBundle:AutoCodeSearch s
+          LEFT JOIN EnvelopeBundle:BudgetAccount b WITH s.budgetAccount = b
+          LEFT JOIN EnvelopeBundle:BudgetGroup g WITH b.budget_group = g
+          WHERE g.access_group = :accessgroup
+          ')
+            ->setParameters(
+                [
+                    'accessgroup' => $accessGroup
+                ])
+            ->getResult();
 
         return $this->render(
             'EnvelopeBundle:Default:autoCodeAction.html.twig',
@@ -326,8 +342,92 @@ class DefaultController extends Controller
                 'actionrun' => $actionRun,
                 'results' => $autoCodeResults,
                 'form' => $form->createView(),
+                'searches' => $searches,
             ]
         );
+    }
+
+    public function autoCodeSearchEditAction(Request $request, $id)
+    {
+        $session = $request->getSession();
+        $accessGroup = $session->get('accessgroupid');
+        $em = $this->getDoctrine()->getManager();
+
+        if ($id == 'new') {
+            $search = new AutoCodeSearch();
+        } else {
+            /** @var AutoCodeSearch $search */
+            $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+            if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
+                // Attempt to edit an search that assigns to a budget other than ours
+                $this->addFlash('error', 'No access to a search with that id');
+                return $this->redirectToRoute('envelope_autocode');
+            }
+        }
+
+        $form = $this->createFormBuilder($search)
+            ->add('budgetAccount', 'entity', [
+                'class' => 'EnvelopeBundle\Entity\BudgetAccount',
+                'query_builder' => function(EntityRepository $repository) use($accessGroup) {
+                    $qb = $repository->createQueryBuilder('b');
+                    return $qb
+                        ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'b.budget_group = g')
+                        ->Where('g.access_group = :accessgroup')
+                        ->setParameter('accessgroup', $accessGroup);
+                },
+            ])
+            ->add('search',null,['label' => "Search (SQL LIKE %% search string)"])
+            ->add('rename')
+            ->add('save', 'submit', array('label' => 'Save'))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+
+        if ($form->isValid() && $form->isSubmitted()) {
+            $em->persist($search);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Search Updated'
+            );
+
+            return $this->redirectToRoute('envelope_autocode');
+
+        }
+
+        return $this->render(
+            'EnvelopeBundle:Default:autoCodeSearch.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
+    }
+
+    public function autoCodeSearchDeleteAction(Request $request, $id)
+    {
+        $session = $request->getSession();
+        $accessGroup = $session->get('accessgroupid');
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var AutoCodeSearch $search */
+        $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+        if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
+            // Attempt to delete an search that assigns to a budget other than ours
+            $this->addFlash('error', 'No access to a search with that id');
+            return $this->redirectToRoute('envelope_autocode');
+        }
+
+        $em->remove($search);
+        $em->flush();
+
+        $this->addFlash(
+            'success',
+            'Search deleted'
+        );
+
+        return $this->redirectToRoute('envelope_autocode');
     }
 
     private function findFirstTransactionDate()

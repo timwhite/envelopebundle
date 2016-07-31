@@ -61,4 +61,65 @@
 
     </div><!-- row -->
 
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Auto Code Searches</h3>
+                    <div class="box-tools pull-right">
+                        <a class="text-success btn"  data-toggle="tooltip" href="{{ path('envelope_autocode_edit_search', {'id': 'new'}) }}"
+                           title="New Search"><i class="fa fa-plus"></i> New Search</a>
+                    </div><!-- /.box-tools -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+
+                    <table class="table table-striped datatable" data-order='[[ 0, "asc" ]]' data-page-length='25'>
+                        <thead>
+                        <tr>
+                            <th>Search String</th>
+                            <th>New Description</th>
+                            <th>Account</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for search in searches %}
+                            <tr>
+                                <td>{{ search.search }}</td>
+                                <td>{{ search.rename }}</td>
+                                <td>{{ search.budgetAccount.budgetName }}</td>
+                                <td><form method='POST' action="{{ path('envelope_autocode_delete_search', {'id': search.id}) }}">
+                                <a href="{{ path('envelope_autocode_edit_search', {'id': search.id}) }}"><i class="fa fa-pencil"></i></a> <a href="" onclick="confirm('Are you sure you want to delete this search?') && $(this).closest('form').submit(); return false;"><i class="fa fa-trash text-danger"></i></a>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer">
+                </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div><!-- col -->
+
+
+    </div><!-- row -->
+
+{% endblock %}
+
+{% block javascripts_inline %}
+    <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
+    <script>
+        $(function () {
+            //$.fn.dataTable.moment( 'D/MM/YYYY' );
+            $('.datatable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "order": [[ 0, "desc" ]],
+            });
+        });
+    </script>
 {% endblock %}
