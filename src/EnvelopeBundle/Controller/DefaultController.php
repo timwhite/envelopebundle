@@ -80,10 +80,20 @@ class DefaultController extends Controller
         );
     }
 
-    private function importForm()
+    private function importForm($accessGroup)
     {
         return $form = $this->createFormBuilder()
-            ->add('account', 'entity', ['class' => 'EnvelopeBundle:Account'])
+            ->add('account', 'entity', [
+                'class' => 'EnvelopeBundle:Account',
+                'query_builder' => function(EntityRepository $repository) use ($accessGroup) {
+                    // EnvelopeBundle:BudgetAccount is the entity we are selecting
+                    $qb = $repository->createQueryBuilder('a');
+                    return $qb
+                        ->andWhere('a.access_group = :accessgroup')
+                        ->setParameter('accessgroup', $accessGroup)
+                        ;
+                },
+            ])
             ->add('accountType', 'choice', ['choices' => ['NAB' => 'NAB', 'ANZ' => 'ANZ']])
             ->add('bankExport', 'file')
             ->add('save', 'submit', array('label' => 'Import transactions'))
@@ -92,11 +102,12 @@ class DefaultController extends Controller
 
     public function importAction(Request $request)
     {
+        $session = $request->getSession();
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT i FROM EnvelopeBundle:Import i'
         );
 
-        $form = $this->importForm();
+        $form = $this->importForm($session->get('accessgroupid'));
 
         $form->handleRequest($request);
 
