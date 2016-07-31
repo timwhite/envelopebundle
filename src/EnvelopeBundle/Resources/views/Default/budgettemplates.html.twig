@@ -18,7 +18,7 @@
         {% for budgettemplate in budgettemplates %}
 
             <div class="col-md-6">
-                <div class="box">
+                <div class="box {% if budgettemplate.archived %}collapsed-box{% endif %}">
                     <div class="box-header with-border">
                         <h3 class="box-title">{{ budgettemplate.name }}</h3>
                         <div class="box-tools pull-right">
@@ -31,8 +31,9 @@
                             {% if budgettemplate.balance != 0 %}
                                 <span class="label label-warning">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
                             {% endif %}
+                            {% if budgettemplate.archived %}<span class="label label-primary">Archived</span>{% endif %}
                             <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                                    title="Collapse"><i class="fa fa-minus"></i></button>
+                                    title="Collapse"><i class="fa {% if budgettemplate.archived %}fa-plus{% else %}fa-minus{% endif %}"></i></button>
 
                         </div><!-- /.box-tools -->
                     </div><!-- /.box-header -->

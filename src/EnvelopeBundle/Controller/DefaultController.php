@@ -559,7 +559,7 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($budgetTemplate->getTemplateTransactions() as $templateTransaction) {
                 if (
@@ -607,6 +607,13 @@ class DefaultController extends Controller
              */
             return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
         }
+        if($form->isSubmitted() && ! $form->isValid()) {
+            $this->addFlash(
+                'error',
+                'Changes not saved. Please fix errors'
+            );
+        }
+
 
         return $this->render(
             'EnvelopeBundle:Default:editbudgettemplate.html.twig',

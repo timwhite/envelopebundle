@@ -24,6 +24,9 @@
                     {{ form_row(addform.name) }}
                     <strong>Description</strong>
                     {{ form_row(addform.description) }}
+                    <strong>Archived</strong>
+                    {{ form_row(addform.archived) }}
+
 <style>
     form legend {
         padding: 0 2px;
@@ -52,12 +55,15 @@
                                 <li>
                                     <span class="col-xs-3">
                                         {{ form_widget(templatetransaction.description) }}
+                                        {{ form_errors(templatetransaction.description) }}
                                     </span>
                                     <span class="col-xs-6">
                                     {{ form_widget(templatetransaction.budgetaccount, { 'attr': {'class': 'combobox'} }) }}
+                                    {{ form_errors(templatetransaction.budgetaccount) }}
                                     </span>
                                     <span class="col-xs-3">
                                     {{ form_widget(templatetransaction.amount) }}
+                                    {{ form_errors(templatetransaction.amount) }}
                                     </span>
                                 </li>
                             {% endfor %}

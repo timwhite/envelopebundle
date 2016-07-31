@@ -46,7 +46,6 @@ class BudgetAccount
      */
     private $budget_group;
 
-
     /** @var  BudgetAccountStats $budgetStats */
     private $budgetStats;
 

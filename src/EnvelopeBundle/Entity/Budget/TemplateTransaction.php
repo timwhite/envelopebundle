@@ -137,7 +137,7 @@ class TemplateTransaction
      * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccount
      * @return TemplateTransaction
      */
-    public function setBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccount)
+    public function setBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccount = null)
     {
         $this->budgetAccount = $budgetAccount;
 

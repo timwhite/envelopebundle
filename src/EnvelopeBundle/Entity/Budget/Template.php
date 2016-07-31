@@ -50,6 +50,12 @@ class Template
      */
     private $template_transactions;
 
+
+    /**
+     * @ORM\Column(name="Archived", type="boolean", nullable=false)
+     */
+    private $archived = false;
+
     public function getBalance()
     {
         $balance = 0;
@@ -231,5 +237,29 @@ class Template
             }
             $this->template_transactions = $cloned_transactions;
         }
+    }
+
+
+    /**
+     * Set archived
+     *
+     * @param boolean $archived
+     * @return BudgetAccount
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived
+     *
+     * @return boolean
+     */
+    public function getArchived()
+    {
+        return $this->archived;
     }
 }
