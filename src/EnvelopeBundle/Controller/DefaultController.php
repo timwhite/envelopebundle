@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Controller;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use EnvelopeBundle\Entity\Budget\Template;
 use EnvelopeBundle\Entity\BudgetTransaction;
@@ -429,7 +430,18 @@ class DefaultController extends Controller
     public function applyBudgetTemplateAction(Request $request)
     {
         $form = $this->createFormBuilder(['date' => new \DateTime()])
-            ->add('template', 'entity', ['class' => 'EnvelopeBundle:Budget\Template'])
+            ->add('template', 'entity', [
+                'class' => 'EnvelopeBundle:Budget\Template',
+                'query_builder' => function(EntityRepository $repository) {
+                    // EnvelopeBundle:BudgetAccount is the entity we are selecting
+                    $qb = $repository->createQueryBuilder('t');
+                    return $qb
+                        ->andWhere('t.archived = 0')
+                        //->andWhere('g.access_group = :accessgroup')
+                        //->setParameter('accessgroup', $accessgroup)
+                        ;
+                },
+                ])
             ->add('date', 'date', ['widget' => 'single_text'])
             ->add('description')
             ->add('save', 'submit', array('label' => 'Apply Budget Template'))
