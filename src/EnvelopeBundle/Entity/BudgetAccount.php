@@ -279,9 +279,16 @@ class BudgetAccount
         // NB: This should probably be handled by the view, instead of hard coding a locale here
         $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
         $desc = [];
+        /** @var \EnvelopeBundle\Entity\Budget\TemplateTransaction $trans */
         foreach($this->getTemplateTransactions() as $trans)
         {
-            $desc[] = $trans->getDescription(). " (". numfmt_format_currency($fmt, $trans->getAmount(), 'AUD').")";
+            if(!$trans->getTemplate()->getArchived()) {
+                $desc[] = $trans->getDescription() . " (" . numfmt_format_currency(
+                        $fmt,
+                        $trans->getAmount(),
+                        'AUD'
+                    ) . ")";
+            }
         }
         return implode("<br/>", $desc);
     }
