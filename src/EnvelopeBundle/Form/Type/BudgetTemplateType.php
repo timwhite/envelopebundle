@@ -21,6 +21,7 @@ class BudgetTemplateType extends AbstractType
             'allow_delete' => true,
             //'delete_empty' => true,
             'label' => false,
+            'options' => ['accessgroup' => $options['accessgroup']]
 
         ));
 
@@ -40,6 +41,7 @@ class BudgetTemplateType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'EnvelopeBundle\Entity\Budget\Template',
             'existing_entity' => true,
+            'accessgroup' => 0,
         ));
     }
 

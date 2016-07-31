@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Entity\Budget\TemplateTransaction;
+use EnvelopeBundle\Entity\AccessGroup;
 
 /**
  * Template
@@ -49,6 +50,12 @@ class Template
      * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template", cascade={"persist","remove"})
      */
     private $template_transactions;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\EnvelopeBundle\Entity\AccessGroup")
+     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
+     */
+    private $access_group;
 
 
     /**
@@ -261,5 +268,28 @@ class Template
     public function getArchived()
     {
         return $this->archived;
+    }
+
+    /**
+     * Set access_group
+     *
+     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @return Template
+     */
+    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    {
+        $this->access_group = $accessGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get access_group
+     *
+     * @return \EnvelopeBundle\Entity\AccessGroup
+     */
+    public function getAccessGroup()
+    {
+        return $this->access_group;
     }
 }

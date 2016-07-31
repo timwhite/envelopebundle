@@ -12,6 +12,7 @@ use EnvelopeBundle\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
+use EnvelopeBundle\Entity\AccessGroup;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -370,11 +371,14 @@ class DefaultController extends Controller
         );
     }
 
-    public function budgetTemplateCloneAction($templateid)
+    public function budgetTemplateCloneAction(Request $request, $templateid)
     {
+        $session = $request->getSession();
         $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository('EnvelopeBundle:Budget\Template');
+
+        /** @var Template $budgetTemplate */
         $budgetTemplate = $budgetTemplateRepo->find($templateid);
-        if($budgetTemplate) {
+        if($budgetTemplate && $budgetTemplate->getAccessGroup()->getId() == $session->get('accessgroupid')) {
             $newBudgetTemplate = clone $budgetTemplate;
             $this->getDoctrine()->getManager()->persist($newBudgetTemplate);
             $this->getDoctrine()->getManager()->flush();
@@ -391,14 +395,22 @@ class DefaultController extends Controller
         return $this->redirectToRoute('envelope_budget_templates');
     }
 
-    public function budgetTemplateListAction()
+    public function budgetTemplateListAction(Request $request)
     {
+        $session = $request->getSession();
         $query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Budget\Template t
+            WHERE t.access_group = :accessgroup
             '
         );
+        $query->setParameters(
+            [
+                "accessgroup" => $session->get('accessgroupid')
+            ]
+        );
 
+        // TODO: Finish formatting SUMS in a presentable way
         $group_sums_query = $this->getDoctrine()->getManager()->createQuery(
             'SELECT
               t.id,
@@ -429,16 +441,17 @@ class DefaultController extends Controller
 
     public function applyBudgetTemplateAction(Request $request)
     {
+        $session = $request->getSession();
         $form = $this->createFormBuilder(['date' => new \DateTime()])
             ->add('template', 'entity', [
                 'class' => 'EnvelopeBundle:Budget\Template',
-                'query_builder' => function(EntityRepository $repository) {
+                'query_builder' => function(EntityRepository $repository) use ($session) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('t');
                     return $qb
                         ->andWhere('t.archived = 0')
-                        //->andWhere('g.access_group = :accessgroup')
-                        //->setParameter('accessgroup', $accessgroup)
+                        ->andWhere('t.access_group = :accessgroup')
+                        ->setParameter('accessgroup', $session->get('accessgroupid'))
                         ;
                 },
                 ])
@@ -507,18 +520,21 @@ class DefaultController extends Controller
     }
 
 
-    public function budgetTemplateDeleteAction($id) {
+    public function budgetTemplateDeleteAction(Request $request, $id) {
+        $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
             'SELECT t
                     FROM EnvelopeBundle:Budget\Template t
                     WHERE t.id = :id
+                    AND t.access_group = :accessgroup
                     '
         );
 
         $query->setParameters(
             [
-                "id" => $id
+                "id" => $id,
+                "accessgroup" => $session->get('accessgroupid')
             ]
         );
 
@@ -542,6 +558,10 @@ class DefaultController extends Controller
         if ($id == 'new') {
             $existing = false;
             $budgetTemplate = new Template();
+
+            // Set access group for new templates
+            $accessGroup = $em->getRepository(AccessGroup::class)->find($session->get('accessgroupid'));
+            $budgetTemplate->setAccessGroup($accessGroup);
         } else {
             $existing = true;
 
@@ -549,12 +569,14 @@ class DefaultController extends Controller
                 'SELECT t
                     FROM EnvelopeBundle:Budget\Template t
                     WHERE t.id = :id
+                    AND t.access_group = :accessgroup
                     '
             );
 
             $query->setParameters(
                 [
-                    "id" => $id
+                    "id" => $id,
+                    "accessgroup" => $session->get('accessgroupid')
                 ]
             );
 
@@ -567,7 +589,7 @@ class DefaultController extends Controller
             }
         }
 
-        $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate, ['existing_entity' => $existing]);
+        $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate, ['existing_entity' => $existing, 'accessgroup' => $session->get('accessgroupid')]);
 
         $form->handleRequest($request);
 
