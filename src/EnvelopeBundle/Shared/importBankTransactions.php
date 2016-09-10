@@ -68,6 +68,7 @@ class importBankTransactions
                     continue;
                 }
 
+                /*
                 // Limit to transactions in this financial year //TODO remove this?
                 if ($date < new \DateTime("2015-07-01 00:00:00")) {
                     $this->ignored[] = [
@@ -76,7 +77,7 @@ class importBankTransactions
                         'amount' =>$amount
                     ];
                     continue;
-                }
+                }*/
 
                 if (!$importDuplicates) {
                     // Attempt to detect duplicate transaction
