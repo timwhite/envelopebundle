@@ -14,6 +14,7 @@ class AccountAdmin extends Admin
     {
         $formMapper
             ->add('name', 'text', array('label' => 'Account Name'))
+            ->add('accessGroup',  'entity', array('class' => 'EnvelopeBundle\Entity\AccessGroup'))
         ;
     }
 
@@ -31,6 +32,7 @@ class AccountAdmin extends Admin
         $listMapper
             ->addIdentifier('name')
             ->add('balance')
+            ->add('accessGroup')
         ;
     }
 }
