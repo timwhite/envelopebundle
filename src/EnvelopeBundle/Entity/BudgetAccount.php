@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Shared\BudgetAccountStats;
 
@@ -11,6 +12,7 @@ use EnvelopeBundle\Shared\BudgetAccountStats;
  * @ORM\Table()
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ * @ApiResource()
  */
 class BudgetAccount
 {

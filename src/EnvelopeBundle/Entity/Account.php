@@ -2,13 +2,18 @@
 
 namespace EnvelopeBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Account
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ApiResource(attributes={
+ *     "normalization_context"={"groups"={"read-account"}}
+ *     })
  */
 class Account
 {
@@ -18,6 +23,7 @@ class Account
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"read-account"})
      */
     private $id;
 
@@ -25,12 +31,14 @@ class Account
      * @var string
      *
      * @ORM\Column(name="Name", type="string", length=255, nullable=false)
+     * @Groups({"read-account"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account")
      * @ORM\OrderBy({"date" = "DESC"})
+     * @Groups({"read-account"})
      */
     private $transactions;
 
@@ -43,6 +51,7 @@ class Account
     /**
      * @ORM\Column(name="budget_transfer", type="boolean", )
      * @var boolean
+     * @Groups({"read-account"})
      */
     private $budgetTransfer = false;
 

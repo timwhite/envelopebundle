@@ -33,3 +33,8 @@ _sonata_admin:
     resource: .
     type: sonata_admin
     prefix: /admin
+
+api:
+    resource: '.'
+    type:     'api_platform'
+    prefix:   '/api' # Optional

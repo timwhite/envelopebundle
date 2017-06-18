@@ -2,13 +2,16 @@
 
 namespace EnvelopeBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Transactions
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ApiResource()
  */
 class Transaction
 {
@@ -18,6 +21,7 @@ class Transaction
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
      */
     private $id;
 
@@ -25,6 +29,7 @@ class Transaction
      * @var string
      *
      * @ORM\Column(name="Description", type="string", length=255)
+     *
      */
     private $description;
 
@@ -32,6 +37,7 @@ class Transaction
      * @var string
      *
      * @ORM\Column(name="FullDescription", type="string", length=255)
+     *
      */
     private $fullDescription;
 
@@ -45,6 +51,7 @@ class Transaction
      * @var \DateTime
      *
      * @ORM\Column(name="Date", type="date", nullable=false)
+     *
      */
     private $date;
 
@@ -52,11 +59,13 @@ class Transaction
      * @var string
      *
      * @ORM\Column(name="Amount", type="decimal", scale=2, nullable=false)
+     *
      */
     private $amount;
 
     /**
      * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist")
+     *
      */
     private $budget_transactions;
 
