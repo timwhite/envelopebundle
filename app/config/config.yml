@@ -101,5 +101,14 @@ hwi_oauth:
             scope:               "email profile"
             options:
                 csrf: true
+
+        live:
+            type:                windows_live
+            client_id:           "%live_client_id%"
+            client_secret:       "%live_client_secret%"
+            scope:               wl.signin
+            options:
+                csrf: true
+
     http_client:
         timeout:    10

@@ -22,6 +22,7 @@ security:
             oauth:
                 resource_owners:
                     google:             "/login/check-google"
+                    live:               "/login/check-live"
                 login_path:        /connect/google
                 use_forward:       false
                 failure_path:      /login
