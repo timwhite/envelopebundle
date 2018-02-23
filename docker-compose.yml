@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 # http://geekyplatypus.com/dockerise-your-php-application-with-nginx-and-php7-fpm/
 services:
@@ -23,6 +23,9 @@ services:
 #            - ./log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
         networks:
             - code-network
+
+volumes:
+  code:
 
 networks:
     code-network:
