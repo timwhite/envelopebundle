@@ -18,6 +18,8 @@ services:
           context: ./
           dockerfile: ./docker/Dockerfile-php.yml
         #image: php:7-fpm
+        external_links:
+          - mariadb_db_1
         volumes:
             - code:/code
 #            - ./log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
