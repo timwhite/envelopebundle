@@ -6,6 +6,8 @@ services:
         image: nginx:latest
         ports:
             - "8000:80"
+        env_file:
+          - web-variables.env
         volumes:
             - ./:/code
             - ./docker/site.conf:/etc/nginx/conf.d/default.conf
