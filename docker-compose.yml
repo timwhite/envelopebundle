@@ -15,6 +15,7 @@ services:
             - code-network
     php:
         build:
+          context: ./
           dockerfile: ./docker/Dockerfile-php.yml
         #image: php:7-fpm
         volumes:
