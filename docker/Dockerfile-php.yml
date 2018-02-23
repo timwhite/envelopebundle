@@ -8,5 +8,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
 
 COPY ./ /code
 RUN chown www-data -R /code
+RUN chown www-data -R /var/www/
 USER www-data
 RUN cd /code; composer install
