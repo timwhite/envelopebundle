@@ -29,11 +29,14 @@ services:
 #            - ./log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
         networks:
             - code-network
+            - mariadb_mariadb
 
 volumes:
   code:
 
 networks:
+    mariadb_mariadb:
+        external: true
     nginxproxy_nginxproxy:
         external: true
     code-network:
