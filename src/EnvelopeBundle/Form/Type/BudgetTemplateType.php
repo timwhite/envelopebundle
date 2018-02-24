@@ -15,7 +15,7 @@ class BudgetTemplateType extends AbstractType
         $builder->add('archived', null, ['label' => false, 'required' => false]);
 
         $builder->add('template_transactions', 'collection', array(
-            'type' => new BudgetTemplateTransactionType(),
+            'type' => BudgetTemplateTransactionType::class,
             'allow_add'    => true,
             'by_reference' => false,
             'allow_delete' => true,

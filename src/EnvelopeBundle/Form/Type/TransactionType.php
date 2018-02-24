@@ -13,15 +13,15 @@ class TransactionType extends AbstractType
     {
         $builder->add('description', null, ['label' => false]);
 
-        $builder->add('budget_transactions', 'collection', array(
-            'type' => new BudgetTransactionType(),
+        $builder->add('budget_transactions', 'collection', [
+            'type' => BudgetTransactionType::class,
             'allow_add'    => true,
             'by_reference' => false,
             'allow_delete' => true,
             'label' => false,
             'options' => ['accessgroup' => $options['accessgroup']]
 
-        ));
+        ] );
 
         if(!$options['existing_entity']) {
 
@@ -42,17 +42,17 @@ class TransactionType extends AbstractType
             //$builder->add('fulldescription', null, ['disabled' => $existing, 'label' => false,]);
         }
 
-        $builder->add('save', 'submit', array('label' => 'Update Transaction'));
+        $builder->add('save', 'submit', [ 'label' => 'Update Transaction' ] );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults( [
             'data_class' => 'EnvelopeBundle\Entity\Transaction',
             'existing_entity' => true,
             'date' => new \DateTime(),
             'accessgroup' => 0,
-        ));
+        ] );
     }
 
     public function getName()
