@@ -12,7 +12,7 @@ services:
             - code:/code
             - ./docker/site.conf:/etc/nginx/conf.d/default.conf
         networks:
-            - bridge
+            - nginxproxy_nginxproxy
             - code-network
     php:
         build:
@@ -31,7 +31,7 @@ volumes:
   code:
 
 networks:
-    bridge:
+    nginxproxy_nginxproxy:
         external: true
     code-network:
         driver: bridge
