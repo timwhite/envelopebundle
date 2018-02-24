@@ -13,8 +13,8 @@ class AccountAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', array('label' => 'Account Name'))
-            ->add('accessGroup',  'entity', array('class' => 'EnvelopeBundle\Entity\AccessGroup'))
+            ->add('name', 'text', [ 'label' => 'Account Name' ] )
+            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
         ;
     }
 

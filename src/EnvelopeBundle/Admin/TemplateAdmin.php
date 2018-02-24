@@ -13,7 +13,7 @@ class TemplateAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', array('label' => 'Budget Template Name'))
+            ->add('name', 'text', [ 'label' => 'Budget Template Name' ] )
             ->add('description')
         ;
     }

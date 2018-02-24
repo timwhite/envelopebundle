@@ -67,7 +67,7 @@ class MyMenuItemListListener {
 
             ];
         }
-        $menuItems = array();
+        $menuItems = [];
         foreach($items as $key => $label)
         {
             if(is_array($label))

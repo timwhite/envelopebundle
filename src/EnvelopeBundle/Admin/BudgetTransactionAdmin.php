@@ -13,8 +13,8 @@ class BudgetTransactionAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('transaction', 'entity', array('class' => 'EnvelopeBundle\Entity\Transaction'))
-            ->add('budgetAccount', 'entity', array('class' => 'EnvelopeBundle\Entity\BudgetAccount'))
+            ->add('transaction', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Transaction' ] )
+            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
             ->add('amount')
         ;
     }

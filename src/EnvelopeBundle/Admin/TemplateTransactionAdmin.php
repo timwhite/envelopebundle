@@ -13,8 +13,8 @@ class TemplateTransactionAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('template', 'entity', array('class' => 'EnvelopeBundle\Entity\Budget\Template'))
-            ->add('budgetAccount', 'entity', array('class' => 'EnvelopeBundle\Entity\BudgetAccount'))
+            ->add('template', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Budget\Template' ] )
+            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
             ->add('description')
             ->add('amount')
         ;

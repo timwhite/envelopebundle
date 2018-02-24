@@ -39,13 +39,13 @@ class UserAdmin extends Admin
             ->add('username')
             ->add('avatar')
             ->add('access_group')
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'show' => array(),
-                    'edit' => array(),
-                    'delete' => array(),
-                )
-            ))
+            ->add('_action', 'actions', [
+                'actions' => [
+                    'show' => [],
+                    'edit' => [],
+                    'delete' => [],
+                ]
+            ] )
         ;
     }
 

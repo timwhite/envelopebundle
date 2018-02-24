@@ -13,7 +13,7 @@ class BudgetAccountAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('budget_name', 'text', array('label' => 'Budget Account Name'))
+            ->add('budget_name', 'text', [ 'label' => 'Budget Account Name' ] )
             ->add('budget_group')
         ;
     }

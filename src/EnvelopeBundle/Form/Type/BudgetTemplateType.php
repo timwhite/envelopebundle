@@ -14,7 +14,7 @@ class BudgetTemplateType extends AbstractType
         $builder->add('description', null, ['label' => false]);
         $builder->add('archived', null, ['label' => false, 'required' => false]);
 
-        $builder->add('template_transactions', 'collection', array(
+        $builder->add('template_transactions', 'collection', [
             'type' => BudgetTemplateTransactionType::class,
             'allow_add'    => true,
             'by_reference' => false,
@@ -23,7 +23,7 @@ class BudgetTemplateType extends AbstractType
             'label' => false,
             'options' => ['accessgroup' => $options['accessgroup']]
 
-        ));
+        ] );
 
         /*if(!$options['existing_entity']) {
 
@@ -33,16 +33,16 @@ class BudgetTemplateType extends AbstractType
             //$builder->add('fulldescription', null, ['disabled' => $existing, 'label' => false,]);
         }*/
 
-        $builder->add('save', 'submit', array('label' => 'Update Template'));
+        $builder->add('save', 'submit', [ 'label' => 'Update Template' ] );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults( [
             'data_class' => 'EnvelopeBundle\Entity\Budget\Template',
             'existing_entity' => true,
             'accessgroup' => 0,
-        ));
+        ] );
     }
 
     public function getName()

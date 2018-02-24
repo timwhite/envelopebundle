@@ -97,7 +97,7 @@ class DefaultController extends Controller
             ])
             ->add('accountType', 'choice', ['choices' => ['NAB' => 'NAB', 'ANZ' => 'ANZ']])
             ->add('bankExport', 'file')
-            ->add('save', 'submit', array('label' => 'Import transactions'))
+            ->add('save', 'submit', [ 'label' => 'Import transactions' ] )
             ->getForm();
     }
 
@@ -308,7 +308,7 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $form = $this->createFormBuilder()
-            ->add('save', 'submit', array('label' => 'Auto code transactions'))
+            ->add('save', 'submit', [ 'label' => 'Auto code transactions' ] )
             ->getForm();
 
         $form->handleRequest($request);
@@ -378,7 +378,7 @@ class DefaultController extends Controller
             ])
             ->add('search',null,['label' => "Search (SQL LIKE %% search string)"])
             ->add('rename')
-            ->add('save', 'submit', array('label' => 'Save'))
+            ->add('save', 'submit', [ 'label' => 'Save' ] )
             ->getForm();
 
         $form->handleRequest($request);
@@ -568,7 +568,7 @@ class DefaultController extends Controller
                 ])
             ->add('date', 'date', ['widget' => 'single_text'])
             ->add('description')
-            ->add('save', 'submit', array('label' => 'Apply Budget Template'))
+            ->add('save', 'submit', [ 'label' => 'Apply Budget Template' ] )
             ->getForm();
 
         $form->handleRequest($request);

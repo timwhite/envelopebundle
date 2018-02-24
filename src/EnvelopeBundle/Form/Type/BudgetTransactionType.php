@@ -34,10 +34,10 @@ class BudgetTransactionType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults( [
             'data_class' => 'EnvelopeBundle\Entity\BudgetTransaction',
             'accessgroup' => 0
-        ));
+        ] );
     }
 
     public function getName()
