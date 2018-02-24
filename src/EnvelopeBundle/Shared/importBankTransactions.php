@@ -40,8 +40,20 @@ class importBankTransactions
                     $date = new\DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
                     //$output->writeln($description);
                 } elseif ($accountType == 'NAB') {
+                    /**
+                     * Old NAB Format was
+                     * Date,Amount,_,_,Type,Description,Balance,_
+                     * No string quoting, date was DD-MON-YY
+                     * 30-Nov-17,-14.95,,,MISCELLANEOUS DEBIT,V1234 28/11 KFC ,123.45,
+                     *
+                     * New NAB format is
+                     * "Date","Amount","_",_,"Type","Description","Balance"
+                     * String quoting. Date is DD MON YY
+                     * "28 Dec 17","-14.95","000000000000",,"MISCELLANEOUS DEBIT","V1234 25/12 KFC","+456.78"
+                     */
+
                     //NAB format date,amount,__,__,Type,Description,Balance,__
-                    if (sizeof($row) != 8) {
+                    if (sizeof($row) != 7) {
                         $this->unknown[] = implode(',', $row);
                         continue;
                     }
@@ -56,7 +68,13 @@ class importBankTransactions
                     throw new \Exception('Invalid Account Type');
                 }
 
-                $amount = $row[1];
+                /*
+                 * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
+                 * unless it has a - at the start
+                 */
+                $amount = ltrim($row[1], '+');
+                // Remove any , characters in the string, they stuff things up too
+                $amount = str_replace(',', '', $amount);
 
                 if($this->checkUnclearedTransaction($fullDescription))
                 {
