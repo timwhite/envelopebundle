@@ -13,9 +13,9 @@ class AutoCodeSearchAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('search', 'text', array('label' => 'Search Text'))
-            ->add('rename', 'text', array('label' => 'Transaction Description Rename', 'required' => false))
-            ->add('budgetAccount', 'entity', array('class' => 'EnvelopeBundle\Entity\BudgetAccount'))
+            ->add('search', 'text', [ 'label' => 'Search Text' ] )
+            ->add('rename', 'text', [ 'label' => 'Transaction Description Rename', 'required' => false ] )
+            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
         ;
     }
 

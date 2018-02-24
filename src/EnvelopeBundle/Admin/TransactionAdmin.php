@@ -16,7 +16,7 @@ class TransactionAdmin extends Admin
             ->add('description')
             ->add('date')
             ->add('fullDescription')
-            ->add('account', 'entity', array('class' => 'EnvelopeBundle\Entity\Account'))
+            ->add('account', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Account' ] )
             ->add('amount')
         ;
     }

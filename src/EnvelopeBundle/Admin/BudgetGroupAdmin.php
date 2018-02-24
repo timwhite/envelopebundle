@@ -30,13 +30,13 @@ class BudgetGroupAdmin extends Admin
             ->add('id')
             ->add('name')
             ->add('accessGroup')
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'show' => array(),
-                    'edit' => array(),
-                    'delete' => array(),
-                )
-            ))
+            ->add('_action', 'actions', [
+                'actions' => [
+                    'show' => [],
+                    'edit' => [],
+                    'delete' => [],
+                ]
+            ] )
         ;
     }
 
@@ -46,8 +46,8 @@ class BudgetGroupAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', array('label' => 'Budget Group Name'))
-            ->add('accessGroup',  'entity', array('class' => 'EnvelopeBundle\Entity\AccessGroup'))
+            ->add('name', 'text', [ 'label' => 'Budget Group Name' ] )
+            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
         ;
     }
 

@@ -58,10 +58,10 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize( [
             $this->id,
             $this->username
-        ));
+        ] );
     }
 
     /**

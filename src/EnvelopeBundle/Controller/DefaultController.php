@@ -4,8 +4,10 @@ namespace EnvelopeBundle\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\AutoCodeSearch;
 use EnvelopeBundle\Entity\Budget\Template;
+use EnvelopeBundle\Entity\BudgetAccount;
 use EnvelopeBundle\Entity\BudgetTransaction;
 use EnvelopeBundle\Entity\Transaction;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
@@ -14,7 +16,12 @@ use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
 use EnvelopeBundle\Entity\AccessGroup;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -84,8 +91,8 @@ class DefaultController extends Controller
     private function importForm($accessGroup)
     {
         return $form = $this->createFormBuilder()
-            ->add('account', 'entity', [
-                'class' => 'EnvelopeBundle:Account',
+            ->add('account', EntityType::class, [
+                'class' => Account::class,
                 'query_builder' => function(EntityRepository $repository) use ($accessGroup) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('a');
@@ -95,9 +102,9 @@ class DefaultController extends Controller
                         ;
                 },
             ])
-            ->add('accountType', 'choice', ['choices' => ['NAB' => 'NAB', 'ANZ' => 'ANZ']])
-            ->add('bankExport', 'file')
-            ->add('save', 'submit', array('label' => 'Import transactions'))
+            ->add('accountType', ChoiceType::class, ['choices' => ['NAB' => 'NAB', 'ANZ' => 'ANZ']])
+            ->add('bankExport', FileType::class)
+            ->add('save', SubmitType::class, [ 'label' => 'Import transactions' ] )
             ->getForm();
     }
 
@@ -117,7 +124,7 @@ class DefaultController extends Controller
         $unknown = null;
         $import = null;
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $bankImport = new importBankTransactions();
             $bankImport->importBankFile(
                 $this->getDoctrine()->getManager(),
@@ -253,7 +260,7 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($transaction->getBudgetTransactions() as $budgetTransaction) {
                 if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
@@ -308,7 +315,7 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $form = $this->createFormBuilder()
-            ->add('save', 'submit', array('label' => 'Auto code transactions'))
+            ->add('save', SubmitType::class, [ 'label' => 'Auto code transactions' ] )
             ->getForm();
 
         $form->handleRequest($request);
@@ -316,7 +323,7 @@ class DefaultController extends Controller
         $autoCodeResults = [];
         $actionRun = false;
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $autoCode = new autoCodeTransactions();
             $autoCode->codeTransactions($em, $accessGroup);
             $autoCodeResults = $autoCode->getResults();
@@ -366,8 +373,8 @@ class DefaultController extends Controller
         }
 
         $form = $this->createFormBuilder($search)
-            ->add('budgetAccount', 'entity', [
-                'class' => 'EnvelopeBundle\Entity\BudgetAccount',
+            ->add('budgetAccount', EntityType::class, [
+                'class' => BudgetAccount::class,
                 'query_builder' => function(EntityRepository $repository) use($accessGroup) {
                     $qb = $repository->createQueryBuilder('b');
                     return $qb
@@ -378,13 +385,13 @@ class DefaultController extends Controller
             ])
             ->add('search',null,['label' => "Search (SQL LIKE %% search string)"])
             ->add('rename')
-            ->add('save', 'submit', array('label' => 'Save'))
+            ->add('save', SubmitType::class, [ 'label' => 'Save' ] )
             ->getForm();
 
         $form->handleRequest($request);
 
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($search);
             $em->flush();
 
@@ -554,8 +561,8 @@ class DefaultController extends Controller
     {
         $session = $request->getSession();
         $form = $this->createFormBuilder(['date' => new \DateTime()])
-            ->add('template', 'entity', [
-                'class' => 'EnvelopeBundle:Budget\Template',
+            ->add('template', EntityType::class, [
+                'class' => Template::class,
                 'query_builder' => function(EntityRepository $repository) use ($session) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('t');
@@ -566,14 +573,14 @@ class DefaultController extends Controller
                         ;
                 },
                 ])
-            ->add('date', 'date', ['widget' => 'single_text'])
+            ->add('date', DateType::class, ['widget' => 'single_text'])
             ->add('description')
-            ->add('save', 'submit', array('label' => 'Apply Budget Template'))
+            ->add('save', SubmitType::class, [ 'label' => 'Apply Budget Template' ] )
             ->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $this->applyBudgetTemplate(
                 $request,
