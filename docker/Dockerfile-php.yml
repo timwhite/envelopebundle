@@ -7,7 +7,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
 	php composer-setup.php --install-dir=/usr/bin --filename=composer; php -r "unlink('composer-setup.php');";
 
 RUN echo 'date.timezone = "Australia/Brisbane"' > /usr/local/etc/php/conf.d/timezone.ini
-COPY --chown=www-data:www-data ./ /code
-RUN chown www-data -R /var/www/
-USER www-data
-RUN cd /code; composer install
+COPY ./docker-php-entrypoint-composer /usr/local/bin
