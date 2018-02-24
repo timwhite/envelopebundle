@@ -3,13 +3,16 @@ version: '3'
 # http://geekyplatypus.com/dockerise-your-php-application-with-nginx-and-php7-fpm/
 services:
     web:
-        image: nginx:latest
+        build:
+          context: ./
+          dockerfile: ./docker/Dockerfile-nginx.yml
+        #image: nginx:latest
         ports:
             - "8000:80"
         env_file:
           - web-variables.env
         volumes:
-            - code:/code
+            - ./app/config/parameters.yml:/code/app/config/parameters.yml
             - ./docker/site.conf:/etc/nginx/conf.d/default.conf
         networks:
             - nginxproxy_nginxproxy
@@ -22,7 +25,7 @@ services:
         external_links:
           - mariadb_db_1
         volumes:
-            - code:/code
+            - ./app/config/parameters.yml:/code/app/config/parameters.yml
 #            - ./log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
         networks:
             - code-network
