@@ -4,6 +4,7 @@ namespace EnvelopeBundle\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
 use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\AutoCodeSearch;
 use EnvelopeBundle\Entity\Budget\Template;
@@ -165,19 +166,7 @@ class DefaultController extends Controller
             '
         )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
 
-        $query2 = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Transaction t
-            LEFT JOIN EnvelopeBundle:BudgetTransaction b
-            WITH b.transaction = t
-            LEFT JOIN EnvelopeBundle:Account a
-            WITH t.account = a
-            WHERE a.access_group = :accessgroup
-            GROUP BY t.id
-            HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
-            ORDER BY t.date
-            '
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
+        $query2 = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
 
         return $this->render(
             'EnvelopeBundle:Default:transactions.html.twig',
@@ -188,12 +177,14 @@ class DefaultController extends Controller
         );
     }
 
-
-        public function transactionsListUnBalancedAction(Request $request)
+    /**
+     * @param $accessgroupid
+     *
+     * @return Query
+     */
+    private function getUnbalancedTransactionsQuery($accessgroupid)
     {
-        $session = $request->getSession();
-
-        $query = $this->getDoctrine()->getManager()->createQuery(
+        return $this->getDoctrine()->getManager()->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             LEFT JOIN EnvelopeBundle:BudgetTransaction b
@@ -202,11 +193,18 @@ class DefaultController extends Controller
             WITH t.account = a
             WHERE a.access_group = :accessgroup
             GROUP BY t.id
-            HAVING COUNT(b.amount) = 0 OR SUM(b.amount) != t.amount
+            HAVING (COUNT(b.amount) = 0 AND t.amount != 0) OR SUM(b.amount) != t.amount
             ORDER BY t.date
             '
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')])
-        ;
+        )->setParameters(['accessgroup' => $accessgroupid]);
+    }
+
+
+    public function transactionsListUnBalancedAction(Request $request)
+    {
+        $session = $request->getSession();
+
+        $query = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
 
         return $this->render(
             'EnvelopeBundle:Default:unbalancedTransactions.html.twig',
