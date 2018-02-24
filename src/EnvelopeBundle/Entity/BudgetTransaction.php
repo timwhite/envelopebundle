@@ -22,7 +22,9 @@ class BudgetTransaction
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Transaction", inversedBy="budget_transactions")
+     * We need EAGER loading due to us displaying the balance on our _toString method, which requires all
+     * the transactions
+     * @ORM\ManyToOne(targetEntity="Transaction", inversedBy="budget_transactions", fetch="EAGER")
      * @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=false)
      */
     private $transaction;

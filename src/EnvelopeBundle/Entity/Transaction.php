@@ -56,7 +56,8 @@ class Transaction
     private $amount;
 
     /**
-     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist")
+     * Due to us getting the Budget Sum in our _toString, we need EAGER loading
+     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist", fetch="EAGER")
      */
     private $budget_transactions;
 

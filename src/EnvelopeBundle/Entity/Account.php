@@ -29,7 +29,7 @@ class Account
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account")
+     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account", fetch="EAGER")
      * @ORM\OrderBy({"date" = "DESC"})
      */
     private $transactions;

@@ -2,7 +2,10 @@
 namespace EnvelopeBundle\Form\Type;
 
 use Doctrine\ORM\EntityRepository;
+use EnvelopeBundle\Entity\BudgetAccount;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -12,8 +15,8 @@ class BudgetTransactionType extends AbstractType
     {
         $accessgroup = $options['accessgroup'];
         $builder
-            ->add('budgetaccount', 'entity', [
-                'class' => 'EnvelopeBundle:BudgetAccount',
+            ->add('budgetaccount', EntityType::class, [
+                'class' => BudgetAccount::class,
                 'required' => false,
                 'query_builder' => function(EntityRepository $repository) use($accessgroup) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
@@ -27,7 +30,7 @@ class BudgetTransactionType extends AbstractType
                     // the function returns a QueryBuilder object
     },
             ])
-            ->add('amount', 'money', ['required' => false, 'currency' => 'AUD', 'attr' => ['class'   => 'budgetransactionamount']])
+            ->add('amount', MoneyType::class, ['required' => false, 'currency' => 'AUD', 'attr' => ['class'   => 'budgetransactionamount']])
         ;
 
     }
@@ -40,7 +43,7 @@ class BudgetTransactionType extends AbstractType
         ] );
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'budgetTransaction';
     }
