@@ -34,7 +34,7 @@
                         <tbody>
                     {% for budgettransaction in budgetaccount.budgettransactions %}
                         <tr>
-                            <td><a href="{{ path('envelope_transaction', {'id': budgettransaction.transaction.id}) }}">{{ budgettransaction.transaction.date|localizeddate('short', 'none') }}</a></td>
+                            <td><a href="{{ path('envelope_transaction', {'id': budgettransaction.transaction.id}) }}">{{ budgettransaction.transaction.date|date('d/m/y') }}</a></td>
                             <td>{{ budgettransaction.transaction.description }}</td>
                             <td align="right" {% if budgettransaction.amount < 0 %}class="text-danger"{% endif %} ><span data-toggle="tooltip" title="{{ budgettransaction.transaction.account }}: {{ budgettransaction.transaction.amount|localizedcurrency('AUD') }} / {{ budgettransaction.transaction.unassignedsum|localizedcurrency('AUD') }}">{{ budgettransaction.amount|localizedcurrency('AUD') }}</span></td>
 
@@ -56,7 +56,7 @@
     <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
     <script>
         $(function () {
-            $.fn.dataTable.moment( 'D/MM/YYYY' );
+            $.fn.dataTable.moment( 'DD/MM/YY' );
             $('.datatable').DataTable({
                 "paging": true,
                 "searching": true,
