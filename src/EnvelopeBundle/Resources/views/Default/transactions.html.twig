@@ -30,7 +30,7 @@
                         <tbody>
                         {% for transaction in unbalancedtransactions %}
                             <tr>
-                                <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                <td>{{ transaction.date|date('d/m/y') }}</td>
                                 <td>
                                     <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'transactions'}) }}">{{ transaction.description }}</a>
                                 </td>
@@ -85,7 +85,7 @@
 
                             {% for transaction in account.transactions %}
                                 <tr>
-                                    <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                                    <td>{{ transaction.date|date('d/m/y') }}</td>
                                     <td>
                                         <a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a>
                                     </td>
@@ -142,7 +142,7 @@
     <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
     <script>
         $(function () {
-            $.fn.dataTable.moment( 'D/MM/YYYY' );
+            $.fn.dataTable.moment( 'DD/MM/YY' );
             $('.datatable').DataTable({
                 "paging": true,
                 "searching": true,
