@@ -246,7 +246,7 @@ class DefaultController extends Controller
             }
         }
 
-        $form = $this->createForm(new TransactionType(), $transaction, [
+        $form = $this->createForm(TransactionType::class, $transaction, [
             'existing_entity' => $existing,
             "accessgroup" => $session->get('accessgroupid')
         ]);
@@ -700,7 +700,7 @@ class DefaultController extends Controller
             }
         }
 
-        $form = $this->createForm(new BudgetTemplateType(), $budgetTemplate, ['existing_entity' => $existing, 'accessgroup' => $session->get('accessgroupid')]);
+        $form = $this->createForm(BudgetTemplateType::class, $budgetTemplate, ['existing_entity' => $existing, 'accessgroup' => $session->get('accessgroupid')]);
 
         $form->handleRequest($request);
 
