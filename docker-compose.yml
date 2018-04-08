@@ -7,6 +7,7 @@ services:
         #  context: ./
         #  dockerfile: ./docker/Dockerfile-nginx.yml
         image: nginx:latest
+        restart: always
         ports:
           - "8000:80"
         env_file:
@@ -22,6 +23,7 @@ services:
         build:
           context: ./docker/
           dockerfile: Dockerfile-php.yml
+        restart: always
         #image: php:7-fpm
         external_links:
           - mariadb_db_1
