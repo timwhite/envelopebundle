@@ -9,6 +9,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
 RUN echo 'date.timezone = "Australia/Brisbane"' > /usr/local/etc/php/conf.d/timezone.ini
 
 # Bower
+RUN apt-get install -y gnupg
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 RUN npm install -g bower
