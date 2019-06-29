@@ -17,6 +17,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
+                    <form action="{{ path('envelope_bulk_code') }}" method="post">
                     <table class="table table-striped datatable" data-order='[[ 0, "asc" ]]' data-page-length='25'>
                         <thead>
                         <tr>
@@ -29,7 +30,7 @@
                         <tbody>
                         {% for transaction in unbalancedtransactions %}
                             <tr>
-                                <td>{{ transaction.date|date('d/m/y') }}</td>
+                                <td><input type="checkbox" name="bulktransactions[]" value="{{ transaction.id }}"/>{{ transaction.date|date('d/m/y') }}</td>
                                 <td>
                                     <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'unbalanced_transactions'}) }}">{{ transaction.description }}</a>
                                 </td>
@@ -44,6 +45,11 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                        <span class="col-sm-8 col-xs-7">
+                                {{ form_widget(codingForm.budget_transactions.vars.prototype.budgetaccount, { 'attr': {'class': 'combobox'} })|replace({'__name__': 0})|raw }}
+                        </span>
+                        <input type="submit" value="Bulk Code Selected Transactions"/>
+                    </form>
                 </div>
                 <div class="box-footer">
                 </div>
