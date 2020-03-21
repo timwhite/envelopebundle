@@ -67,7 +67,12 @@ class Transaction
      */
     private $import;
 
-
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="extra", type="json", nullable=true)
+     */
+    private $extra;
 
     /**
      * Get id
@@ -311,5 +316,21 @@ class Transaction
     public function getImport()
     {
         return $this->import;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtra(): array
+    {
+        return $this->extra;
+    }
+
+    /**
+     * @param array $extra
+     */
+    public function setExtra(array $extra)
+    {
+        $this->extra = $extra;
     }
 }

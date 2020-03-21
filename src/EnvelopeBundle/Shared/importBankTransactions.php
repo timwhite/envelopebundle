@@ -7,6 +7,11 @@ use EnvelopeBundle\Entity\Transaction;
 
 class importBankTransactions
 {
+    public static $accountTypes = [
+        'NAB' => 'NAB',
+        'ANZ' => 'ANZ',
+        'UP' => 'UP',
+    ];
     private $duplicates = [];
     private $ignored = [];
     private $unknown = [];
@@ -23,6 +28,7 @@ class importBankTransactions
             $em->persist($this->import);
             $em->flush();
 
+            // @TODO check header rows?
             while (($row = fgetcsv($handle)) !== FALSE) {
                 $processRow = $this->processRow($row, $accountType);
                 if (!$processRow) {
@@ -88,6 +94,7 @@ class importBankTransactions
                 $transaction->setDescription($processRow->description);
                 $transaction->setFullDescription($processRow->fullDescription);
                 $transaction->setImport($this->import);
+                $transaction->setExtra($processRow->extra);
 
                 $em->persist($transaction);
             }
@@ -140,6 +147,7 @@ class importBankTransactions
      */
     private function processRow($row, $fileType)
     {
+        $extra = [];
         // ANZ and NAB differ for importing description
         switch ($fileType) {
             case 'ANZ':
@@ -198,6 +206,55 @@ class importBankTransactions
                 // Remove any , characters in the string, they stuff things up too
                 $amount = str_replace(',', '', $amount);
                 break;
+
+            case 'UP':
+                /**
+                 * UP Bank CSV Format
+                 * Time, BSB/Account number, Transaction Type, Payee, Description, Category, Tags,
+                 * Subtotal (AUD), Currency, Subtotal (Transaction Currency), Fee (AUD),
+                 * Round Up (AUD), Total (AUD), Payment Method, Settled Date
+                 */
+                if (sizeof($row) != 15) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+
+                if ($row[0] === 'Time') {
+                    // Header row
+                    return false;
+                }
+
+                $fullDescription = "${row[2]}: ${row[3]} - ${row[4]}";
+                if ($row[8] != 'AUD') {
+                    $fullDescription .= " (${row[8]} ${row[9]})";
+                }
+
+                $description = "${row[3]} - ${row[4]}";
+
+                $date = new \DateTime($row[0]);
+
+                $amount = $row[12];
+
+                $extra = [
+                    'timestamp' => $row[0],
+                    'bsb_account' => $row[1],
+                    'transaction_type' => $row[2],
+                    'payee' => $row[3],
+                    //'description' => $row[4],
+                    'category' => $row[5],
+                    'tags' => $row[6],
+                    //'subtotal_aud' => $row[7],
+                    'currency' => $row[8],
+                    'subtotal_currency' => $row[9],
+                    //'fee' => $row[10],
+                    //'roundup' => $row[11],
+                    //'total_aud' => $row[12],
+                    'payment_method' => $row[13],
+                    'settlement_date' => $row[14],
+                ];
+                break;
+
+
             default:
                 throw new \Exception('Invalid Account Type');
 
@@ -208,6 +265,7 @@ class importBankTransactions
             'fullDescription' => $fullDescription,
             'date' => $date,
             'amount' => $amount,
+            'extra' => $extra,
         ];
     }
 
