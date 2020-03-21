@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\Transaction;
 
-
+// @TODO Update this to use importBankTransactions
 class ImportTransactionsCommand  extends ContainerAwareCommand
 {
     protected function configure()

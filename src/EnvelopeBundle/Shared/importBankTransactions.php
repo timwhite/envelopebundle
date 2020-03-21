@@ -24,64 +24,19 @@ class importBankTransactions
             $em->flush();
 
             while (($row = fgetcsv($handle)) !== FALSE) {
-
-                // ANZ and NAB differ for importing description
-                if ($accountType == 'ANZ') {
-                    // ANZ format is date,amount,description
-                    if (sizeof($row) != 3) {
-                        $this->unknown[] = implode(',', $row);
-                        continue;
-                    }
-                    $description = preg_replace("/ {2,}/", " ", $row[2]);
-                    $fullDescription = $description;
-
-
-                    $dateparts = explode('/', $row[0], 3);
-                    $date = new\DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
-                    //$output->writeln($description);
-                } elseif ($accountType == 'NAB') {
-                    /**
-                     * Old NAB Format was
-                     * Date,Amount,_,_,Type,Description,Balance,_
-                     * No string quoting, date was DD-MON-YY
-                     * 30-Nov-17,-14.95,,,MISCELLANEOUS DEBIT,V1234 28/11 KFC ,123.45,
-                     *
-                     * New NAB format is
-                     * "Date","Amount","_",_,"Type","Description","Balance"
-                     * String quoting. Date is DD MON YY
-                     * "28 Dec 17","-14.95","000000000000",,"MISCELLANEOUS DEBIT","V1234 25/12 KFC","+456.78"
-                     */
-
-                    //NAB format date,amount,__,__,Type,Description,Balance,__
-                    if (sizeof($row) != 7) {
-                        $this->unknown[] = implode(',', $row);
-                        continue;
-                    }
-                    $description = preg_replace("/ {2,}/", " ", $row[5]);
-                    if ($description == "") {
-                        $description = $row[4];
-                    }
-                    $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
-
-                    $date = new \DateTime($row[0]);
-                } else {
-                    throw new \Exception('Invalid Account Type');
+                $processRow = $this->processRow($row, $accountType);
+                if (!$processRow) {
+                    // Row's we've added to ignored already
+                    continue;
                 }
 
-                /*
-                 * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
-                 * unless it has a - at the start
-                 */
-                $amount = ltrim($row[1], '+');
-                // Remove any , characters in the string, they stuff things up too
-                $amount = str_replace(',', '', $amount);
 
-                if($this->checkUnclearedTransaction($fullDescription))
+                if($this->checkUnclearedTransaction($processRow->fullDescription))
                 {
                     $this->ignored[] = [
-                        'date' => $date,
-                        'fullDescription' => $fullDescription,
-                        'amount' =>$amount
+                        'date' => $processRow->date,
+                        'fullDescription' => $processRow->fullDescription,
+                        'amount' =>$processRow->amount
                     ];
                     continue;
                 }
@@ -109,18 +64,18 @@ class importBankTransactions
                     $query->setParameters(
                         [
                             'account' => $account,
-                            'fulldesc' => $fullDescription,
-                            'amount' => $amount,
-                            'tdate' => $date,
+                            'fulldesc' => $processRow->fullDescription,
+                            'amount' => $processRow->amount,
+                            'tdate' => $processRow->date,
                             'import' => $this->import->getId()
                         ]
                     );
                     $results = $query->getResult();
                     if (sizeof($results) > 0) {
                         $this->duplicates[] = [
-                            "date" => $date,
-                            "fullDescription" => $fullDescription,
-                            "amount" =>$amount
+                            "date" => $processRow->date,
+                            "fullDescription" => $processRow->fullDescription,
+                            "amount" =>$processRow->amount
                         ];
                         continue;
                     }
@@ -128,10 +83,10 @@ class importBankTransactions
 
                 $transaction = new Transaction();
                 $transaction->setAccount($account);
-                $transaction->setDate($date);
-                $transaction->setAmount($amount);
-                $transaction->setDescription($description);
-                $transaction->setFullDescription($fullDescription);
+                $transaction->setDate($processRow->date);
+                $transaction->setAmount($processRow->amount);
+                $transaction->setDescription($processRow->description);
+                $transaction->setFullDescription($processRow->fullDescription);
                 $transaction->setImport($this->import);
 
                 $em->persist($transaction);
@@ -175,4 +130,87 @@ class importBankTransactions
         }
         return false;
     }
+
+    /**
+     * @param $row
+     * @param $fileType
+     *
+     * @return bool|object
+     * @throws \Exception
+     */
+    private function processRow($row, $fileType)
+    {
+        // ANZ and NAB differ for importing description
+        switch ($fileType) {
+            case 'ANZ':
+                // ANZ format is date,amount,description
+                if (sizeof($row) != 3) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+                $description = preg_replace("/ {2,}/", " ", $row[2]);
+                $fullDescription = $description;
+
+
+                $dateparts = explode('/', $row[0], 3);
+                $date = new\DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
+                //$output->writeln($description);
+
+                /*
+                     * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
+                     * unless it has a - at the start
+                     */
+                $amount = ltrim($row[1], '+');
+                // Remove any , characters in the string, they stuff things up too
+                $amount = str_replace(',', '', $amount);
+                break;
+            case 'NAB':
+                /**
+                 * Old NAB Format was
+                 * Date,Amount,_,_,Type,Description,Balance,_
+                 * No string quoting, date was DD-MON-YY
+                 * 30-Nov-17,-14.95,,,MISCELLANEOUS DEBIT,V1234 28/11 KFC ,123.45,
+                 *
+                 * New NAB format is
+                 * "Date","Amount","_",_,"Type","Description","Balance"
+                 * String quoting. Date is DD MON YY
+                 * "28 Dec 17","-14.95","000000000000",,"MISCELLANEOUS DEBIT","V1234 25/12 KFC","+456.78"
+                 */
+
+                //NAB format date,amount,__,__,Type,Description,Balance,__
+                if (sizeof($row) != 7) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+                $description = preg_replace("/ {2,}/", " ", $row[5]);
+                if ($description == "") {
+                    $description = $row[4];
+                }
+                $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
+
+                $date = new \DateTime($row[0]);
+
+                /*
+                 * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
+                 * unless it has a - at the start
+                 */
+                $amount = ltrim($row[1], '+');
+                // Remove any , characters in the string, they stuff things up too
+                $amount = str_replace(',', '', $amount);
+                break;
+            default:
+                throw new \Exception('Invalid Account Type');
+
+        }
+
+        return (object)[
+            'description' => $description,
+            'fullDescription' => $fullDescription,
+            'date' => $date,
+            'amount' => $amount,
+        ];
+    }
+
 }
+
+
