@@ -2,16 +2,15 @@ FROM php:7.2-fpm
 
 RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libicu-dev g++ git zip
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql bcmath intl
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
-	php -r "if (hash_file('SHA384', 'composer-setup.php') === '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5') { echo 'Installer verified'; } else { echo 'Installer corrupt'. PHP_EOL; unlink('composer-setup.php'); exit(1); } echo PHP_EOL;"
-RUN php composer-setup.php --install-dir=/usr/bin --filename=composer && php -r "unlink('composer-setup.php');";
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN echo 'date.timezone = "Australia/Brisbane"' > /usr/local/etc/php/conf.d/timezone.ini
 RUN echo 'max_execution_time = 60' > /usr/local/etc/php/conf.d/executiontime.ini
 
 # Bower
 RUN apt-get install -y gnupg
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+
 RUN apt-get install -y nodejs
 RUN npm install -g bower
 RUN ln -s /usr/bin/bower /usr/local/bin/bower
