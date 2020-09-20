@@ -96,5 +96,6 @@ envelope_budget_search:
     defaults: { _controller: EnvelopeBundle:Search:search}
 
 envelope_bulk_code:
-    path: /bulkcode/
+    path: /bulkcode
     defaults: { _controller: EnvelopeBundle:Default:transactionBulkCode}
+    methods:  [POST]
