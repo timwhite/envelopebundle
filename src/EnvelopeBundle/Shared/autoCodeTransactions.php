@@ -2,14 +2,21 @@
 
 namespace EnvelopeBundle\Shared;
 
+use Doctrine\ORM\EntityManagerInterface;
+use EnvelopeBundle\Entity\AutoCodeSearch;
 use EnvelopeBundle\Entity\BudgetTransaction;
 
 class autoCodeTransactions
 {
     private $codedResults = [];
 
+    /**
+     * @param $em EntityManagerInterface
+     * @param $accessgroup
+     */
     public function codeTransactions($em, $accessgroup)
     {
+        /** @var AutoCodeSearch[] $searches */
         $searches = $em->createQuery('
           SELECT s
           FROM EnvelopeBundle:AutoCodeSearch s
@@ -23,9 +30,14 @@ class autoCodeTransactions
                 ])
             ->getResult();
 
-        // Find all unassigned transactions (no budget transactions assigned to them at all)
-        $query = $em->createQuery(
-            'SELECT t
+        foreach ($searches as $search) {
+            $amountQuery = '';
+            if ($search->getAmount()) {
+                $amountQuery = 'AND t.amount = :amount';
+            }
+            // Find all unassigned transactions (no budget transactions assigned to them at all)
+            $query = $em->createQuery(
+                'SELECT t
             FROM EnvelopeBundle:Transaction t
             JOIN EnvelopeBundle:Account a
             WHERE NOT EXISTS (
@@ -34,17 +46,18 @@ class autoCodeTransactions
               WHERE b.transaction = t
             )
             AND t.description LIKE :search
-            AND a.access_group = :accessgroup
-            '
-        );
+            AND a.access_group = :accessgroup ' . $amountQuery
+            );
 
-        foreach ($searches as $search) {
             $query->setParameters(
                 ['search' => "%" . $search->getSearch() . "%",
                     'accessgroup' => $accessgroup
                 ]
             );
 
+            if ($search->getAmount()) {
+                $query->setParameter('amount', $search->getAmount());
+            }
 
             $transactions = $query->getResult();
             foreach ($transactions as $transaction) {

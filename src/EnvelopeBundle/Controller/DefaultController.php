@@ -392,6 +392,7 @@ class DefaultController extends Controller
             ])
             ->add('search',null,['label' => "Search (SQL LIKE %% search string)"])
             ->add('rename')
+            ->add('amount', null, ['label' => "Optional Amount to restrict search to"])
             ->add('save', SubmitType::class, [ 'label' => 'Save' ] )
             ->getForm();
 

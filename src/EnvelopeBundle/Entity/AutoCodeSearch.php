@@ -39,7 +39,12 @@ class AutoCodeSearch
      */
     private $rename = null;
 
-
+    /**
+     * @ORM\Column(name="amount", type="decimal", scale=2, nullable=true)
+     *
+     * An amount for searching exact amounts
+     */
+    private $amount = null;
 
     /**
      * Get id
@@ -118,5 +123,25 @@ class AutoCodeSearch
     public function getRename()
     {
         return $this->rename;
+    }
+
+    /**
+     * @return null|float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param $amount null|float
+     *
+     * @return $this
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
     }
 }
