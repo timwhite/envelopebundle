@@ -11,6 +11,7 @@ class importBankTransactions
         'NAB' => 'NAB',
         'ANZ' => 'ANZ',
         'UP' => 'UP',
+        'Athena' => 'ATHENA',
     ];
     private $duplicates = [];
     private $ignored = [];
@@ -161,7 +162,7 @@ class importBankTransactions
 
 
                 $dateparts = explode('/', $row[0], 3);
-                $date = new\DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
+                $date = new \DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
                 //$output->writeln($description);
 
                 /*
@@ -171,6 +172,53 @@ class importBankTransactions
                 $amount = ltrim($row[1], '+');
                 // Remove any , characters in the string, they stuff things up too
                 $amount = str_replace(',', '', $amount);
+                break;
+            case 'ATHENA':
+                /**
+                 * Athena format is:
+                 * Date, Description, Detail, Debit, Credit, Balance
+                 * Date is "DD MON YY"
+                 *
+                 * Description is the transaction type
+                 * New lines are allowed in the detail
+                 * 01 Feb 2021,Loan repayment (EFT),"Savings
+                 * Payment from T S White",$0.00,$650.00,-$176828.49
+                 * 01 Feb 2021,Loan repayment (direct debit),"",$0.00,$162.04,-$177478.49
+
+                 */
+                if (sizeof($row) != 6) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+
+                if ($row[0] === 'Date') {
+                    // Header row
+                    return false;
+                }
+
+                // Try the detail field as the description
+                $description = $row[2];
+                if ($description == "") {
+                    // If detail is empty, just use the type instead
+                    $description = $row[1];
+                }
+                $fullDescription = $row[1] . ': ' . $row[2];
+
+                // Turn newlines into spaces
+                $description = str_replace("\n", ' ', $description);
+                $fullDescription = str_replace("\n", ' ', $fullDescription);
+
+                $date = new \DateTime($row[0]);
+
+                /*
+                 * Get the amount. But remove any extra '$' at the start of the string, also remove the , characters
+                 */
+                $debit = - str_replace(',', '', ltrim($row[3], '-$'));
+                $credit = str_replace(',', '', ltrim($row[4], '$'));
+
+                $amount = $debit + $credit;
+                
+
                 break;
             case 'NAB':
                 /**
