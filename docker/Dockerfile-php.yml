@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.3-fpm
 
 RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libicu-dev g++ git zip
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql bcmath intl
