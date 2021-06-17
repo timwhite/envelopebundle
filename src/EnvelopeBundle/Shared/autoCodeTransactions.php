@@ -39,7 +39,7 @@ class autoCodeTransactions
             $query = $em->createQuery(
                 'SELECT t
             FROM EnvelopeBundle:Transaction t
-            JOIN EnvelopeBundle:Account a
+            LEFT JOIN EnvelopeBundle:Account a WITH t.account = a
             WHERE NOT EXISTS (
               SELECT b
               FROM EnvelopeBundle:BudgetTransaction b
