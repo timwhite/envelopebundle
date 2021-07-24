@@ -31,5 +31,5 @@ services:
 
     ib_user.oauth_user_provider:
         public: true
-        class: EnvelopeBundle\Auth\OAuthProvider
+        class: App\Auth\OAuthProvider
         arguments: ['@session', '@doctrine', '@service_container']
