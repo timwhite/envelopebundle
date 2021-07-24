@@ -63,6 +63,7 @@ class StoreApiSecretCommand extends ContainerAwareCommand
 
         if (empty($apiSecret)) {
             $output->writeln('<error>Missing API Secret</error>');
+            return 1;
         }
 
         $encryptionKey = KeyFactory::loadEncryptionKey($this->apiSecretKeyFile);

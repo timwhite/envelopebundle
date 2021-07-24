@@ -68,7 +68,7 @@ class Transaction
     private $import;
 
     /**
-     * @var array
+     * @var array|null
      *
      * @ORM\Column(name="extra", type="json", nullable=true)
      */
@@ -328,17 +328,17 @@ class Transaction
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getExtra(): array
+    public function getExtra(): ?array
     {
         return $this->extra;
     }
 
     /**
-     * @param array $extra
+     * @param array|null $extra
      */
-    public function setExtra(array $extra)
+    public function setExtra(?array $extra)
     {
         $this->extra = $extra;
     }

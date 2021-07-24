@@ -24,11 +24,6 @@ class importBankTransactions
         'OUTSTANDING TRANS'
     ];
 
-    public function importFromExternalConnector(Account $account, EntityManagerInterface $em, $startDate = null)
-    {
-
-    }
-
     public function importBankFile($em, $inputFile, $account, $accountType, $importDuplicates = false)
     {
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
