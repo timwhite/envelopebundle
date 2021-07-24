@@ -33,8 +33,6 @@
         "php-http/guzzle6-adapter": "^2.0"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~3.1",
-        "symfony/web-server-bundle": "^3.3"
     },
     "scripts": {
         "post-root-package-install": [
