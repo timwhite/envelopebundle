@@ -2,6 +2,8 @@
 
 namespace EnvelopeBundle\Shared;
 
+use Doctrine\ORM\EntityManagerInterface;
+use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\Import;
 use EnvelopeBundle\Entity\Transaction;
 
@@ -21,6 +23,11 @@ class importBankTransactions
     private $uncleared_searches = [
         'OUTSTANDING TRANS'
     ];
+
+    public function importFromExternalConnector(Account $account, EntityManagerInterface $em, $startDate = null)
+    {
+
+    }
 
     public function importBankFile($em, $inputFile, $account, $accountType, $importDuplicates = false)
     {

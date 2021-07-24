@@ -2,6 +2,7 @@
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 /app/config/parameters.yml
+/app/secrets/
 /phpunit.xml
 /vendor/
 /web/bundles/

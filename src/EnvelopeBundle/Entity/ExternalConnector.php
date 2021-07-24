@@ -12,10 +12,16 @@ use Doctrine\ORM\Mapping as ORM;
 class ExternalConnector
 {
     /**
+     * @var int
+     * @ORM\Id
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private $id;
+
+    /**
      * @var Account
      *
      * @ORM\ManyToOne(targetEntity="Account", inversedBy="externalConnectors")
-     * @ORM\Id
      */
     private $account;
 
@@ -25,7 +31,6 @@ class ExternalConnector
      * @var string
      *
      * @ORM\Column (type="string", length=512, nullable=false)
-     * @ORM\Id
      */
     private $systemId;
 
@@ -35,7 +40,6 @@ class ExternalConnector
      * @var string
      *
      * @ORM\Column (type="string", length=64, nullable=false)
-     * @ORM\Id
      */
     private $systemType;
 
