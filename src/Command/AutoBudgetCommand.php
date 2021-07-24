@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

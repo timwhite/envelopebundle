@@ -18,7 +18,3 @@ services:
         tags:
            - { name: kernel.event_listener, event: theme.navbar_user, method: onShowUser }
         arguments: ['@session', '@doctrine', '@service_container']
-
-    ib_user.oauth_user_provider:
-        class: EnvelopeBundle\Auth\OAuthProvider
-        arguments: ['@session', '@doctrine', '@service_container']
