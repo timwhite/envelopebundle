@@ -15,11 +15,12 @@ security:
 
         secured_area:
             anonymous: ~
-            logout: true
             logout:
                 path:   /logout
                 target: /
+            logout_on_user_change: true
             oauth:
+                provider: my_custom_hwi_provider
                 resource_owners:
                     google:             "/login/check-google"
                 login_path:        /connect/google
