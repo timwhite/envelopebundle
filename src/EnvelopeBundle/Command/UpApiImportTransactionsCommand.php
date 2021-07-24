@@ -38,7 +38,7 @@ class UpApiImportTransactionsCommand extends ContainerAwareCommand
         }
 
         /** @var ApiImportService $apiImport */
-        $apiImport = $this->getContainer()->get('api_import');
+        $apiImport = $this->getContainer()->get(ApiImportService::class);
 
         $apiImport->importAccount($externalConnector);
         return 0;

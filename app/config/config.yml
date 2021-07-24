@@ -8,6 +8,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en-AU
+    container.autowiring.strict_mode: true
 
 framework:
     #esi:             ~
@@ -100,5 +101,3 @@ hwi_oauth:
             scope:               "email profile"
             options:
                 csrf: true
-    http_client:
-        timeout:    10

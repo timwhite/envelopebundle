@@ -20,9 +20,10 @@ class ApiImportService
     private ParameterBagInterface $parameterBag;
     private EntityManagerInterface $em;
 
-    public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager)
+    // @TODO enable ParameterBagInterface after 4.0 upgrade
+    public function __construct(/*ParameterBagInterface $parameterBag,*/ EntityManagerInterface $entityManager)
     {
-        $this->parameterBag = $parameterBag;
+        //$this->parameterBag = $parameterBag;
         $this->em = $entityManager;
     }
 

@@ -3,9 +3,10 @@ parameters:
     my_admin_bundle.show_user_listener.class: EnvelopeBundle\EventListener\MyShowUserListener
 
 services:
-#    envelope.example:
-#        class: EnvelopeBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
     my_admin_bundle.menu_listener:
         class: "%my_admin_bundle.menu_listener.class%"
         tags:
