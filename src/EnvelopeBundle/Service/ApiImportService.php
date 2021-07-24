@@ -6,18 +6,14 @@ namespace EnvelopeBundle\Service;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\ExternalConnector;
 use EnvelopeBundle\Entity\Import;
 use EnvelopeBundle\Entity\Transaction;
 use ParagonIE\Halite\Halite;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
-use ParagonIE\HiddenString\HiddenString;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiImportService
 {

@@ -2,8 +2,6 @@
 
 namespace EnvelopeBundle\Shared;
 
-use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\Account;
 use EnvelopeBundle\Entity\Import;
 use EnvelopeBundle\Entity\Transaction;
 
