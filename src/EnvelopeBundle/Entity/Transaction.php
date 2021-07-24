@@ -75,6 +75,15 @@ class Transaction
     private $extra;
 
     /**
+     * An external immutable ID to match this transaction automatically via an API or similar
+     *
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true, length=512)
+     */
+    private $externalId;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -333,4 +342,25 @@ class Transaction
     {
         $this->extra = $extra;
     }
+
+    /**
+     * @return string
+     */
+    public function getExternalId(): string
+    {
+        return $this->externalId;
+    }
+
+    /**
+     * @param string $externalId
+     *
+     * @return Transaction
+     */
+    public function setExternalId(string $externalId): Transaction
+    {
+        $this->externalId = $externalId;
+        return $this;
+    }
+
+
 }

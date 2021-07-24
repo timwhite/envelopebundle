@@ -46,6 +46,12 @@ class Account
      */
     private $budgetTransfer = false;
 
+
+    /**
+     * @ORM\OneToMany(targetEntity="ExternalConnector", mappedBy="account")
+     */
+    private $externalConnectors;
+
     /**
      * Get id
      *

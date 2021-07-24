@@ -26,7 +26,8 @@ class BudgetAccount
     /**
      * @var string
      *
-     * @ORM\Column(name="BudgetName", type="string", length=255, nullable=false, unique=true)
+     * @TODO unique isn't enforced, and it should be unique with the budgetGroup
+     * @ORM\Column(name="BudgetName", type="string", length=255, nullable=false)
      */
     private $budget_name;
 
