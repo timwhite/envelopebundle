@@ -6,9 +6,9 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\BudgetAccount;
-use EnvelopeBundle\Entity\BudgetGroup;
+use App\Entity\Account;
+use App\Entity\BudgetAccount;
+use App\Entity\BudgetGroup;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 

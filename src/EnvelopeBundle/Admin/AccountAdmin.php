@@ -14,7 +14,7 @@ class AccountAdmin extends AbstractAdmin
     {
         $formMapper
             ->add('name', 'text', [ 'label' => 'Account Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
+            ->add('accessGroup',  'entity', [ 'class' => 'App\Entity\AccessGroup'] )
         ;
     }
 

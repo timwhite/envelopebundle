@@ -6,9 +6,9 @@ namespace EnvelopeBundle\Service;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\ExternalConnector;
-use EnvelopeBundle\Entity\Import;
-use EnvelopeBundle\Entity\Transaction;
+use App\Entity\ExternalConnector;
+use App\Entity\Import;
+use App\Entity\Transaction;
 use ParagonIE\Halite\Halite;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;

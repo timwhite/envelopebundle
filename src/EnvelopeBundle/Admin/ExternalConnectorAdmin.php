@@ -45,7 +45,7 @@ final class ExternalConnectorAdmin extends AbstractAdmin
             ->add('systemId')
             ->add('systemType')
             ->add('systemCredential')
-            ->add('account', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Account' ] )
+            ->add('account', 'entity', [ 'class' => 'App\Entity\Account'] )
         ;
     }
 

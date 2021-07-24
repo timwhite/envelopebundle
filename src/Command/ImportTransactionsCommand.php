@@ -1,9 +1,9 @@
 <?php
 
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\Import;
+use App\Entity\Import;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,8 +11,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\Transaction;
+use App\Entity\Account;
+use App\Entity\Transaction;
 
 // @TODO Update this to use importBankTransactions
 class ImportTransactionsCommand  extends ContainerAwareCommand

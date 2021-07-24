@@ -6,7 +6,7 @@ namespace EnvelopeBundle\Auth;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use EnvelopeBundle\Entity\User;
+use App\Entity\User;
 
 
 class OAuthProvider extends OAuthUserProvider
@@ -103,6 +103,6 @@ class OAuthProvider extends OAuthUserProvider
 
     public function supportsClass($class)
     {
-        return $class === 'EnvelopeBundle\\Entity\\User';
+        return $class === 'App\\Entity\\User';
     }
 }

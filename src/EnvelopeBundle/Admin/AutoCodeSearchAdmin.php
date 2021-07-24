@@ -15,7 +15,7 @@ class AutoCodeSearchAdmin extends AbstractAdmin
         $formMapper
             ->add('search', 'text', [ 'label' => 'Search Text' ] )
             ->add('rename', 'text', [ 'label' => 'Transaction Description Rename', 'required' => false ] )
-            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
+            ->add('budgetAccount', 'entity', [ 'class' => 'App\Entity\BudgetAccount'] )
         ;
     }
 

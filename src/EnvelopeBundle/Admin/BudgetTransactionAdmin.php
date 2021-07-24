@@ -13,8 +13,8 @@ class BudgetTransactionAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('transaction', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Transaction' ] )
-            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
+            ->add('transaction', 'entity', [ 'class' => 'App\Entity\Transaction'] )
+            ->add('budgetAccount', 'entity', [ 'class' => 'App\Entity\BudgetAccount'] )
             ->add('amount')
         ;
     }

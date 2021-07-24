@@ -1,10 +1,10 @@
 <?php
 
 
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\ExternalConnector;
+use App\Entity\ExternalConnector;
 use EnvelopeBundle\Service\ApiImportService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;

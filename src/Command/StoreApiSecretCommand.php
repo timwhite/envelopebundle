@@ -1,11 +1,11 @@
 <?php
 
 
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\ExternalConnector;
+use App\Entity\ExternalConnector;
 use ParagonIE\Halite\Halite;
 use ParagonIE\HiddenString\HiddenString;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

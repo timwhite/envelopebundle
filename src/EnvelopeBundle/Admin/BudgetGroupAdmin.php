@@ -47,7 +47,7 @@ class BudgetGroupAdmin extends AbstractAdmin
     {
         $formMapper
             ->add('name', 'text', [ 'label' => 'Budget Group Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
+            ->add('accessGroup',  'entity', [ 'class' => 'App\Entity\AccessGroup'] )
         ;
     }
 
