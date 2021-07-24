@@ -15,6 +15,7 @@ class ExternalConnector
      * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", nullable=false)
+     * @ORM\GeneratedValue
      */
     private $id;
 
