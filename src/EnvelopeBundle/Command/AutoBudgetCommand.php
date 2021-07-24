@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,6 +24,13 @@ class AutoBudgetCommand  extends ContainerAwareCommand
                 'DOMINOS'
             ]
         ];
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        parent::__construct();
+        $this->em = $entityManager;
+    }
 
     protected function configure()
     {
@@ -33,13 +41,10 @@ class AutoBudgetCommand  extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get("doctrine")->getManager();
-        //$account = $em->getRepository('EnvelopeBundle:Account')
-        //    ->find($input->getArgument('accountID'));
-        $searches = $em->createQuery('SELECT s from EnvelopeBundle:AutoCodeSearch s')->getResult();
+        $searches = $this->em->createQuery('SELECT s from EnvelopeBundle:AutoCodeSearch s')->getResult();
 
         // Find all unassigned transactions (no budget transactions assigned to them at all)
-        $query = $em->createQuery(
+        $query = $this->em->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
             WHERE NOT EXISTS (
@@ -69,12 +74,12 @@ class AutoBudgetCommand  extends ContainerAwareCommand
 
                 if ($search->getRename() != "") {
                     $transaction->setDescription($search->getRename());
-                    $em->persist($transaction);
+                    $this->em->persist($transaction);
                 }
 
-                $em->persist($budgetTransaction);
+                $this->em->persist($budgetTransaction);
             }
-            $em->flush();
+            $this->em->flush();
         }
     }
 

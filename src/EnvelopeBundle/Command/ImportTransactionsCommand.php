@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use EnvelopeBundle\Entity\Import;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -16,6 +17,14 @@ use EnvelopeBundle\Entity\Transaction;
 // @TODO Update this to use importBankTransactions
 class ImportTransactionsCommand  extends ContainerAwareCommand
 {
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        parent::__construct();
+        $this->em = $entityManager;
+    }
+
     protected function configure()
     {
         $this
@@ -31,7 +40,6 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get("doctrine")->getManager();
         $inputFile = $input->getArgument('inputFile');
 
         if(!file_exists($inputFile)) {
@@ -39,7 +47,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             exit(1);
         }
 
-        $account = $em->getRepository('EnvelopeBundle:Account')
+        $account = $this->em->getRepository('EnvelopeBundle:Account')
             ->findOneByName($input->getArgument('accountName'));
         if(!$account) {
             $output->writeln("Unable to find that account");
@@ -50,8 +58,8 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
 
         if (($handle = fopen($inputFile, "r")) !== FALSE) {
             $import = new Import();
-            $em->persist($import);
-            $em->flush();
+            $this->em->persist($import);
+            $this->em->flush();
 
             while(($row = fgetcsv($handle)) !== FALSE) {
 
@@ -96,7 +104,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 if(!$input->getOption('import_duplicates'))
                 {
                     // Attempt to detect duplicate transaction
-                    $query = $em->createQuery('
+                    $query = $this->em->createQuery('
                       SELECT t FROM EnvelopeBundle\Entity\Transaction t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
@@ -128,9 +136,9 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 $transaction->setFullDescription($fullDescription);
                 $transaction->setImport($import);
 
-                $em->persist($transaction);
+                $this->em->persist($transaction);
             }
-            $em->flush();
+            $this->em->flush();
             $output->writeln("*");
         }
     }

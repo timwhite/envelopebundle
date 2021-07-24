@@ -24,13 +24,14 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 
 class DefaultController extends Controller
 {
-    public function dashboardAction()
+    public function dashboardAction(AuthorizationCheckerInterface $authorizationChecker)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$authorizationChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->render(
                 'EnvelopeBundle:Default:welcome.html.twig'
             );

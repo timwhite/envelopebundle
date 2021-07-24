@@ -16,22 +16,24 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use ParagonIE\Halite\KeyFactory;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 
 class StoreApiSecretCommand extends ContainerAwareCommand
 {
     private EntityManagerInterface $em;
-    //private ParameterBag $parameterBag;
+    //private ParameterBagInterface $parameterBag;
     private $apiSecretKeyFile;
 
-    // This constructor can be used in newer symfony versions to do proper DI
-//    public function __construct(EntityManagerInterface $entityManager, ParameterBag $parameterBag)
-//    {
-//        parent::__construct();
-//        $this->em = $entityManager;
-//        $this->parameterBag = $parameterBag;
-//    }
+
+    // @TODO add param bag back in after v4.1
+    public function __construct(EntityManagerInterface $entityManager/*, ParameterBagInterface $parameterBag*/)
+    {
+        parent::__construct();
+        $this->em = $entityManager;
+        //$this->parameterBag = $parameterBag;
+    }
 
     protected function configure()
     {
@@ -45,8 +47,7 @@ class StoreApiSecretCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->em = $this->getContainer()->get("doctrine")->getManager();
-        $this->apiSecretKeyFile = $this->getContainer()->getParameter('api_secret_key_file');
+        $this->apiSecretKeyFile = $this->parameterBag->get('api_secret_key_file');
 
         $this->checkEncryptionKey($output);
         $externalConnectorId = $input->getArgument('externalConnectorId');

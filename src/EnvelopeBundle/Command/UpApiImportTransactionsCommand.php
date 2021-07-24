@@ -3,6 +3,7 @@
 
 namespace EnvelopeBundle\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use EnvelopeBundle\Entity\ExternalConnector;
 use EnvelopeBundle\Service\ApiImportService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -12,6 +13,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpApiImportTransactionsCommand extends ContainerAwareCommand
 {
+    private EntityManagerInterface $em;
+    private ApiImportService $apiImportService;
+
+    public function __construct(EntityManagerInterface $entityManager, ApiImportService $apiImportService)
+    {
+        parent::__construct();
+        $this->em = $entityManager;
+        $this->apiImportService = $apiImportService;
+    }
+
     protected function configure()
     {
         $this
@@ -26,7 +37,7 @@ class UpApiImportTransactionsCommand extends ContainerAwareCommand
     {
         $externalConnectorId = $input->getArgument('externalConnectorId');
         /** @var ExternalConnector $externalConnector */
-        $externalConnector = $this->getContainer()->get("doctrine")->getManager()->getRepository(ExternalConnector::class)->find($externalConnectorId);
+        $externalConnector = $this->em->getRepository(ExternalConnector::class)->find($externalConnectorId);
         if (empty($externalConnector)) {
             $output->writeln('<error>External connector not found</error>');
             return 1;
@@ -37,10 +48,7 @@ class UpApiImportTransactionsCommand extends ContainerAwareCommand
             return 1;
         }
 
-        /** @var ApiImportService $apiImport */
-        $apiImport = $this->getContainer()->get(ApiImportService::class);
-
-        $apiImport->importAccount($externalConnector);
+        $this->apiImportService->importAccount($externalConnector);
         return 0;
     }
 
