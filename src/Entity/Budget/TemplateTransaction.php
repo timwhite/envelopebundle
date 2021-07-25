@@ -39,13 +39,13 @@ class TemplateTransaction
     private $amount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="EnvelopeBundle\Entity\BudgetAccount", inversedBy="template_transactions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BudgetAccount", inversedBy="template_transactions")
      * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
      */
     private $budgetAccount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="EnvelopeBundle\Entity\Budget\Template", inversedBy="template_transactions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Budget\Template", inversedBy="template_transactions")
      * @ORM\JoinColumn(name="template_id", referencedColumnName="id", nullable=false)
      */
     private $template;

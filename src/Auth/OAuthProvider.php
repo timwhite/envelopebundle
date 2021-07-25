@@ -3,6 +3,7 @@
 namespace App\Auth;
 
 
+use App\Entity\AccessGroup;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -25,7 +26,7 @@ class OAuthProvider extends OAuthUserProvider
 
         $qb = $this->doctrine->getManager()->createQueryBuilder();
         $qb->select('u')
-            ->from('EnvelopeBundle:User', 'u')
+            ->from(User::class, 'u')
             ->where('u.username = :gid')
             ->setParameter('gid', $google_id)
             ->setMaxResults(1);
@@ -57,7 +58,7 @@ class OAuthProvider extends OAuthUserProvider
         //Check if this Google user already exists in our app DB
         $qb = $this->doctrine->getManager()->createQueryBuilder();
         $qb->select('u')
-            ->from('EnvelopeBundle:User', 'u')
+            ->from(User::class, 'u')
             ->where('u.email = :email')
             ->setParameter('email', $email)
             ->setMaxResults(1);
@@ -74,7 +75,7 @@ class OAuthProvider extends OAuthUserProvider
             $user->setEmail($email);
             $user->setAvatar($avatar);
 
-            $accessgroup = $em->getRepository('EnvelopeBundle:AccessGroup')->findByName("No Access");
+            $accessgroup = $em->getRepository(AccessGroup::class)->findByName("No Access");
             $user->setAccessGroup($accessgroup[0]);
 
 

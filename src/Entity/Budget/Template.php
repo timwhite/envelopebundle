@@ -5,10 +5,6 @@ namespace App\Entity\Budget;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use EnvelopeBundle\Entity\Budget\Budget;
-use EnvelopeBundle\Entity\Budget\BudgetAccount;
-use App\Entity\Budget\TemplateTransaction;
-use App\Entity\AccessGroup;
 
 /**
  * Template
@@ -54,7 +50,7 @@ class Template
     private $template_transactions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\EnvelopeBundle\Entity\AccessGroup")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\AccessGroup")
      * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
      */
     private $access_group;
@@ -114,7 +110,7 @@ class Template
      * Set name
      *
      * @param string $name
-     * @return Budget:Template
+     * @return Template
      */
     public function setName($name)
     {
@@ -137,7 +133,7 @@ class Template
      * Set description
      *
      * @param string $description
-     * @return Budget:Template
+     * @return Template
      */
     public function setDescription($description)
     {
@@ -177,11 +173,11 @@ class Template
     /**
      * Add template_transactions
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param TemplateTransaction $templateTransactions
      *
      * @return Template
      */
-    public function addTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -191,9 +187,9 @@ class Template
     /**
      * Remove template_transactions
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param TemplateTransaction $templateTransactions
      */
-    public function removeTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
@@ -254,7 +250,7 @@ class Template
      * Set archived
      *
      * @param boolean $archived
-     * @return BudgetAccount
+     * @return Template
      */
     public function setArchived($archived)
     {

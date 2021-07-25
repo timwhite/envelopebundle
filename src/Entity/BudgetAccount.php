@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\BudgetTransaction;
+use App\Entity\Budget\TemplateTransaction;
 use App\Shared\BudgetAccountStats;
 
 /**
@@ -38,7 +39,7 @@ class BudgetAccount
     private $budget_transactions;
 
     /**
-     * @ORM\OneToMany(targetEntity="EnvelopeBundle\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
+     * @ORM\OneToMany(targetEntity="App\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
      */
     private $template_transactions;
 

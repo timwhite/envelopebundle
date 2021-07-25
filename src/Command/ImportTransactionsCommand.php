@@ -47,7 +47,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
             exit(1);
         }
 
-        $account = $this->em->getRepository('EnvelopeBundle:Account')
+        $account = $this->em->getRepository(Account::class)
             ->findOneByName($input->getArgument('accountName'));
         if(!$account) {
             $output->writeln("Unable to find that account");
@@ -105,7 +105,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 {
                     // Attempt to detect duplicate transaction
                     $query = $this->em->createQuery('
-                      SELECT t FROM EnvelopeBundle\Entity\Transaction t
+                      SELECT t FROM Transaction t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
                       AND t.amount = :amount

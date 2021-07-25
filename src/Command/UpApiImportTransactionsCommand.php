@@ -5,7 +5,7 @@ namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ExternalConnector;
-use EnvelopeBundle\Service\ApiImportService;
+use App\Service\ApiImportService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

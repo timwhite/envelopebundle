@@ -41,15 +41,15 @@ class AutoBudgetCommand  extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $searches = $this->em->createQuery('SELECT s from EnvelopeBundle:AutoCodeSearch s')->getResult();
+        $searches = $this->em->createQuery('SELECT s from AutoCodeSearch s')->getResult();
 
         // Find all unassigned transactions (no budget transactions assigned to them at all)
         $query = $this->em->createQuery(
             'SELECT t
-            FROM EnvelopeBundle:Transaction t
+            FROM Transaction t
             WHERE NOT EXISTS (
               SELECT b
-              FROM EnvelopeBundle:BudgetTransaction b
+              FROM BudgetTransaction b
               WHERE b.transaction = t
             )
             AND t.description LIKE :search
