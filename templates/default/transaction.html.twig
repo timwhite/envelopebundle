@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block page_title %}Edit Transaction{% endblock %}
 {% block page_subtitle %}Update the description of the bank transaction, and add budget transactions to distribute the bank transaction value{% endblock %}
 
@@ -75,7 +75,7 @@
                             {% if addform.amount is defined %}
                                 {{ form_row(addform.amount) }}
                             {% else %}
-                                {{ transaction.amount|localizedcurrency('AUD') }}
+                                {{ transaction.amount|format_currency('AUD') }}
                             {% endif %}
                                 </span>
                         </li>
@@ -104,7 +104,7 @@
                             {% if addform.amount is not defined %}
                         <li>
                                 <strong class="col-sm-8 col-xs-7" style="text-align: right">Unassigned Amount</strong>
-                                <span id="unassignedamount" data-unassignedamount="{{ transaction.unassignedsum }}" style="text-align: center" class="col-sm-4 col-xs-5"> {{ transaction.unassignedsum|localizedcurrency('AUD') }}</span>
+                                <span id="unassignedamount" data-unassignedamount="{{ transaction.unassignedsum }}" style="text-align: center" class="col-sm-4 col-xs-5"> {{ transaction.unassignedsum|format_currency('AUD') }}</span>
                         </li>
                             {% endif %}
 

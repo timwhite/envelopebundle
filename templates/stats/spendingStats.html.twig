@@ -1,4 +1,4 @@
-{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% extends '@AdminLTE/layout/default-layout-avanzu.html.twig' %}
 {% block page_content %}
     <div class="row">
         <div class="col-sm-8">&nbsp;</div>
@@ -28,7 +28,7 @@
                         {% for transaction in excludedtransactions %}
                             <tr>
                                 <td>{{ transaction.description  }}</td>
-                                <td>{{ transaction.sumamount|localizedcurrency('AUD') }}</td>
+                                <td>{{ transaction.sumamount|format_currency('AUD') }}</td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -43,7 +43,7 @@
     {{ parent() }}
     <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/chartjs/Chart.js') }}"></script>
     <script type="text/javascript">
-    {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
+    {{ include('stats/datepicker.js.twig') }}
     </script>
 
 {% endblock %}

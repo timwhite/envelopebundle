@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use Avanzu\AdminThemeBundle\Event\ShowUserEvent;
+use KevinPapst\AdminLTEBundle\Event\ShowUserEvent;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
@@ -31,7 +31,7 @@ class MyShowUserListener
 
         $qb = $this->doctrine->getManager()->createQueryBuilder();
         $qb->select('u')
-            ->from('EnvelopeBundle:User', 'u')
+            ->from(User::class, 'u')
             ->where('u.id = :id')
             ->setParameter('id', $id)
             ->setMaxResults(1);

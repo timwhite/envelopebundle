@@ -64,7 +64,7 @@ class BudgetAccountStatsLoader
         $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days / 14.0;
 
         // Load all Budget Accounts to set common data
-        $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+        $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
         /** @var BudgetAccount $budgetAccounts */
         $budgetAccounts = $budgetAccountRepo->findAll();
         /** @var BudgetAccountStats $stats */
@@ -97,7 +97,7 @@ class BudgetAccountStatsLoader
             ]
         );
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -135,7 +135,7 @@ class BudgetAccountStatsLoader
             ]
         );
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -173,7 +173,7 @@ class BudgetAccountStatsLoader
             ]
         );
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -201,7 +201,7 @@ class BudgetAccountStatsLoader
               ORDER BY yearweeknum, budget_account_id");
         $query->execute();
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -227,7 +227,7 @@ class BudgetAccountStatsLoader
             ORDER BY yearweeknum, budget_account_id");
         $query->execute();
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {

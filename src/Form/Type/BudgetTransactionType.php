@@ -1,6 +1,7 @@
 <?php
 namespace App\Form\Type;
 
+use App\Entity\BudgetGroup;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\BudgetAccount;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -22,7 +23,7 @@ class BudgetTransactionType extends AbstractType
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('a');
                     return $qb
-                        ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
+                        ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
                         ->andWhere('g.access_group = :accessgroup')
                         ->setParameter('accessgroup', $accessgroup)
         ;

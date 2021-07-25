@@ -1,7 +1,7 @@
 <?php
 
 
-namespace EnvelopeBundle\Service;
+namespace App\Service;
 
 
 use DateTime;

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
+use KevinPapst\AdminLTEBundle\Model\UserInterface as ThemeUser;
 
 /**
  * Class User

@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block page_title %}Budget Transactions{% endblock %}
 {% block page_subtitle %}All transactions in budget accounts{% endblock %}
 
@@ -14,10 +14,10 @@
             <div class="box {% if collapsed %}collapsed-box{% endif %}">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ budgetaccount.budgetname }} Transactions ({{ budgetaccount.budgettransactions|length }})
-                        {% if budgetaccount.budgetstats %}<span class="label label-warning">{{ budgetaccount.budgetstats.AverageFortnightlySpend|localizedcurrency('AUD') }}</span>{% endif %}
+                        {% if budgetaccount.budgetstats %}<span class="label label-warning">{{ budgetaccount.budgetstats.AverageFortnightlySpend|format_currency('AUD') }}</span>{% endif %}
                     </h3>
                     <div class="box-tools pull-right">
-                        <span class="label {% if budgetaccount.balance < 0 %}label-danger{% elseif budgetaccount.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budgetaccount.balance|localizedcurrency('AUD') }}</span>
+                        <span class="label {% if budgetaccount.balance < 0 %}label-danger{% elseif budgetaccount.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budgetaccount.balance|format_currency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa {% if collapsed %}fa-plus{% else %}fa-minus{% endif %}"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
@@ -36,7 +36,7 @@
                         <tr>
                             <td><a href="{{ path('envelope_transaction', {'id': budgettransaction.transaction.id}) }}">{{ budgettransaction.transaction.date|date('d/m/y') }}</a></td>
                             <td>{{ budgettransaction.transaction.description }}</td>
-                            <td align="right" {% if budgettransaction.amount < 0 %}class="text-danger"{% endif %} ><span data-toggle="tooltip" title="{{ budgettransaction.transaction.account }}: {{ budgettransaction.transaction.amount|localizedcurrency('AUD') }} / {{ budgettransaction.transaction.unassignedsum|localizedcurrency('AUD') }}">{{ budgettransaction.amount|localizedcurrency('AUD') }}</span></td>
+                            <td align="right" {% if budgettransaction.amount < 0 %}class="text-danger"{% endif %} ><span data-toggle="tooltip" title="{{ budgettransaction.transaction.account }}: {{ budgettransaction.transaction.amount|format_currency('AUD') }} / {{ budgettransaction.transaction.unassignedsum|format_currency('AUD') }}">{{ budgettransaction.amount|format_currency('AUD') }}</span></td>
 
                         </tr>
                     {% endfor %}

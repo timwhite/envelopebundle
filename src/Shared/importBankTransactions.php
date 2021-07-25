@@ -62,7 +62,7 @@ class importBankTransactions
                 if (!$importDuplicates) {
                     // Attempt to detect duplicate transaction
                     $query = $em->createQuery('
-                      SELECT t FROM EnvelopeBundle\Entity\Transaction t
+                      SELECT t FROM ' . Transaction::class . ' t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
                       AND t.amount = :amount

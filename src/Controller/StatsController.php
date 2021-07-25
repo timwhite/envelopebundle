@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\BudgetGroup;
+use App\Entity\Transaction;
 use Doctrine\DBAL\Types\DecimalType;
 use App\Entity\BudgetAccount;
 use App\Shared\BudgetAccountStats;
@@ -9,18 +11,26 @@ use App\Shared\BudgetAccountStatsLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 
 class StatsController extends Controller
 {
+    /**
+     * @Route(name="envelope_budget_stats", path="/stats/")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function budgetStatsAction(Request $request)
     {
         $session = $request->getSession();
 
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('a')
-            ->from('EnvelopeBundle:BudgetAccount', 'a')
-            ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
+            ->from(BudgetAccount::class, 'a')
+            ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
             ->andWhere('g.access_group = :accessgroup')
             ->setParameter('accessgroup', $session->get('accessgroupid'));
 
@@ -30,7 +40,7 @@ class StatsController extends Controller
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
-            'EnvelopeBundle:Default:budgetaccountstats.html.twig',
+            'default/budgetaccountstats.html.twig',
             [
                 'budgetaccounts' => $budgetaccounts,
                 'startdate' => $budgetAccountStatsLoader->getFirstTransactionDate(),
@@ -43,7 +53,7 @@ class StatsController extends Controller
     {
         return $this->getDoctrine()->getManager()->createQueryBuilder()
             ->select('MIN(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
+            ->from(Transaction::class, 't')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -52,11 +62,19 @@ class StatsController extends Controller
     {
         return $this->getDoctrine()->getManager()->createQueryBuilder()
             ->select('MAX(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
+            ->from(Transaction::class, 't')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
+    /**
+     * @Route(name="envelope_budget_stats_spending", path="/stats/spending")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     public function spendingStatsAction(Request $request) {
         $session = $request->getSession();
 
@@ -120,7 +138,7 @@ class StatsController extends Controller
         }
 
         return $this->render(
-            'EnvelopeBundle:Stats:spendingStats.html.twig',
+            'stats/spendingStats.html.twig',
             [
                 'piechartvalues' => json_encode($results),
                 'excludedtransactions' => $excluded_transactions,

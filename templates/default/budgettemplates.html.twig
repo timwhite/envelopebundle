@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block page_title %}Budget Templates{% endblock %}
 {% block page_subtitle %}Preset templates for applying multiple budget transactions at once. Use to distribute your fortnightly income into the relevant budget areas{% endblock %}
@@ -23,13 +23,13 @@
                         <h3 class="box-title">{{ budgettemplate.name }}</h3>
                         <div class="box-tools pull-right">
                             <span class="label label-success"
-                                  title="Positive Sum">{{ budgettemplate.positivesum|localizedcurrency('AUD') }}</span>
+                                  title="Positive Sum">{{ budgettemplate.positivesum|format_currency('AUD') }}</span>
                             <span class="label label-default"
-                                  title="Monthly to Fortnight">{{ (budgettemplate.positivesum*12/26)|localizedcurrency('AUD') }}</span>
+                                  title="Monthly to Fortnight">{{ (budgettemplate.positivesum*12/26)|format_currency('AUD') }}</span>
                             <span class="label label-default"
-                                  title="Fortnight to Monthly">{{ (budgettemplate.positivesum*26/12)|localizedcurrency('AUD') }}</span>
+                                  title="Fortnight to Monthly">{{ (budgettemplate.positivesum*26/12)|format_currency('AUD') }}</span>
                             {% if budgettemplate.balance != 0 %}
-                                <span class="label label-warning">{{ budgettemplate.balance|localizedcurrency('AUD') }}</span>
+                                <span class="label label-warning">{{ budgettemplate.balance|format_currency('AUD') }}</span>
                             {% endif %}
                             {% if budgettemplate.archived %}<span class="label label-primary">Archived</span>{% endif %}
                             <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
@@ -60,9 +60,9 @@
                                 {% else %}
                                             <span class="label label-default">
                                 {% endif %}
-                                                {{ templatetransaction.budgetaccount.balance|localizedcurrency('AUD') }}</span>
+                                                {{ templatetransaction.budgetaccount.balance|format_currency('AUD') }}</span>
                                     </td>
-                                    <td align="right">{{ templatetransaction.amount|localizedcurrency('AUD') }}</td>
+                                    <td align="right">{{ templatetransaction.amount|format_currency('AUD') }}</td>
                                 </tr>
                             {% endfor %}
                         </table>

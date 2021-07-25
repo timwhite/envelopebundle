@@ -1,18 +1,28 @@
 <?php
 namespace App\EventListener;
 
-use Avanzu\AdminThemeBundle\Model\MenuItemModel;
-use Avanzu\AdminThemeBundle\Event\SidebarMenuEvent;
+use KevinPapst\AdminLTEBundle\Model\MenuItemModel;
+use KevinPapst\AdminLTEBundle\Event\SidebarMenuEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class MyMenuItemListListener {
+class MyMenuItemListListener implements EventSubscriberInterface
+{
 
     private $securityChecker;
 
-    public function __construct(AuthorizationChecker $securityChecker)
+    public function __construct(AuthorizationCheckerInterface $securityChecker)
     {
         $this->securityChecker = $securityChecker;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            SidebarMenuEvent::class => ['onSetupMenu', 100],
+        ];
     }
 
     public function onSetupMenu(SidebarMenuEvent $event) {
@@ -44,10 +54,10 @@ class MyMenuItemListListener {
                         'envelope_transactions' => [
                             'label' => 'View Transactions',
                             'children' => [
-                                'envelope_transaction' => ['label' => 'A']
+                                'envelope_transactions' => ['label' => 'A']
                             ],
                         ],
-                        'envelope_transaction_new' => [
+                        'envelope_transaction' => [
                             'label' => 'New Transaction',
                             'route_args' => ['id' => 'new']
                         ]

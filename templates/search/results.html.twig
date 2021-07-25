@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block page_title %}Search Results{% endblock %}
 {% block page_subtitle %}{% endblock %}
 {% block page_content %}
@@ -34,11 +34,11 @@
                             </td>
                             <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
                                             <span data-toggle="tooltip"
-                                                  title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
-                                            {{ transaction.amount|localizedcurrency('AUD') }}
+                                                  title="{{ transaction.PositiveBudgetSum|format_currency('AUD') }} / {{ transaction.NegativeBudgetSum|format_currency('AUD') }}">
+                                            {{ transaction.amount|format_currency('AUD') }}
                                             </span>
                             </td>
-                            <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                            <td align="right">{{ transaction.unassignedsum|format_currency('AUD') }}</td>
                         </tr>
                     {% endfor %}
                 </table>

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\BudgetGroup;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -17,6 +19,7 @@ use App\Shared\autoCodeTransactions;
 use App\Shared\BudgetAccountStatsLoader;
 use App\Shared\importBankTransactions;
 use App\Entity\AccessGroup;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -29,15 +32,22 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class DefaultController extends Controller
 {
+    /**
+     *
+     * @Route (name="dashboard", path="/")
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     *
+     * @return mixed
+     */
     public function dashboardAction(AuthorizationCheckerInterface $authorizationChecker)
     {
         if (!$authorizationChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->render(
-                'EnvelopeBundle:Default:welcome.html.twig'
+                'default/welcome.html.twig'
             );
         }
         return $this->render(
-            'EnvelopeBundle:Default:dashboard.html.twig'
+            'default/dashboard.html.twig'
         );
     }
 
@@ -45,27 +55,35 @@ class DefaultController extends Controller
     {
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('u')
-            ->from('EnvelopeBundle:User', 'u');
+            ->from(User::class, 'u');
 
         $qb->where('u.username = :username')
             ->setParameter('username', $userid);
 
         return $this->render(
-            'EnvelopeBundle:Default:profile.html.twig',
+            'default/profile.html.twig',
             [
                 'user' => $qb->getQuery()->getResult()[0],
             ]
         );
     }
 
+    /**
+     * @Route(name="envelope_budgettransactions", path="/budgettransactions/{accountid}")
+     *
+     * @param Request $request
+     * @param null    $accountid
+     *
+     * @return mixed
+     */
     public function budgetTransactionListAction(Request $request, $accountid = null)
     {
         $session = $request->getSession();
 
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('a')
-            ->from('EnvelopeBundle:BudgetAccount', 'a')
-            ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
+            ->from(BudgetAccount::class, 'a')
+            ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
             ->andWhere('g.access_group = :accessgroup')
             ->setParameter('accessgroup', $session->get('accessgroupid'))
         ;
@@ -83,7 +101,7 @@ class DefaultController extends Controller
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
-            'EnvelopeBundle:Default:budgettransactions.html.twig',
+            'default/budgettransactions.html.twig',
             [
                 'budgetaccounts' => $budgetaccounts,
             ]
@@ -110,6 +128,13 @@ class DefaultController extends Controller
             ->getForm();
     }
 
+    /**
+     * @Route(name="envelope_import", path="/import/")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function importAction(Request $request)
     {
         $session = $request->getSession();
@@ -144,7 +169,7 @@ class DefaultController extends Controller
 
 
         return $this->render(
-            'EnvelopeBundle:Default:imports.html.twig',
+            'default/imports.html.twig',
             [
                 'imports' => $query->getResult(),
                 'importform' => $form->createView(),
@@ -157,6 +182,13 @@ class DefaultController extends Controller
         );
     }
 
+    /**
+     * @Route(name="envelope_transactions", path="/transaction/list")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function transactionsListAction(Request $request)
     {
         $session = $request->getSession();
@@ -170,7 +202,7 @@ class DefaultController extends Controller
         $query2 = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
 
         return $this->render(
-            'EnvelopeBundle:Default:transactions.html.twig',
+            'default/transactions.html.twig',
             [
                 'accounts' => $query->getResult(),
                 'unbalancedtransactions' => $query2->getResult()
@@ -201,6 +233,13 @@ class DefaultController extends Controller
     }
 
 
+    /**
+     * @Route(name="envelope_transactions_unbalanced", path="/transaction/list/unbalanced")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function transactionsListUnBalancedAction(Request $request)
     {
         $session = $request->getSession();
@@ -216,7 +255,7 @@ class DefaultController extends Controller
         ]);
 
         return $this->render(
-            'EnvelopeBundle:Default:unbalancedTransactions.html.twig',
+            'default/unbalancedTransactions.html.twig',
             [
                 'unbalancedtransactions' => $query->getResult(),
                 'codingForm' => $form->createView()
@@ -224,6 +263,18 @@ class DefaultController extends Controller
         );
     }
 
+    /**
+     * @Route(name="envelope_transaction", path="/transaction/{id}")
+     *
+     *
+     * Set id to 'new' for creating new transactions
+     *
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return mixed
+     */
     public function transactionListAction(Request $request, $id)
     {
         $session = $request->getSession();
@@ -257,7 +308,7 @@ class DefaultController extends Controller
             } catch(NoResultException $e) {
                 $this->addFlash('warning', "No transaction with that ID available to you");
                 return $this->render(
-                    'EnvelopeBundle:Default:dashboard.html.twig');
+                    'default/dashboard.html.twig');
             }
         }
 
@@ -307,7 +358,7 @@ class DefaultController extends Controller
         }
 
         return $this->render(
-            'EnvelopeBundle:Default:transaction.html.twig',
+            'default/transaction.html.twig',
             [
                 'transaction' => $transaction,
                 'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
@@ -316,6 +367,13 @@ class DefaultController extends Controller
         );
     }
 
+    /**
+     * @Route(name="envelope_autocode", path="/autocode/")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function autoCodeAction(Request $request)
     {
         $session = $request->getSession();
@@ -352,7 +410,7 @@ class DefaultController extends Controller
             ->getResult();
 
         return $this->render(
-            'EnvelopeBundle:Default:autoCodeAction.html.twig',
+            'default/autoCodeAction.html.twig',
             [
                 'actionrun' => $actionRun,
                 'results' => $autoCodeResults,
@@ -386,7 +444,7 @@ class DefaultController extends Controller
                 'query_builder' => function(EntityRepository $repository) use($accessGroup) {
                     $qb = $repository->createQueryBuilder('b');
                     return $qb
-                        ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'b.budget_group = g')
+                        ->join(BudgetGroup::class, 'g', 'WITH', 'b.budget_group = g')
                         ->Where('g.access_group = :accessgroup')
                         ->setParameter('accessgroup', $accessGroup);
                 },
@@ -414,7 +472,7 @@ class DefaultController extends Controller
         }
 
         return $this->render(
-            'EnvelopeBundle:Default:autoCodeSearch.html.twig',
+            'default/autoCodeSearch.html.twig',
             [
                 'form' => $form->createView()
             ]
@@ -450,7 +508,7 @@ class DefaultController extends Controller
     {
         return $this->getDoctrine()->getManager()->createQueryBuilder()
             ->select('MIN(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
+            ->from(Transaction::class, 't')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -459,11 +517,19 @@ class DefaultController extends Controller
     {
         return $this->getDoctrine()->getManager()->createQueryBuilder()
             ->select('MAX(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
+            ->from(Transaction::class, 't')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
+    /**
+     * @Route(name="envelope_budgets", path="/budgetaccounts/")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     public function budgetAccountListAction(Request $request)
     {
         $session = $request->getSession();
@@ -489,7 +555,7 @@ class DefaultController extends Controller
         $budgetgroups = $query->getResult();
 
         return $this->render(
-            'EnvelopeBundle:Default:budgetaccounts.html.twig',
+            'default/budgetaccounts.html.twig',
             [
                 'budgetgroups' => $budgetgroups,
                 'startdate' => $startdate,
@@ -501,7 +567,7 @@ class DefaultController extends Controller
     public function budgetTemplateCloneAction(Request $request, $templateid)
     {
         $session = $request->getSession();
-        $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository('EnvelopeBundle:Budget\Template');
+        $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository(Template::class);
 
         /** @var Template $budgetTemplate */
         $budgetTemplate = $budgetTemplateRepo->find($templateid);
@@ -522,6 +588,13 @@ class DefaultController extends Controller
         return $this->redirectToRoute('envelope_budget_templates');
     }
 
+    /**
+     * @Route(name="envelope_budget_templates", path="/budgets/templates/")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function budgetTemplateListAction(Request $request)
     {
         $session = $request->getSession();
@@ -558,7 +631,7 @@ class DefaultController extends Controller
         }
 
         return $this->render(
-            'EnvelopeBundle:Default:budgettemplates.html.twig',
+            'default/budgettemplates.html.twig',
             [
                 'budgettemplates' => $query->getResult(),
                 'budgettemplates_groupsums' => $template_groups,
@@ -566,6 +639,13 @@ class DefaultController extends Controller
         );
     }
 
+    /**
+     * @Route(name="envelope_budget_apply_template", path="/budget/templates/apply")
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
     public function applyBudgetTemplateAction(Request $request)
     {
         $session = $request->getSession();
@@ -602,7 +682,7 @@ class DefaultController extends Controller
         }
 
         return $this->render(
-            'EnvelopeBundle:Default:applybudgettemplate.html.twig',
+            'default/applybudgettemplate.html.twig',
             ['form' => $form->createView()]
         );
     }
@@ -613,7 +693,7 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $session = $request->getSession();
         $budgetTransferAccount = $em
-            ->getRepository('EnvelopeBundle:Account')
+            ->getRepository(Account::class)
             ->findOneBy(['access_group' => $session->get('accessgroupid'), 'budgetTransfer' => true]);
         // Create bank transaction for $0
         $transferTransaction = new Transaction();
@@ -712,7 +792,7 @@ class DefaultController extends Controller
             } catch(NoResultException $e) {
                 $this->addFlash('warning', "No budget template with that ID available to you");
                 return $this->render(
-                    'EnvelopeBundle:Default:dashboard.html.twig');
+                    'default/dashboard.html.twig');
             }
         }
 
@@ -777,7 +857,7 @@ class DefaultController extends Controller
 
 
         return $this->render(
-            'EnvelopeBundle:Default:editbudgettemplate.html.twig',
+            'default/editbudgettemplate.html.twig',
             [
                 'template' => $budgetTemplate,
                 'addform' => $form->createView(),

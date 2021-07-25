@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block page_title %}Budgets{% endblock %}
 {% block page_subtitle %}See how your budgets are tracking by looking at the balance of the relevant budget "account"{% endblock %}
 
@@ -31,10 +31,10 @@
                         {% set totalsum = totalsum + budgetgroupsum %}
                         {% set totalpossum = totalpossum + budgetgrouppossum %}
                         {% set totalnegsum = totalnegsum + budgetgroupnegsum %}
-                        <span class="label label-success" data-toggle="tooltip" title="Positive Transactions">{{ budgetgrouppossum|localizedcurrency('AUD') }}</span>
-                        <span class="label label-warning" data-toggle="tooltip" title="Negative Transactions">{{ budgetgroupnegsum|localizedcurrency('AUD') }}</span>
+                        <span class="label label-success" data-toggle="tooltip" title="Positive Transactions">{{ budgetgrouppossum|format_currency('AUD') }}</span>
+                        <span class="label label-warning" data-toggle="tooltip" title="Negative Transactions">{{ budgetgroupnegsum|format_currency('AUD') }}</span>
 
-                        <span class="label {%  if budgetgroupsum < 0 %}label-danger{% else %}label-default{% endif %}" data-toggle="tooltip" title="Balance">{{ budgetgroup.getBudgetSum(startdate, enddate)|localizedcurrency('AUD') }}</span>
+                        <span class="label {%  if budgetgroupsum < 0 %}label-danger{% else %}label-default{% endif %}" data-toggle="tooltip" title="Balance">{{ budgetgroup.getBudgetSum(startdate, enddate)|format_currency('AUD') }}</span>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
@@ -55,18 +55,18 @@
                             {% set balance = budget.getBalance(startdate, enddate) %}
                             {% set posbalance = budget.getPositiveBalance(startdate, enddate) %}
                             {% set negbalance = budget.getNegativeBalance(startdate, enddate) %}
-                            <td align="right" {% if posbalance < 0 %}class="text-danger"{% endif %}>{{ posbalance|localizedcurrency('AUD') }}</td>
-                            <td align="right" {% if negbalance < 0 %}class="text-danger"{% endif %}>{{ negbalance|localizedcurrency('AUD') }}</td>
-                            <td align="right" {% if balance < 0 %}class="text-danger"{% endif %}><strong>{{ balance|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if posbalance < 0 %}class="text-danger"{% endif %}>{{ posbalance|format_currency('AUD') }}</td>
+                            <td align="right" {% if negbalance < 0 %}class="text-danger"{% endif %}>{{ negbalance|format_currency('AUD') }}</td>
+                            <td align="right" {% if balance < 0 %}class="text-danger"{% endif %}><strong>{{ balance|format_currency('AUD') }}</strong></td>
                         </tr>
                     {% endfor %}
                         </tbody>
                         <tfoot>
                         <tr>
                             <td></td>
-                            <td align="right" {% if budgetgrouppossum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgrouppossum|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if budgetgroupnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupnegsum|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if budgetgroupsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupsum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgrouppossum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgrouppossum|format_currency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupnegsum|format_currency('AUD') }}</strong></td>
+                            <td align="right" {% if budgetgroupsum < 0 %}class="text-danger"{% endif %}><strong>{{ budgetgroupsum|format_currency('AUD') }}</strong></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -99,9 +99,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <td align="right" {% if totalpossum < 0 %}class="text-danger"{% endif %}><strong>{{ totalpossum|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if totalnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalnegsum|localizedcurrency('AUD') }}</strong></td>
-                            <td align="right" {% if totalsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalsum|localizedcurrency('AUD') }}</strong></td>
+                            <td align="right" {% if totalpossum < 0 %}class="text-danger"{% endif %}><strong>{{ totalpossum|format_currency('AUD') }}</strong></td>
+                            <td align="right" {% if totalnegsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalnegsum|format_currency('AUD') }}</strong></td>
+                            <td align="right" {% if totalsum < 0 %}class="text-danger"{% endif %}><strong>{{ totalsum|format_currency('AUD') }}</strong></td>
                         </tbody>
                     </table>
                 </div>
@@ -113,6 +113,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
+        {{ include('stats/datepicker.js.twig') }}
     </script>
 {% endblock %}

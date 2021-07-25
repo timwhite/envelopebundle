@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block page_title %}Fortnight Trends{% endblock %}
 {% block page_subtitle %}Budget account fortnightly trends showing balance (Trend graph) and fortnightly expenses (Spend graph){% endblock %}
 
@@ -35,11 +35,11 @@
                         <tr {% if budget.budgetstats.overspend %}class="danger"{% endif %}>
                             <td>{{ budget.budgetname }}</td>
                             <td>{{ budget.TemplateTransactionsDescriptionsTooltip|raw }}</td>
-                            <td>{{ budget.budgetstats.AverageFortnightlySpend |localizedcurrency('AUD') }}</td>
-                            <td>{% if budget.budgetstats.AverageFortnightlyPositive %}{{ budget.budgetstats.AverageFortnightlyPositive |localizedcurrency('AUD') }}{% endif %}</td>
-                            <td>{% if budget.budgetstats.AverageFortnightlyIncome %}{{ budget.budgetstats.AverageFortnightlyIncome |localizedcurrency('AUD') }}{% endif %}</td>
+                            <td>{{ budget.budgetstats.AverageFortnightlySpend |format_currency('AUD') }}</td>
+                            <td>{% if budget.budgetstats.AverageFortnightlyPositive %}{{ budget.budgetstats.AverageFortnightlyPositive |format_currency('AUD') }}{% endif %}</td>
+                            <td>{% if budget.budgetstats.AverageFortnightlyIncome %}{{ budget.budgetstats.AverageFortnightlyIncome |format_currency('AUD') }}{% endif %}</td>
                             <td>
-                                <span class="label {% if budget.balance < 0 %}label-danger{% elseif budget.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budget.balance|localizedcurrency('AUD') }}</span>
+                                <span class="label {% if budget.balance < 0 %}label-danger{% elseif budget.balance == 0 %}label-warning{% else %}label-success{% endif %}">{{ budget.balance|format_currency('AUD') }}</span>
                             </td>
                             <td>
                                 <span class="sparkline"
@@ -63,7 +63,7 @@
     {{ parent() }}
     <script src="{{ asset('bundles/avanzuadmintheme/vendor/adminlte/plugins/sparkline/jquery.sparkline.js') }}"></script>
     <script type="text/javascript">
-        {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
+        {{ include('stats/datepicker.js.twig') }}
     </script>
 {% endblock %}
 
