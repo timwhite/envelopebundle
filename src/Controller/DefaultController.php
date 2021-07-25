@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BudgetGroup;
 use App\Entity\User;
+use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -19,6 +20,7 @@ use App\Shared\autoCodeTransactions;
 use App\Shared\BudgetAccountStatsLoader;
 use App\Shared\importBankTransactions;
 use App\Entity\AccessGroup;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -30,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     /**
      *
@@ -135,12 +137,10 @@ class DefaultController extends Controller
      *
      * @return mixed
      */
-    public function importAction(Request $request)
+    public function importAction(Request $request, ImportRepository $importRepository)
     {
         $session = $request->getSession();
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT i FROM EnvelopeBundle:Import i'
-        );
+        $imports = $importRepository->getAllWithCounts();
 
         $form = $this->importForm($session->get('accessgroupid'));
 
@@ -171,7 +171,7 @@ class DefaultController extends Controller
         return $this->render(
             'default/imports.html.twig',
             [
-                'imports' => $query->getResult(),
+                'imports' => $imports,
                 'importform' => $form->createView(),
                 'lastimport' => $import,
                 'lastimportaccount' => $form['account']->getData(),

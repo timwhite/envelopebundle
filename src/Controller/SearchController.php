@@ -9,13 +9,14 @@ use Doctrine\DBAL\Types\DecimalType;
 use App\Entity\BudgetAccount;
 use App\Shared\BudgetAccountStats;
 use App\Shared\BudgetAccountStatsLoader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class SearchController extends Controller
+class SearchController extends AbstractController
 {
 
     public function searchAction(Request $request) {

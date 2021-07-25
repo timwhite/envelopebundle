@@ -36,7 +36,7 @@ class Transaction
     private $fullDescription;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Account")
+     * @ORM\ManyToOne(targetEntity="Account", inversedBy="transactions")
      * @ORM\JoinColumn(name="account_id", referencedColumnName="id", nullable=false)
      */
     private $account;
@@ -62,7 +62,7 @@ class Transaction
     private $budget_transactions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Import")
+     * @ORM\ManyToOne(targetEntity="Import", inversedBy="transactions")
      * @ORM\JoinColumn(name="import_id", referencedColumnName="id", nullable=true)
      */
     private $import;

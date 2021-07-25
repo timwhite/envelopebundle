@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Import;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @method Import|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Import|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Import[]    findAll()
+ * @method Import[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ImportRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Import::class);
+    }
+
+    public function getAllWithCounts()
+    {
+        $qb = $this->createQueryBuilder('i');
+        $results = $qb
+            ->addSelect($qb->expr()->count('t'))
+            ->leftJoin('i.transactions', 't')
+            ->groupBy('i.id')
+            ->getQuery()->getResult();
+        $newResults = [];
+        foreach ($results as $result) {
+            /** @var Import $obj */
+            $obj = $result[0];
+            $count = $result[1];
+            $newResults[] = $obj;
+            $obj->setTransactionCountHydrate($count);
+            
+        }
+        return $newResults;
+    }
+
+    // /**
+    //  * @return Import[] Returns an array of Import objects
+    //  */
+    /*
+    public function findByExampleField($value)
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.exampleField = :val')
+            ->setParameter('val', $value)
+            ->orderBy('i.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    */
+
+    /*
+    public function findOneBySomeField($value): ?Import
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.exampleField = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    */
+}

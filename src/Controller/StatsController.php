@@ -8,13 +8,14 @@ use Doctrine\DBAL\Types\DecimalType;
 use App\Entity\BudgetAccount;
 use App\Shared\BudgetAccountStats;
 use App\Shared\BudgetAccountStatsLoader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class StatsController extends Controller
+class StatsController extends AbstractController
 {
     /**
      * @Route(name="envelope_budget_stats", path="/stats/")

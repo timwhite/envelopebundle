@@ -41,7 +41,7 @@
                             </thead>
                         {% for result in results %}
                             <tr class="danger">
-                                <td>{{ result.transaction.date|localizeddate('short', 'none') }}</td>
+                                <td>{{ result.transaction.date|format_datetime('short', 'none') }}</td>
                                 <td>{{ result.transaction.fullDescription }}</td>
                                 <td>{{ result.transaction.description }}</td>
                                 <td>{{ result.transaction.amount }}</td>

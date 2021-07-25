@@ -28,7 +28,7 @@
 
                     {% for transaction in transactions %}
                         <tr>
-                            <td>{{ transaction.date|localizeddate('short', 'none') }}</td>
+                            <td>{{ transaction.date|format_datetime('short', 'none') }}</td>
                             <td>
                                 <a href="{{ path('envelope_transaction', {'id': transaction.id}) }}">{{ transaction.description }}</a>
                             </td>

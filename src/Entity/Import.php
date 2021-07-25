@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Import
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ImportRepository")
  */
 class Import
 {
@@ -33,10 +35,12 @@ class Import
      * @ORM\OneToMany(targetEntity="Transaction", mappedBy="import")
      */
     private $transactions;
+    private $transactionCount;
 
     public function __construct()
     {
         $this->importTime = new \DateTime();
+        $this->transactions = new ArrayCollection();
     }
 
 
@@ -111,4 +115,16 @@ class Import
     {
         return $this->transactions;
     }
+
+    public function setTransactionCountHydrate(int $count)
+    {
+        $this->transactionCount = $count;
+    }
+
+    public function getTransactionsCountSpecial()
+    {
+        return $this->transactionCount;
+    }
+
+    // @TODO store Account refrence in Import instead of trying to get it from transactions
 }
