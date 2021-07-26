@@ -53,9 +53,10 @@ class MyMenuItemListListener implements EventSubscriberInterface
                         ],
                         'envelope_transactions' => [
                             'label' => 'View Transactions',
-                            'children' => [
+                            // @TODO this children part was to ensure we kept the right menu selected when viewing a transaction
+                            /*'children' => [
                                 'envelope_transactions' => ['label' => 'A']
-                            ],
+                            ],*/
                         ],
                         'envelope_transaction' => [
                             'label' => 'New Transaction',

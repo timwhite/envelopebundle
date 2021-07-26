@@ -14,16 +14,6 @@ avanzu_admin_logout:
 #    #    route: envelope_transactions
 #    #    permanent: true
 
-envelope_autocode_edit_search:
-    path:   /autocode/edit/{id}
-    defaults: { _controller: EnvelopeBundle:Default:autoCodeSearchEdit }
-
-envelope_autocode_delete_search:
-    path:   /autocode/delete/{id}
-    defaults: { _controller: EnvelopeBundle:Default:autoCodeSearchDelete }
-    methods:  [POST]
-
-
 envelope_transactionAddBudgetTransaction:
     path:   /transaction/{id}/addbudgettransaction/
     defaults: { _controller: EnvelopeBundle:Default:transactionAddBudgetTransaction}

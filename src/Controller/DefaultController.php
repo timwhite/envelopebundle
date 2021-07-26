@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\BudgetGroup;
 use App\Entity\User;
+use App\Repository\AutoCodeSearchRepository;
 use App\Repository\ImportRepository;
+use App\Repository\TransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -20,7 +23,11 @@ use App\Shared\autoCodeTransactions;
 use App\Shared\BudgetAccountStatsLoader;
 use App\Shared\importBankTransactions;
 use App\Entity\AccessGroup;
+use Doctrine\ORM\QueryBuilder;
+use Http\Discovery\Exception\NotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -34,6 +41,12 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class DefaultController extends AbstractController
 {
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->em = $entityManager;
+    }
     /**
      *
      * @Route (name="dashboard", path="/")
@@ -192,19 +205,14 @@ class DefaultController extends AbstractController
     public function transactionsListAction(Request $request)
     {
         $session = $request->getSession();
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT a
-            FROM EnvelopeBundle:Account a
-            WHERE a.access_group = :accessgroup
-            '
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
+        $accounts = $this->em->getRepository(Account::class)->findBy(['access_group' => $session->get('accessgroupid')]);
 
         $query2 = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
 
         return $this->render(
             'default/transactions.html.twig',
             [
-                'accounts' => $query->getResult(),
+                'accounts' => $accounts,
                 'unbalancedtransactions' => $query2->getResult()
             ]
         );
@@ -217,19 +225,16 @@ class DefaultController extends AbstractController
      */
     private function getUnbalancedTransactionsQuery($accessgroupid)
     {
-        return $this->getDoctrine()->getManager()->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Transaction t
-            LEFT JOIN EnvelopeBundle:BudgetTransaction b
-            WITH b.transaction = t
-            LEFT JOIN EnvelopeBundle:Account a
-            WITH t.account = a
-            WHERE a.access_group = :accessgroup
-            GROUP BY t.id
-            HAVING (COUNT(b.amount) = 0 AND t.amount != 0) OR SUM(b.amount) != t.amount
-            ORDER BY t.date
-            '
-        )->setParameters(['accessgroup' => $accessgroupid]);
+        /** @var QueryBuilder $qb */
+        $qb = $this->em->getRepository(Transaction::class)->createQueryBuilder('t');
+        $qb->leftJoin(BudgetTransaction::class, 'b', Query\Expr\Join::WITH, 'b.transaction = t')
+            ->leftJoin(Account::class, 'a', Query\Expr\Join::WITH, 't.account = a')
+            ->where('a.access_group = :accessGroup')
+            ->groupBy('t.id')
+            ->having('(COUNT(b.amount) = 0 AND t.amount != 0) OR SUM(b.amount) != t.amount')
+            ->orderBy('t.date')
+            ->setParameters(['accessGroup' => $accessgroupid]);
+        return $qb->getQuery();
     }
 
 
@@ -270,12 +275,13 @@ class DefaultController extends AbstractController
      * Set id to 'new' for creating new transactions
      *
      *
-     * @param Request $request
-     * @param         $id
+     * @param Request               $request
+     * @param                       $id
+     * @param TransactionRepository $transactionRepository
      *
-     * @return mixed
+     * @return RedirectResponse|Response
      */
-    public function transactionListAction(Request $request, $id)
+    public function transactionListAction(Request $request, $id, TransactionRepository $transactionRepository)
     {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
@@ -286,30 +292,10 @@ class DefaultController extends AbstractController
         } else {
             $existing = true;
 
-            $query = $em->createQuery(
-                'SELECT t
-                    FROM EnvelopeBundle:Transaction t
-                    JOIN EnvelopeBundle:Account a
-                    WITH t.account = a
-                    WHERE t.id = :id
-                    AND a.access_group = :accessgroup
-                    '
-            );
+            $transaction = $transactionRepository->find($id);
 
-            $query->setParameters(
-                [
-                    "id" => $id,
-                    "accessgroup" => $session->get('accessgroupid')
-                ]
-            );
-
-            try {
-                $transaction = $query->getSingleResult();
-            } catch(NoResultException $e) {
-                $this->addFlash('warning', "No transaction with that ID available to you");
-                return $this->render(
-                    'default/dashboard.html.twig');
-            }
+            // This will deny if the transaction isn't found, or we don't have access to it
+            $this->denyAccessUnlessGranted('edit', $transaction);
         }
 
         $form = $this->createForm(TransactionType::class, $transaction, [
@@ -374,7 +360,7 @@ class DefaultController extends AbstractController
      *
      * @return mixed
      */
-    public function autoCodeAction(Request $request)
+    public function autoCodeAction(Request $request, AutoCodeSearchRepository $autoCodeSearchRepository)
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
@@ -396,18 +382,7 @@ class DefaultController extends AbstractController
             $actionRun = true;
         }
 
-        $searches = $em->createQuery('
-          SELECT s
-          FROM EnvelopeBundle:AutoCodeSearch s
-          LEFT JOIN EnvelopeBundle:BudgetAccount b WITH s.budgetAccount = b
-          LEFT JOIN EnvelopeBundle:BudgetGroup g WITH b.budget_group = g
-          WHERE g.access_group = :accessgroup
-          ')
-            ->setParameters(
-                [
-                    'accessgroup' => $accessGroup
-                ])
-            ->getResult();
+        $searches = $autoCodeSearchRepository->findByAccessGroup($accessGroup);
 
         return $this->render(
             'default/autoCodeAction.html.twig',
@@ -420,6 +395,14 @@ class DefaultController extends AbstractController
         );
     }
 
+    /**
+     * @Route (name="envelope_autocode_edit_search", path="/autocode/edit/{id}")
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return RedirectResponse|Response
+     */
     public function autoCodeSearchEditAction(Request $request, $id)
     {
         $session = $request->getSession();
@@ -479,6 +462,14 @@ class DefaultController extends AbstractController
         );
     }
 
+    /**
+     * @Route (name="envelope_autocode_delete_search", path="/autocode/delete/{id}", methods={"POST"})
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return RedirectResponse
+     */
     public function autoCodeSearchDeleteAction(Request $request, $id)
     {
         $session = $request->getSession();
@@ -545,13 +536,11 @@ class DefaultController extends AbstractController
             $enddate = new \DateTime($this->findLastTransactionDate());
         }
 
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT b
-            FROM EnvelopeBundle:BudgetGroup b
-            JOIN EnvelopeBundle:AccessGroup a
-            WITH b.access_group = a
-            WHERE a.id  = :accessgroup'
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
+        $query = $this->getDoctrine()->getRepository(BudgetGroup::class)->createQueryBuilder('b')
+            ->leftJoin(AccessGroup::class, 'a', Query\Expr\Join::WITH, 'b.access_group = a')
+            ->where('a.id = :accessGroup')
+            ->setParameters(['accessGroup' => $session->get('accessgroupid')])
+            ->getQuery();
         $budgetgroups = $query->getResult();
 
         return $this->render(
