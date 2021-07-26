@@ -30,6 +30,7 @@ class TransactionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('transaction')
             ->leftJoin('transaction.account', 'account')
             ->where('account.access_group = :accessGroup')
+            ->setParameter('accessGroup', $accessGroup)
             ->getQuery()->getResult();
     }
 

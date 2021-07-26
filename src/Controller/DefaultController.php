@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\BudgetGroup;
 use App\Entity\User;
 use App\Repository\AutoCodeSearchRepository;
+use App\Repository\BudgetTemplateRepository;
 use App\Repository\ImportRepository;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +29,7 @@ use Http\Discovery\Exception\NotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -553,6 +555,14 @@ class DefaultController extends AbstractController
         );
     }
 
+    /**
+     * @Route(name="envelope_budget_template_clone", path="/budgets/templates/clone/{templateid}")
+     *
+     * @param Request $request
+     * @param         $templateid
+     *
+     * @return RedirectResponse
+     */
     public function budgetTemplateCloneAction(Request $request, $templateid)
     {
         $session = $request->getSession();
@@ -584,46 +594,15 @@ class DefaultController extends AbstractController
      *
      * @return mixed
      */
-    public function budgetTemplateListAction(Request $request)
+    public function budgetTemplateListAction(Request $request, Session $session, BudgetTemplateRepository $templateRepository)
     {
-        $session = $request->getSession();
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Budget\Template t
-            WHERE t.access_group = :accessgroup
-            '
-        );
-        $query->setParameters(
-            [
-                "accessgroup" => $session->get('accessgroupid')
-            ]
-        );
-
-        // TODO: Finish formatting SUMS in a presentable way
-        $group_sums_query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT
-              t.id,
-              g.name,
-              SUM(a.amount) as total
-            FROM
-              EnvelopeBundle:Budget\Template t
-              JOIN t.template_transactions a
-              JOIN a.budgetAccount b
-              JOIN b.budget_group g
-            GROUP BY t.id, b.budget_group
-            ORDER by b.budget_group'
-        );
-
-        $template_groups = [];
-        foreach ($group_sums_query->getResult() as $part) {
-            $template_groups[$part['id']][] = $part;
-        }
 
         return $this->render(
             'default/budgettemplates.html.twig',
             [
-                'budgettemplates' => $query->getResult(),
-                'budgettemplates_groupsums' => $template_groups,
+                'budgettemplates' => $templateRepository->findAllLimitedAccessGroup($session->get('accessgroupid')),
+                // TODO: Finish formatting SUMS in a presentable way
+                'budgettemplates_groupsums' => $templateRepository->findGroupSums($session->get('accessgroupid')),
             ]
         );
     }
@@ -716,6 +695,14 @@ class DefaultController extends AbstractController
     }
 
 
+    /**
+     * @Route(name="envelope_budget_template_delete", path="/budgets/template/delete/{id}", methods={"POST"})
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return RedirectResponse
+     */
     public function budgetTemplateDeleteAction(Request $request, $id) {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
@@ -747,6 +734,14 @@ class DefaultController extends AbstractController
 
     }
 
+    /**
+     * @Route(name="envelope_budget_template_edit", path="/budgets/template/edit/{id}")
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return RedirectResponse|Response
+     */
     public function budgetTemplateEditAction(Request $request, $id)
     {
         $session = $request->getSession();

@@ -19,18 +19,7 @@ envelope_transactionAddBudgetTransaction:
     defaults: { _controller: EnvelopeBundle:Default:transactionAddBudgetTransaction}
 
 
-envelope_budget_template_clone:
-    path:   /budgets/templates/clone/{templateid}
-    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateClone}
 
-envelope_budget_template_edit:
-    path:   /budgets/template/edit/{id}
-    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateEdit}
-
-envelope_budget_template_delete:
-    path:     /budgets/template/delete/{id}
-    defaults: { _controller: EnvelopeBundle:Default:budgetTemplateDelete }
-    methods:  [POST]
 
 envelope_budget_search:
     path:   /search/
