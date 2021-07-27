@@ -696,42 +696,21 @@ class DefaultController extends AbstractController
 
 
     /**
-     * @Route(name="envelope_budget_template_delete", path="/budgets/template/delete/{id}", methods={"POST"})
+     * @Route(name="envelope_budget_template_delete", path="/budgets/template/delete/{template}", methods={"POST"})
      *
-     * @param Request $request
-     * @param         $id
+     * @param Request  $request
+     * @param Template $template
      *
      * @return RedirectResponse
      */
-    public function budgetTemplateDeleteAction(Request $request, $id) {
-        $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
-            'SELECT t
-                    FROM EnvelopeBundle:Budget\Template t
-                    WHERE t.id = :id
-                    AND t.access_group = :accessgroup
-                    '
-        );
+    public function budgetTemplateDeleteAction(Template $template)
+    {
+        $this->denyAccessUnlessGranted('edit', $template);
 
-        $query->setParameters(
-            [
-                "id" => $id,
-                "accessgroup" => $session->get('accessgroupid')
-            ]
-        );
-
-        try {
-            $budgetTemplate = $query->getSingleResult();
-        } catch(NoResultException $e) {
-            $this->addFlash('warning', "No budget template with that ID available to you");
-            return $this->redirectToRoute('envelope_budget_templates');
-        }
-        $this->addFlash('success', "Budget " . $budgetTemplate->getName() . " Deleted");
-        $em->remove($budgetTemplate);
-        $em->flush();
+        $this->addFlash('success', "Budget " . $template->getName() . " Deleted");
+        $this->em->remove($template);
+        $this->em->flush();
         return $this->redirectToRoute('envelope_budget_templates');
-
     }
 
     /**
@@ -742,42 +721,21 @@ class DefaultController extends AbstractController
      *
      * @return RedirectResponse|Response
      */
-    public function budgetTemplateEditAction(Request $request, $id)
+    public function budgetTemplateEditAction(Request $request, BudgetTemplateRepository $templateRepository, $id)
     {
         $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
         if ($id == 'new') {
             $existing = false;
             $budgetTemplate = new Template();
 
             // Set access group for new templates
-            $accessGroup = $em->getRepository(AccessGroup::class)->find($session->get('accessgroupid'));
+            $accessGroup = $this->em->getRepository(AccessGroup::class)->find($session->get('accessgroupid'));
             $budgetTemplate->setAccessGroup($accessGroup);
         } else {
             $existing = true;
 
-            $query = $em->createQuery(
-                'SELECT t
-                    FROM EnvelopeBundle:Budget\Template t
-                    WHERE t.id = :id
-                    AND t.access_group = :accessgroup
-                    '
-            );
-
-            $query->setParameters(
-                [
-                    "id" => $id,
-                    "accessgroup" => $session->get('accessgroupid')
-                ]
-            );
-
-            try {
-                $budgetTemplate = $query->getSingleResult();
-            } catch(NoResultException $e) {
-                $this->addFlash('warning', "No budget template with that ID available to you");
-                return $this->render(
-                    'default/dashboard.html.twig');
-            }
+            $budgetTemplate = $templateRepository->find($id);
+            $this->denyAccessUnlessGranted('edit', $budgetTemplate);
         }
 
         $form = $this->createForm(BudgetTemplateType::class, $budgetTemplate, ['existing_entity' => $existing, 'accessgroup' => $session->get('accessgroupid')]);
@@ -794,7 +752,7 @@ class DefaultController extends AbstractController
                 ) {
                     if($templateTransaction->getId())
                     {
-                        $em->refresh($templateTransaction);
+                        $this->em->refresh($templateTransaction);
                         $this->addFlash(
                             'warning',
                             'Removing Template Transaction - ' . $templateTransaction
@@ -802,23 +760,17 @@ class DefaultController extends AbstractController
                     }
                     $budgetTemplate->removeTemplateTransaction($templateTransaction);
                     //$templateTransaction->setTemplate(null);
-                    $em->remove($templateTransaction);
+                    $this->em->remove($templateTransaction);
                 }
                 // Ensure that transactions are correctly linked to the template (not sure why this is needed in this case)
                 elseif ($templateTransaction->getTemplate() == null) {
                     $templateTransaction->setTemplate($budgetTemplate);
-                    $em->persist($templateTransaction);
+                    $this->em->persist($templateTransaction);
                 }
             }
 
-/*            if($id == 'new')
-            {
-                $budgetTemplate->setFullDescription($budgetTemplate->getDescription());
-            }*/
-
-
-            $em->persist($budgetTemplate);
-            $em->flush();
+            $this->em->persist($budgetTemplate);
+            $this->em->flush();
 
             $this->addFlash(
                 'success',

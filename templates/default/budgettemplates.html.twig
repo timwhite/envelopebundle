@@ -83,7 +83,7 @@
                             </form>
                         </div>
                         <div class="box-tools pull-right">
-                            <form action="{{ path('envelope_budget_template_delete', {'id': budgettemplate.id}) }}"
+                            <form action="{{ path('envelope_budget_template_delete', {'template': budgettemplate.id}) }}"
                                   method="post">
                                 <button onclick="return confirm('Are you sure you want to delete this template?');"
                                         class="btn btn-danger btn-box-tool"><i class="fa fa-trash"></i> Delete Template
