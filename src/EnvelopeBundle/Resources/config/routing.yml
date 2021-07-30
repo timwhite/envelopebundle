@@ -1,4 +1,0 @@
-envelope_bulk_code:
-    path: /bulkcode
-    defaults: { _controller: EnvelopeBundle:Default:transactionBulkCode}
-    methods:  [POST]

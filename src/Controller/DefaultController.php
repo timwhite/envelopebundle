@@ -293,7 +293,6 @@ class DefaultController extends AbstractController
     public function transactionListAction(Request $request, $id, TransactionRepository $transactionRepository)
     {
         $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
         if ($id == 'new') {
             $existing = false;
             $transaction = new Transaction();
@@ -320,7 +319,7 @@ class DefaultController extends AbstractController
                 if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
                     $budgetTransaction->setTransaction(null);
-                    $em->remove($budgetTransaction);
+                    $this->em->remove($budgetTransaction);
                 }
             }
 
@@ -330,8 +329,8 @@ class DefaultController extends AbstractController
             }
 
 
-            $em->persist($transaction);
-            $em->flush();
+            $this->em->persist($transaction);
+            $this->em->flush();
 
             $this->addFlash(
                 'success',
@@ -373,7 +372,6 @@ class DefaultController extends AbstractController
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
 
         $form = $this->createFormBuilder()
             ->add('save', SubmitType::class, [ 'label' => 'Auto code transactions' ] )
@@ -386,7 +384,7 @@ class DefaultController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $autoCode = new autoCodeTransactions();
-            $autoCode->codeTransactions($em, $accessGroup);
+            $autoCode->codeTransactions($this->em, $accessGroup);
             $autoCodeResults = $autoCode->getResults();
             $actionRun = true;
         }
@@ -416,13 +414,12 @@ class DefaultController extends AbstractController
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
 
         if ($id == 'new') {
             $search = new AutoCodeSearch();
         } else {
             /** @var AutoCodeSearch $search */
-            $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+            $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
             if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
                 // Attempt to edit an search that assigns to a budget other than ours
                 $this->addFlash('error', 'No access to a search with that id');
@@ -451,8 +448,8 @@ class DefaultController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($search);
-            $em->flush();
+            $this->em->persist($search);
+            $this->em->flush();
 
             $this->addFlash(
                 'success',
@@ -483,18 +480,17 @@ class DefaultController extends AbstractController
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
 
         /** @var AutoCodeSearch $search */
-        $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+        $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
         if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
             // Attempt to delete an search that assigns to a budget other than ours
             $this->addFlash('error', 'No access to a search with that id');
             return $this->redirectToRoute('envelope_autocode');
         }
 
-        $em->remove($search);
-        $em->flush();
+        $this->em->remove($search);
+        $this->em->flush();
 
         $this->addFlash(
             'success',
@@ -665,9 +661,8 @@ class DefaultController extends AbstractController
     private function applyBudgetTemplate(Request $request, Template $template, $date, $description)
     {
         // Get Special bank account
-        $em = $this->getDoctrine()->getManager();
         $session = $request->getSession();
-        $budgetTransferAccount = $em
+        $budgetTransferAccount = $this->em
             ->getRepository(Account::class)
             ->findOneBy(['access_group' => $session->get('accessgroupid'), 'budgetTransfer' => true]);
         // Create bank transaction for $0
@@ -677,7 +672,7 @@ class DefaultController extends AbstractController
             ->setAmount(0)
             ->setDescription($description)
             ->setFullDescription("Budget Template Transaction - " . $template->getDescription());
-        $em->persist($transferTransaction);
+        $this->em->persist($transferTransaction);
 
         // Loop through template transactions
         // For each transaction, create a budget transaction linked to bank transaction
@@ -686,13 +681,13 @@ class DefaultController extends AbstractController
             $budgetTransaction->setAmount($templateTransaction->getAmount())
                 ->setBudgetAccount($templateTransaction->getBudgetAccount())
                 ->setTransaction($transferTransaction);
-            $em->persist($budgetTransaction);
+            $this->em->persist($budgetTransaction);
         }
 
         // Update last applied date
         $template->setLastAppliedDate($date);
-        $em->persist($template);
-        $em->flush();
+        $this->em->persist($template);
+        $this->em->flush();
 
         $this->addFlash(
             'success',
@@ -809,27 +804,32 @@ class DefaultController extends AbstractController
         );
     }
 
+    /**
+     * @Route(name="envelope_bulk_code", path="/bulkcode", methods={"POST"})
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
     public function transactionBulkCodeAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $bulkTransactions = $request->get('bulktransactions');
         $budgetAccountId = $request->get('transaction')['budget_transactions'][0]['budgetaccount'];
         /** @var BudgetAccount $budgetAccount */
-        $budgetAccount = $em->getRepository(BudgetAccount::class)->find($budgetAccountId);
+        $budgetAccount = $this->em->getRepository(BudgetAccount::class)->find($budgetAccountId);
         // @TODO ensure all transactions and budgetAccounts are in the correct group
         foreach($bulkTransactions as $transactionId) {
             /** @var Transaction $transaction */
-            $transaction = $em->getRepository(Transaction::class)->find($transactionId);
+            $transaction = $this->em->getRepository(Transaction::class)->find($transactionId);
             $budgetTransaction = new BudgetTransaction();
             $budgetTransaction->setBudgetAccount($budgetAccount);
             $budgetTransaction->setAmount($transaction->getUnassignedSum());
             $transaction->addBudgetTransaction($budgetTransaction);
-            $em->persist($budgetTransaction);
-            $em->persist($transaction);
+            $this->em->persist($budgetTransaction);
+            $this->em->persist($transaction);
             $this->addFlash('success', $transaction->getDescription() . ' assigned '. $budgetTransaction->getAmount() . ' to ' . $budgetAccount->getBudgetName());
         }
-        $em->flush();
+        $this->em->flush();
 
         return $this->redirectToRoute('envelope_transactions_unbalanced');
 
