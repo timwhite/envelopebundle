@@ -39,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
 class DefaultController extends AbstractController
@@ -68,19 +69,25 @@ class DefaultController extends AbstractController
         );
     }
 
-    public function profileAction($userid)
+    /**
+     * @Route(name="profile", path="/profile/{id}/")
+     *
+     * @param $id
+     *
+     * @return Response
+     */
+    public function profileAction($id)
     {
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
-        $qb->select('u')
-            ->from(User::class, 'u');
+        $user = $this->em->getRepository(User::class)->find($id);
 
-        $qb->where('u.username = :username')
-            ->setParameter('username', $userid);
+        if ($this->getUser() !== $user) {
+            throw new AccessDeniedException();
+        }
 
         return $this->render(
             'default/profile.html.twig',
             [
-                'user' => $qb->getQuery()->getResult()[0],
+                'user' => $user,
             ]
         );
     }
