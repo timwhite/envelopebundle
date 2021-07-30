@@ -22,6 +22,8 @@ class BudgetTransaction
     private $id;
 
     /**
+     * @var Transaction
+     *
      * We need EAGER loading due to us displaying the balance on our _toString method, which requires all
      * the transactions
      * @ORM\ManyToOne(targetEntity="Transaction", inversedBy="budget_transactions", fetch="EAGER")
@@ -30,6 +32,8 @@ class BudgetTransaction
     private $transaction;
 
     /**
+     * @var BudgetAccount
+     *
      * @ORM\ManyToOne(targetEntity="BudgetAccount", inversedBy="budget_transactions")
      * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
      */
@@ -79,7 +83,7 @@ class BudgetTransaction
     /**
      * Set budgetAccount
      *
-     * @param \stdClass $budgetAccount
+     * @param BudgetAccount $budgetAccount
      * @return BudgetTransaction
      */
     public function setBudgetAccount($budgetAccount)
@@ -92,7 +96,7 @@ class BudgetTransaction
     /**
      * Get budgetAccount
      *
-     * @return \stdClass 
+     * @return BudgetAccount
      */
     public function getBudgetAccount()
     {
