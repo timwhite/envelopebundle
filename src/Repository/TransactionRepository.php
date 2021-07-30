@@ -38,6 +38,23 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param string          $search Text search group
+     * @param AccessGroup|int $accessGroup
+     *
+     * @return int|mixed|string
+     */
+    public function findTextSearch(string $search, $accessGroup)
+    {
+        return $this->createQueryBuilder('transaction')
+            ->leftJoin('transaction.account', 'account')
+            ->where('account.access_group = :accessGroup')
+            ->setParameter('accessGroup', $accessGroup)
+            ->andWhere('transaction.fullDescription LIKE :search OR transaction.description LIKE :search')
+            ->setParameter('search', $search)
+            ->getQuery()->getResult();
+    }
+
+    /**
      * Find unassigned budget transactions so we can code them
      *
      * @param AutoCodeSearch $search

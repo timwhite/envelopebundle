@@ -1,26 +1,3 @@
-avanzu_admin_logout:
-    path: /logout
-
-# redirecting the admin home
-#root:
-#    path: /
-#    defaults: { _controller: EnvelopeBundle:Default:dashboard }
-#    #defaults:
-#    #    _controller: FrameworkBundle:Redirect:redirect
-#    #    route: envelope_transactions
-#    #    permanent: true
-
-envelope_transactionAddBudgetTransaction:
-    path:   /transaction/{id}/addbudgettransaction/
-    defaults: { _controller: EnvelopeBundle:Default:transactionAddBudgetTransaction}
-
-
-
-
-envelope_budget_search:
-    path:   /search/
-    defaults: { _controller: EnvelopeBundle:Search:search}
-
 envelope_bulk_code:
     path: /bulkcode
     defaults: { _controller: EnvelopeBundle:Default:transactionBulkCode}
