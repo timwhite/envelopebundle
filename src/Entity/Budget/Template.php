@@ -40,7 +40,7 @@ class Template
     private $description;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      *
      * @ORM\Column(name="last_applied_date", type="date", nullable=True)
      */
@@ -223,7 +223,7 @@ class Template
     /**
      * Get last_applied_date
      *
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getLastAppliedDate()
     {

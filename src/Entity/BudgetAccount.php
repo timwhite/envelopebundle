@@ -125,11 +125,11 @@ class BudgetAccount
     /**
      * Add budget_transactions
      *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
+     * @param BudgetTransaction $budgetTransactions
      *
      * @return BudgetAccount
      */
-    public function addBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function addBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
 
@@ -139,9 +139,9 @@ class BudgetAccount
     /**
      * Remove budget_transactions
      *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
+     * @param BudgetTransaction $budgetTransactions
      */
-    public function removeBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function removeBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions->removeElement($budgetTransactions);
     }
