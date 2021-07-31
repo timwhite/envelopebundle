@@ -20,19 +20,17 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 
-class StoreApiSecretCommand extends ContainerAwareCommand
+class StoreApiSecretCommand extends Command
 {
     private EntityManagerInterface $em;
-    //private ParameterBagInterface $parameterBag;
+    private ParameterBagInterface $parameterBag;
     private $apiSecretKeyFile;
 
-
-    // @TODO add param bag back in after v4.1
-    public function __construct(EntityManagerInterface $entityManager/*, ParameterBagInterface $parameterBag*/)
+    public function __construct(EntityManagerInterface $entityManager, ParameterBagInterface $parameterBag)
     {
         parent::__construct();
         $this->em = $entityManager;
-        //$this->parameterBag = $parameterBag;
+        $this->parameterBag = $parameterBag;
     }
 
     protected function configure()

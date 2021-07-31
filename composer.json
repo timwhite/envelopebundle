@@ -25,6 +25,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
         "hwi/oauth-bundle": "^1.0",
+        "paragonie/halite": "^4.8",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug-bundle": "^1.21",
         "phpdocumentor/reflection-docblock": "^5.2",

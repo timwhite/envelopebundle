@@ -14,17 +14,19 @@ use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiImportService
 {
     private ParameterBagInterface $parameterBag;
     private EntityManagerInterface $em;
+    private HttpClientInterface $httpClient;
 
-    // @TODO enable ParameterBagInterface after 4.0 upgrade
-    public function __construct(/*ParameterBagInterface $parameterBag,*/ EntityManagerInterface $entityManager)
+    public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager, HttpClientInterface $httpClient)
     {
-        //$this->parameterBag = $parameterBag;
+        $this->parameterBag = $parameterBag;
         $this->em = $entityManager;
+        $this->httpClient =$httpClient;
     }
 
     /**
@@ -64,9 +66,8 @@ class ApiImportService
 
         $import = null;
 
-        $httpClient = HttpClient::create();
         while ($requestUrl) {
-            $result = $httpClient->request(
+            $result = $this->httpClient->request(
                 'GET',
                 $requestUrl,
                 [

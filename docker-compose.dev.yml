@@ -21,7 +21,6 @@ services:
         #image: php:7-fpm
         volumes:
             - ./:/code
-            - ./app/config/parameters.dev.yml:/code/app/config/parameters.yml
         #            - ./log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
         command: /usr/local/bin/docker-php-entrypoint-composer
 
