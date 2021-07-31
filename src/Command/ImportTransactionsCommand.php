@@ -47,7 +47,7 @@ class ImportTransactionsCommand  extends Command
         }
 
         $account = $this->em->getRepository(Account::class)
-            ->findOneByName($input->getArgument('accountName'));
+            ->findOneBy(['name'=>$input->getArgument('accountName')]);
         if(!$account) {
             $output->writeln("Unable to find that account");
             return 1;

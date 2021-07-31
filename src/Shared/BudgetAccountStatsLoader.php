@@ -5,12 +5,13 @@ namespace App\Shared;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\BudgetAccount;
 
 class BudgetAccountStatsLoader
 {
-    /** @var  EntityManager $em */
+    /** @var  EntityManagerInterface $em */
     private $em;
 
     /** @var Request $request */
@@ -22,7 +23,7 @@ class BudgetAccountStatsLoader
     private $lastTransactionDate;
     private $totalFortnights;
 
-    public function __construct(EntityManager $em, Request $request)
+    public function __construct(EntityManagerInterface $em, Request $request)
     {
         $this->em = $em;
         $this->request = $request;
@@ -65,9 +66,8 @@ class BudgetAccountStatsLoader
 
         // Load all Budget Accounts to set common data
         $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-        /** @var BudgetAccount $budgetAccounts */
+        /** @var BudgetAccount[] $budgetAccounts */
         $budgetAccounts = $budgetAccountRepo->findAll();
-        /** @var BudgetAccountStats $stats */
         foreach ($budgetAccounts as $budgetAccount) {
             $stats = $budgetAccount->getBudgetStats();
             $stats->setFirstTransactionDate($this->firstTransactionDate);
@@ -78,7 +78,6 @@ class BudgetAccountStatsLoader
 
     private function loadNegativeSums()
     {
-
         $query = $this->em->getConnection()->prepare("
             SELECT budgetName, budget_account_id, MIN(date) as mindate, MAX(date) as maxdate, SUM(budget_transaction.amount) as negativesum
             FROM budget_transaction
@@ -98,7 +97,7 @@ class BudgetAccountStatsLoader
         );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-            /** @var BudgetAccount $budgetAccount */
+            /** @var BudgetAccount|null $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
@@ -136,7 +135,7 @@ class BudgetAccountStatsLoader
         );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-            /** @var BudgetAccount $budgetAccount */
+            /** @var BudgetAccount|null $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
@@ -174,7 +173,7 @@ class BudgetAccountStatsLoader
         );
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-            /** @var BudgetAccount $budgetAccount */
+            /** @var BudgetAccount|null $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
@@ -202,7 +201,7 @@ class BudgetAccountStatsLoader
         $query->execute();
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-            /** @var BudgetAccount $budgetAccount */
+            /** @var BudgetAccount|null $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
@@ -228,7 +227,7 @@ class BudgetAccountStatsLoader
         $query->execute();
         foreach ($query as $result) {
             $budgetAccountRepo = $this->em->getRepository(BudgetAccount::class);
-            /** @var BudgetAccount $budgetAccount */
+            /** @var BudgetAccount|null $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();

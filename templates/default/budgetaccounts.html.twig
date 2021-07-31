@@ -51,7 +51,7 @@
                         <tbody>
                     {% for budget in budgetgroup.budgetaccounts %}
                         <tr>
-                            <td><a href="{{ path('envelope_budgettransactions', {'accountid': budget.id}) }}"  data-toggle="tooltip" data-html="true" title="{{ budget.TemplateTransactionsDescriptionsTooltip }}">{{ budget.budgetName }}</a></td>
+                            <td><a href="{{ path('envelope_budgettransactions', {'accountId': budget.id}) }}"  data-toggle="tooltip" data-html="true" title="{{ budget.TemplateTransactionsDescriptionsTooltip }}">{{ budget.budgetName }}</a></td>
                             {% set balance = budget.getBalance(startdate, enddate) %}
                             {% set posbalance = budget.getPositiveBalance(startdate, enddate) %}
                             {% set negbalance = budget.getNegativeBalance(startdate, enddate) %}

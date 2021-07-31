@@ -52,7 +52,7 @@
                                 <tr>
                                     <td>{{ templatetransaction.description }}</td>
                                     <td>
-                                        <a href="{{ path('envelope_budgettransactions', {'accountid': templatetransaction.budgetaccount.id}) }}">{{ templatetransaction.budgetaccount.budgetname }}</a>
+                                        <a href="{{ path('envelope_budgettransactions', {'accountId': templatetransaction.budgetaccount.id}) }}">{{ templatetransaction.budgetaccount.budgetname }}</a>
                                     </td>
                                     <td>
                                         {% if templatetransaction.budgetaccount.balance <= 0 %}
@@ -75,7 +75,7 @@
 
 
                         <div class="box-tools pull-left">
-                            <form action="{{ path('envelope_budget_template_clone', {'templateid': budgettemplate.id}) }}"
+                            <form action="{{ path('envelope_budget_template_clone', {'templateId': budgettemplate.id}) }}"
                                   method="post">
                                 <a href="{{ path('envelope_budget_template_edit', {'id': budgettemplate.id}) }}"
                                    class="btn btn-default btn-box-tool"><i class="fa fa-pencil"></i> Edit Template</a>

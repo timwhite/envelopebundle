@@ -7,6 +7,7 @@ use App\Entity\BudgetGroup;
 use App\Entity\Transaction;
 use App\Shared\BudgetAccountStatsLoader;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StatsController extends AbstractController
 {
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->em = $entityManager;
+    }
+
     /**
      * @Route(name="envelope_budget_stats", path="/stats/")
      *
@@ -26,7 +34,7 @@ class StatsController extends AbstractController
     {
         $session = $request->getSession();
 
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from(BudgetAccount::class, 'a')
             ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
@@ -35,7 +43,7 @@ class StatsController extends AbstractController
 
         $budgetaccounts = $qb->getQuery()->getResult();
 
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
+        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->em, $request);
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
@@ -50,7 +58,7 @@ class StatsController extends AbstractController
 
     private function findFirstTransactionDate()
     {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('MIN(t.date)')
             ->from(Transaction::class, 't')
             ->getQuery()
@@ -59,7 +67,7 @@ class StatsController extends AbstractController
 
     private function findLastTransactionDate()
     {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('MAX(t.date)')
             ->from(Transaction::class, 't')
             ->getQuery()
@@ -92,7 +100,7 @@ class StatsController extends AbstractController
             'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings'
         ];
 
-        $query = $this->getDoctrine()->getManager()->getConnection()->prepare("
+        $query = $this->em->getConnection()->prepare("
             SELECT
               COUNT(SUBSTRING_INDEX( `Description` , '-', 1 )) AS numtransactions,
               SUBSTRING_INDEX( `Description` , '-', 1 ) AS description,

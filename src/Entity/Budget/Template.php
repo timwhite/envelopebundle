@@ -5,6 +5,7 @@ namespace App\Entity\Budget;
 use App\Entity\AccessGroup;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

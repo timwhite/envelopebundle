@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -58,8 +59,10 @@ class Transaction
     private $amount;
 
     /**
+     * @var BudgetTransaction[]|Collection
+     *
      * Due to us getting the Budget Sum in our _toString, we need EAGER loading
-     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade={"persist"}, fetch="EAGER")
      */
     private $budget_transactions;
 

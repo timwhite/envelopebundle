@@ -71,11 +71,11 @@ class DefaultController extends AbstractController
     /**
      * @Route(name="profile", path="/profile/{id}/")
      *
-     * @param $id
+     * @param int $id
      *
      * @return Response
      */
-    public function profileAction($id)
+    public function profileAction(int $id)
     {
         $user = $this->em->getRepository(User::class)->find($id);
 
@@ -92,18 +92,18 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route(name="envelope_budgettransactions", path="/budgettransactions/{accountid}")
+     * @Route(name="envelope_budgettransactions", path="/budgettransactions/{accountId}")
      *
-     * @param Request $request
-     * @param null    $accountid
+     * @param Request  $request
+     * @param int|null $accountId
      *
      * @return mixed
      */
-    public function budgetTransactionListAction(Request $request, $accountid = null)
+    public function budgetTransactionListAction(Request $request, ?int $accountId = null)
     {
         $session = $request->getSession();
 
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from(BudgetAccount::class, 'a')
             ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
@@ -111,16 +111,16 @@ class DefaultController extends AbstractController
             ->setParameter('accessgroup', $session->get('accessgroupid'))
         ;
 
-        if ($accountid) {
+        if ($accountId) {
             $qb->andWhere('a.id = :id')
-                ->setParameter('id', $accountid);
+                ->setParameter('id', $accountId);
 
         }
 
         $budgetaccounts = $qb->getQuery()->getResult();
 
         // Load Stats and inject into entity
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
+        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->em, $request);
         $budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
@@ -175,7 +175,7 @@ class DefaultController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $bankImport = new importBankTransactions();
             $bankImport->importBankFile(
-                $this->getDoctrine()->getManager(),
+                $this->em,
                 $form['bankExport']->getData()->getPathname(),
                 $form['account']->getData(),
                 $form['accountType']->getData()
@@ -404,12 +404,12 @@ class DefaultController extends AbstractController
     /**
      * @Route (name="envelope_autocode_edit_search", path="/autocode/edit/{id}")
      *
-     * @param Request $request
-     * @param         $id
+     * @param Request    $request
+     * @param int|string $id
      *
      * @return RedirectResponse|Response
      */
-    public function autoCodeSearchEditAction(Request $request, $id)
+    public function autoCodeSearchEditAction(Request $request, AutoCodeSearchRepository $autoCodeSearchRepository, $id)
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
@@ -417,8 +417,7 @@ class DefaultController extends AbstractController
         if ($id == 'new') {
             $search = new AutoCodeSearch();
         } else {
-            /** @var AutoCodeSearch $search */
-            $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+            $search = $autoCodeSearchRepository->find($id);
             if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
                 // Attempt to edit a search that assigns to a budget other than ours
                 $this->addFlash('error', 'No access to a search with that id');
@@ -470,18 +469,18 @@ class DefaultController extends AbstractController
     /**
      * @Route (name="envelope_autocode_delete_search", path="/autocode/delete/{id}", methods={"POST"})
      *
-     * @param Request $request
-     * @param         $id
+     * @param Request                  $request
+     * @param AutoCodeSearchRepository $autoCodeSearchRepository
+     * @param int                      $id
      *
      * @return RedirectResponse
      */
-    public function autoCodeSearchDeleteAction(Request $request, $id)
+    public function autoCodeSearchDeleteAction(Request $request, AutoCodeSearchRepository $autoCodeSearchRepository, int $id)
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
 
-        /** @var AutoCodeSearch $search */
-        $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+        $search = $autoCodeSearchRepository->find($id);
         if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
             // Attempt to delete a search that assigns to a budget other than ours
             $this->addFlash('error', 'No access to a search with that id');
@@ -501,7 +500,7 @@ class DefaultController extends AbstractController
 
     private function findFirstTransactionDate()
     {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('MIN(t.date)')
             ->from(Transaction::class, 't')
             ->getQuery()
@@ -510,7 +509,7 @@ class DefaultController extends AbstractController
 
     private function findLastTransactionDate()
     {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('MAX(t.date)')
             ->from(Transaction::class, 't')
             ->getQuery()
@@ -540,7 +539,7 @@ class DefaultController extends AbstractController
             $enddate = new DateTime($this->findLastTransactionDate());
         }
 
-        $query = $this->getDoctrine()->getRepository(BudgetGroup::class)->createQueryBuilder('b')
+        $query = $this->em->getRepository(BudgetGroup::class)->createQueryBuilder('b')
             ->leftJoin(AccessGroup::class, 'a', Query\Expr\Join::WITH, 'b.access_group = a')
             ->where('a.id = :accessGroup')
             ->setParameters(['accessGroup' => $session->get('accessgroupid')])
@@ -558,32 +557,29 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route(name="envelope_budget_template_clone", path="/budgets/templates/clone/{templateid}")
+     * @Route(name="envelope_budget_template_clone", path="/budgets/templates/clone/{templateId}")
      *
-     * @param Request $request
-     * @param         $templateid
+     * @param Request                  $request
+     * @param BudgetTemplateRepository $budgetTemplateRepository
+     * @param int                      $templateId
      *
      * @return RedirectResponse
      */
-    public function budgetTemplateCloneAction(Request $request, $templateid)
+    public function budgetTemplateCloneAction(Request $request, BudgetTemplateRepository $budgetTemplateRepository, int $templateId)
     {
-        $session = $request->getSession();
-        $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository(Template::class);
-
-        /** @var Template $budgetTemplate */
-        $budgetTemplate = $budgetTemplateRepo->find($templateid);
-        if($budgetTemplate && $budgetTemplate->getAccessGroup()->getId() == $session->get('accessgroupid')) {
+        $budgetTemplate = $budgetTemplateRepository->find($templateId);
+        if (!$budgetTemplate) {
+            $this->addFlash(
+                'error',
+                "Budget Template $templateId doesn't exist to clone"
+            );
+        } else {
             $newBudgetTemplate = clone $budgetTemplate;
-            $this->getDoctrine()->getManager()->persist($newBudgetTemplate);
-            $this->getDoctrine()->getManager()->flush();
+            $this->em->persist($newBudgetTemplate);
+            $this->em->flush();
             $this->addFlash(
                 'success',
                 'Budget Template ' . $budgetTemplate->getName() . ' cloned'
-            );
-        }else{
-            $this->addFlash(
-                'error',
-                "Budget Template $templateid doesn't exist to clone"
             );
         }
         return $this->redirectToRoute('envelope_budget_templates');
@@ -700,7 +696,6 @@ class DefaultController extends AbstractController
     /**
      * @Route(name="envelope_budget_template_delete", path="/budgets/template/delete/{template}", methods={"POST"})
      *
-     * @param Request  $request
      * @param Template $template
      *
      * @return RedirectResponse
