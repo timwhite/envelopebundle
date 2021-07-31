@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -83,17 +85,17 @@ class BudgetGroup
      */
     public function __construct()
     {
-        $this->budget_accounts = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budget_accounts = new ArrayCollection();
     }
 
     /**
      * Add budget_accounts
      *
-     * @param \App\Entity\BudgetAccount $budgetAccounts
+     * @param BudgetAccount $budgetAccounts
      *
      * @return BudgetGroup
      */
-    public function addBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
+    public function addBudgetAccount(BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts[] = $budgetAccounts;
 
@@ -103,9 +105,9 @@ class BudgetGroup
     /**
      * Remove budget_accounts
      *
-     * @param \App\Entity\BudgetAccount $budgetAccounts
+     * @param BudgetAccount $budgetAccounts
      */
-    public function removeBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
+    public function removeBudgetAccount(BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts->removeElement($budgetAccounts);
     }
@@ -113,7 +115,7 @@ class BudgetGroup
     /**
      * Get budget_accounts
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getBudgetAccounts()
     {
@@ -153,11 +155,11 @@ class BudgetGroup
     /**
      * Set access_group
      *
-     * @param \App\Entity\AccessGroup $accessGroup
+     * @param AccessGroup $accessGroup
      *
      * @return BudgetGroup
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -167,7 +169,7 @@ class BudgetGroup
     /**
      * Get access_group
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {

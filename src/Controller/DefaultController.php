@@ -2,42 +2,41 @@
 
 namespace App\Controller;
 
-use App\Entity\BudgetGroup;
-use App\Entity\User;
-use App\Repository\AutoCodeSearchRepository;
-use App\Repository\BudgetTemplateRepository;
-use App\Repository\ImportRepository;
-use App\Repository\TransactionRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Query;
+use App\Entity\AccessGroup;
 use App\Entity\Account;
 use App\Entity\AutoCodeSearch;
 use App\Entity\Budget\Template;
 use App\Entity\BudgetAccount;
+use App\Entity\BudgetGroup;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
+use App\Entity\User;
 use App\Form\Type\BudgetTemplateType;
 use App\Form\Type\TransactionType;
+use App\Repository\AutoCodeSearchRepository;
+use App\Repository\BudgetTemplateRepository;
+use App\Repository\ImportRepository;
+use App\Repository\TransactionRepository;
 use App\Shared\autoCodeTransactions;
 use App\Shared\BudgetAccountStatsLoader;
 use App\Shared\importBankTransactions;
-use App\Entity\AccessGroup;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
-use Http\Discovery\Exception\NotFoundException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Routing\Annotation\Route;
+use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -134,7 +133,7 @@ class DefaultController extends AbstractController
 
     private function importForm($accessGroup)
     {
-        return $form = $this->createFormBuilder()
+        return $this->createFormBuilder()
             ->add('account', EntityType::class, [
                 'class' => Account::class,
                 'query_builder' => function(EntityRepository $repository) use ($accessGroup) {
@@ -262,7 +261,7 @@ class DefaultController extends AbstractController
 
         // Get form for coding transactions
         $transaction = new Transaction();
-        $transaction->setDate(new \DateTime());
+        $transaction->setDate(new DateTime());
         $form = $this->createForm(TransactionType::class, $transaction, [
             'existing_entity' => false,
             "accessgroup" => $session->get('accessgroupid')
@@ -296,7 +295,7 @@ class DefaultController extends AbstractController
         if ($id == 'new') {
             $existing = false;
             $transaction = new Transaction();
-            $transaction->setDate(new \DateTime());
+            $transaction->setDate(new DateTime());
         } else {
             $existing = true;
 
@@ -421,7 +420,7 @@ class DefaultController extends AbstractController
             /** @var AutoCodeSearch $search */
             $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
             if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
-                // Attempt to edit an search that assigns to a budget other than ours
+                // Attempt to edit a search that assigns to a budget other than ours
                 $this->addFlash('error', 'No access to a search with that id');
                 return $this->redirectToRoute('envelope_autocode');
             }
@@ -484,7 +483,7 @@ class DefaultController extends AbstractController
         /** @var AutoCodeSearch $search */
         $search = $this->em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
         if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
-            // Attempt to delete an search that assigns to a budget other than ours
+            // Attempt to delete a search that assigns to a budget other than ours
             $this->addFlash('error', 'No access to a search with that id');
             return $this->redirectToRoute('envelope_autocode');
         }
@@ -524,21 +523,21 @@ class DefaultController extends AbstractController
      * @param Request $request
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function budgetAccountListAction(Request $request)
     {
         $session = $request->getSession();
 
         if ($request->query->get('startdate')) {
-            $startdate = new \DateTime($request->query->get('startdate'));
+            $startdate = new DateTime($request->query->get('startdate'));
         } else {
-            $startdate = new \DateTime($this->findFirstTransactionDate());
+            $startdate = new DateTime($this->findFirstTransactionDate());
         }
         if ($request->query->get('enddate')) {
-            $enddate = new \DateTime($request->query->get('enddate'));;
+            $enddate = new DateTime($request->query->get('enddate'));
         } else {
-            $enddate = new \DateTime($this->findLastTransactionDate());
+            $enddate = new DateTime($this->findLastTransactionDate());
         }
 
         $query = $this->getDoctrine()->getRepository(BudgetGroup::class)->createQueryBuilder('b')
@@ -593,11 +592,12 @@ class DefaultController extends AbstractController
     /**
      * @Route(name="envelope_budget_templates", path="/budgets/templates/")
      *
-     * @param Request $request
+     * @param Session                  $session
+     * @param BudgetTemplateRepository $templateRepository
      *
-     * @return mixed
+     * @return Response
      */
-    public function budgetTemplateListAction(Request $request, Session $session, BudgetTemplateRepository $templateRepository)
+    public function budgetTemplateListAction(Session $session, BudgetTemplateRepository $templateRepository)
     {
 
         return $this->render(
@@ -620,7 +620,7 @@ class DefaultController extends AbstractController
     public function applyBudgetTemplateAction(Request $request)
     {
         $session = $request->getSession();
-        $form = $this->createFormBuilder(['date' => new \DateTime()])
+        $form = $this->createFormBuilder(['date' => new DateTime()])
             ->add('template', EntityType::class, [
                 'class' => Template::class,
                 'query_builder' => function(EntityRepository $repository) use ($session) {

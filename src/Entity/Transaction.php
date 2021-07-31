@@ -2,8 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -44,7 +43,7 @@ class Transaction
     private $account;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="Date", type="date", nullable=false)
      */
@@ -144,7 +143,7 @@ class Transaction
     /**
      * Set date
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return Transaction
      */
     public function setDate($date)
@@ -157,7 +156,7 @@ class Transaction
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return DateTime
      */
     public function getDate()
     {
@@ -190,11 +189,11 @@ class Transaction
     /**
      * Set account
      *
-     * @param \App\Entity\Account $account
+     * @param Account $account
      *
      * @return Transaction
      */
-    public function setAccount(\App\Entity\Account $account = null)
+    public function setAccount(Account $account = null)
     {
         $this->account = $account;
 
@@ -204,7 +203,7 @@ class Transaction
     /**
      * Get account
      *
-     * @return \App\Entity\Account
+     * @return Account
      */
     public function getAccount()
     {
@@ -264,17 +263,17 @@ class Transaction
      */
     public function __construct()
     {
-        $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budget_transactions = new ArrayCollection();
     }
 
     /**
      * Add budget_transactions
      *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
+     * @param BudgetTransaction $budgetTransactions
      *
      * @return Transaction
      */
-    public function addBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function addBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
         $budgetTransactions->setTransaction($this);
@@ -285,9 +284,9 @@ class Transaction
     /**
      * Remove budget_transactions
      *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
+     * @param BudgetTransaction $budgetTransactions
      */
-    public function removeBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function removeBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions->removeElement($budgetTransactions);
     }
@@ -295,7 +294,7 @@ class Transaction
     /**
      * Get budget_transactions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getBudgetTransactions()
     {
@@ -310,11 +309,11 @@ class Transaction
     /**
      * Set import
      *
-     * @param \App\Entity\Import $import
+     * @param Import $import
      *
      * @return Transaction
      */
-    public function setImport(\App\Entity\Import $import = null)
+    public function setImport(Import $import = null)
     {
         $this->import = $import;
         $this->import->addTransaction($this);
@@ -325,7 +324,7 @@ class Transaction
     /**
      * Get import
      *
-     * @return \App\Entity\Import
+     * @return Import
      */
     public function getImport()
     {

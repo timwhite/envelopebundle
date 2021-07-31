@@ -2,7 +2,6 @@
 
 namespace EnvelopeBundle\DataFixtures\ORM;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\AutoCodeSearch;
 use Doctrine\Common\DataFixtures\AbstractFixture;

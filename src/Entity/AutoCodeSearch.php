@@ -82,11 +82,11 @@ class AutoCodeSearch
     /**
      * Set budgetAccount
      *
-     * @param \App\Entity\BudgetAccount $budgetAccount
+     * @param BudgetAccount $budgetAccount
      *
      * @return AutoCodeSearch
      */
-    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount)
+    public function setBudgetAccount(BudgetAccount $budgetAccount)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -96,7 +96,7 @@ class AutoCodeSearch
     /**
      * Get budgetAccount
      *
-     * @return \App\Entity\BudgetAccount
+     * @return BudgetAccount
      */
     public function getBudgetAccount()
     {

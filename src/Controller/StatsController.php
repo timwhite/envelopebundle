@@ -2,16 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\BudgetAccount;
 use App\Entity\BudgetGroup;
 use App\Entity\Transaction;
-use Doctrine\DBAL\Types\DecimalType;
-use App\Entity\BudgetAccount;
-use App\Shared\BudgetAccountStats;
 use App\Shared\BudgetAccountStatsLoader;
+use DateTime;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -74,20 +72,20 @@ class StatsController extends AbstractController
      * @param Request $request
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function spendingStatsAction(Request $request) {
         $session = $request->getSession();
 
         if ($request->query->get('startdate')) {
-            $startdate = new \DateTime($request->query->get('startdate'));
+            $startdate = new DateTime($request->query->get('startdate'));
         } else {
-            $startdate = new \DateTime($this->findFirstTransactionDate());
+            $startdate = new DateTime($this->findFirstTransactionDate());
         }
         if ($request->query->get('enddate')) {
-            $enddate = new \DateTime($request->query->get('enddate'));;
+            $enddate = new DateTime($request->query->get('enddate'));
         } else {
-            $enddate = new \DateTime($this->findLastTransactionDate());
+            $enddate = new DateTime($this->findLastTransactionDate());
         }
 
         $excludeDescriptions = [

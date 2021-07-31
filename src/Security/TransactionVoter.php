@@ -6,6 +6,7 @@ namespace App\Security;
 
 use App\Entity\Transaction;
 use App\Entity\User;
+use LogicException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -51,7 +52,7 @@ class TransactionVoter extends Voter
                 return $this->canEdit($transaction, $user);
         }
 
-        throw new \LogicException('This code should not be reached!');
+        throw new LogicException('This code should not be reached!');
     }
 
     /**

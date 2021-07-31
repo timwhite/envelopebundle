@@ -3,7 +3,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Account;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

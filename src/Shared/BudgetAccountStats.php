@@ -9,8 +9,8 @@
 namespace App\Shared;
 
 
+use DateInterval;
 use Doctrine\DBAL\Types\DecimalType;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class BudgetAccountStats
 {
@@ -263,7 +263,7 @@ class BudgetAccountStats
 
         // Pad start of sparkline if first transaction is after our starting point
         while ($start->diff($lastDate)->format("%r%a") > 7) {
-            $start->add(new \DateInterval("P1W"));
+            $start->add(new DateInterval("P1W"));
             $sparkline[] = 0;
         }
 
@@ -275,7 +275,7 @@ class BudgetAccountStats
             // If date is after our starting range we process it and before our end date
             if ($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
                 while ($lastDate->diff($date)->format("%r%a") > 7 && $lastDate->diff($end)->format("%r%a") > 7) {
-                    $lastDate->add(new \DateInterval("P1W"));
+                    $lastDate->add(new DateInterval("P1W"));
                     $sparkline[] = 0;
                 }
                 $sparkline[] = $spend;
@@ -285,7 +285,7 @@ class BudgetAccountStats
 
         // Pad end of sparkline if last transaction is before our end point
         while ($lastDate->diff($end)->format("%r%a") > 7) {
-            $lastDate->add(new \DateInterval("P1W"));
+            $lastDate->add(new DateInterval("P1W"));
             $sparkline[] = 0;
         }
         return implode(',', $sparkline);
@@ -305,7 +305,7 @@ class BudgetAccountStats
 
         // Pad start of sparkline if first transaction is after our starting point
         while ($start->diff($lastDate)->format("%r%a") > 7) {
-            $start->add(new \DateInterval("P1W"));
+            $start->add(new DateInterval("P1W"));
             $sparkline[] = 0;
         }
 
@@ -317,7 +317,7 @@ class BudgetAccountStats
             // If date is after our starting range we process it and before our end date
             if ($start->diff($date)->format("%r%a") > 0 && $end->diff($date)->format("%r%a") < 0) {
                 while ($lastDate->diff($date)->format("%r%a") > 7 && $lastDate->diff($end)->format("%r%a") > 7) {
-                    $lastDate->add(new \DateInterval("P1W"));
+                    $lastDate->add(new DateInterval("P1W"));
                     $sparkline[] = $lastTotal;
                 }
                 $sparkline[] = $total;
@@ -328,7 +328,7 @@ class BudgetAccountStats
 
         // Pad end of sparkline if last transaction is before our end point
         while ($lastDate->diff($end)->format("%r%a") > 7) {
-            $lastDate->add(new \DateInterval("P1W"));
+            $lastDate->add(new DateInterval("P1W"));
             $sparkline[] = $lastTotal;
         }
         return implode(',', $sparkline);
@@ -342,7 +342,7 @@ class BudgetAccountStats
             if ($this->averageFortnightlyPositive <= 0) {
                 return true;
             }
-            // Otherwise it's only an overspend if it's more than 2% over, to allow for funny fortnights
+            // Otherwise, it's only an overspend if it's more than 2% over, to allow for funny fortnights
             if((abs($this->averageFortnightlySpend))/$this->averageFortnightlyPositive > 1.02) {
                 return true;
             }

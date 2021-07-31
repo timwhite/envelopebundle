@@ -4,16 +4,17 @@
 namespace App\Service;
 
 
-use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ExternalConnector;
 use App\Entity\Import;
 use App\Entity\Transaction;
+use DateTime;
+use DateTimeInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use ParagonIE\Halite\Halite;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiImportService
@@ -58,7 +59,7 @@ class ApiImportService
             'filter[status]' => 'SETTLED'
         ];
         if ($startDate) {
-            $requestParams['filter[since]'] = $startDate->format(\DateTimeInterface::RFC3339);
+            $requestParams['filter[since]'] = $startDate->format(DateTimeInterface::RFC3339);
         }
 
         $requestUrl = 'https://api.up.com.au/api/v1/accounts/' . $externalConnector->getSystemId() . '/transactions?';
@@ -163,7 +164,7 @@ class ApiImportService
      * @param                   $date
      *
      * @return Transaction|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     private function findTransactionByMetadata(ExternalConnector $externalConnector, $amount, $description, $date)
     {

@@ -9,7 +9,6 @@ use KevinPapst\AdminLTEBundle\Event\SidebarUserEvent;
 use KevinPapst\AdminLTEBundle\Model\UserModel;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 
 class MyShowUseNavBarUserSubscriber implements EventSubscriberInterface

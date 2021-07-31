@@ -4,21 +4,18 @@
 namespace App\Command;
 
 
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ExternalConnector;
+use Doctrine\ORM\EntityManagerInterface;
 use ParagonIE\Halite\Halite;
+use ParagonIE\Halite\KeyFactory;
+use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 use ParagonIE\HiddenString\HiddenString;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use ParagonIE\Halite\KeyFactory;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
 
 class StoreApiSecretCommand extends Command
 {

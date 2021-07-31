@@ -2,10 +2,8 @@
 
 namespace App\Entity\Budget;
 
-use App\Entity\AccessGroup;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -199,7 +197,7 @@ class Template
     /**
      * Get template_transactions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTemplateTransactions()
     {
@@ -209,7 +207,8 @@ class Template
     /**
      * Set last_applied_date
      *
-     * @param \DateTime $lastAppliedDate
+     * @param DateTime $lastAppliedDate
+     *
      * @return Template
      */
     public function setLastAppliedDate($lastAppliedDate)
@@ -222,7 +221,7 @@ class Template
     /**
      * Get last_applied_date
      *
-     * @return \DateTime 
+     * @return DateTime
      */
     public function getLastAppliedDate()
     {
@@ -274,11 +273,11 @@ class Template
     /**
      * Set access_group
      *
-     * @param \App\Entity\AccessGroup $accessGroup
+     * @param AccessGroup $accessGroup
      *
      * @return Template
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -288,7 +287,7 @@ class Template
     /**
      * Get access_group
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {

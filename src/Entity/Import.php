@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,7 +24,7 @@ class Import
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="ImportTime", type="datetime", nullable=false, unique=true)
      */
@@ -39,7 +39,7 @@ class Import
 
     public function __construct()
     {
-        $this->importTime = new \DateTime();
+        $this->importTime = new DateTime();
         $this->transactions = new ArrayCollection();
     }
 
@@ -57,7 +57,7 @@ class Import
     /**
      * Set importTime
      *
-     * @param \DateTime $importTime
+     * @param DateTime $importTime
      * @return Import
      */
     public function setImportTime($importTime)
@@ -70,7 +70,7 @@ class Import
     /**
      * Get importTime
      *
-     * @return \DateTime 
+     * @return DateTime
      */
     public function getImportTime()
     {
@@ -85,11 +85,11 @@ class Import
     /**
      * Add transactions
      *
-     * @param \App\Entity\Transaction $transactions
+     * @param Transaction $transactions
      *
      * @return Import
      */
-    public function addTransaction(\App\Entity\Transaction $transactions)
+    public function addTransaction(Transaction $transactions)
     {
         $this->transactions[] = $transactions;
 
@@ -99,9 +99,9 @@ class Import
     /**
      * Remove transactions
      *
-     * @param \App\Entity\Transaction $transactions
+     * @param Transaction $transactions
      */
-    public function removeTransaction(\App\Entity\Transaction $transactions)
+    public function removeTransaction(Transaction $transactions)
     {
         $this->transactions->removeElement($transactions);
     }
@@ -109,7 +109,7 @@ class Import
     /**
      * Get transactions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTransactions()
     {

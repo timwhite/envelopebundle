@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use App\Entity\BudgetTransaction;
 use App\Entity\Budget\TemplateTransaction;
 use App\Shared\BudgetAccountStats;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use NumberFormatter;
 
 /**
  * Account
@@ -107,7 +109,7 @@ class BudgetAccount
      */
     public function __construct()
     {
-        $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budget_transactions = new ArrayCollection();
         $this->budgetStats = new BudgetAccountStats($this->id);
     }
 
@@ -147,7 +149,7 @@ class BudgetAccount
     /**
      * Get budget_transactions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getBudgetTransactions()
     {
@@ -213,8 +215,7 @@ class BudgetAccount
     public function __toString()
     {
         // NB: This should probably be handled by the view, instead of hard coding a locale here
-        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
-            ;
+        $fmt = numfmt_create( 'en_AU', NumberFormatter::CURRENCY );
 
         return $this->getBudgetName() . ": ". numfmt_format_currency($fmt, $this->getBalance(), 'AUD')."";
     }
@@ -223,11 +224,11 @@ class BudgetAccount
     /**
      * Set budget_group
      *
-     * @param \App\Entity\BudgetGroup $budgetGroup
+     * @param BudgetGroup $budgetGroup
      *
      * @return BudgetAccount
      */
-    public function setBudgetGroup(\App\Entity\BudgetGroup $budgetGroup)
+    public function setBudgetGroup(BudgetGroup $budgetGroup)
     {
         $this->budget_group = $budgetGroup;
 
@@ -237,7 +238,7 @@ class BudgetAccount
     /**
      * Get budget_group
      *
-     * @return \App\Entity\BudgetGroup
+     * @return BudgetGroup
      */
     public function getBudgetGroup()
     {
@@ -249,7 +250,7 @@ class BudgetAccount
     /**
      * Add template_transactions
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param TemplateTransaction $templateTransactions
      *
      * @return BudgetAccount
      */
@@ -263,7 +264,7 @@ class BudgetAccount
     /**
      * Remove template_transactions
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param TemplateTransaction $templateTransactions
      */
     public function removeTemplateTransaction(Budget\TemplateTransaction $templateTransactions)
     {
@@ -273,7 +274,7 @@ class BudgetAccount
     /**
      * Get template_transactions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTemplateTransactions()
     {
@@ -283,9 +284,9 @@ class BudgetAccount
     public function getTemplateTransactionsDescriptionsTooltip()
     {
         // NB: This should probably be handled by the view, instead of hard coding a locale here
-        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
+        $fmt = numfmt_create( 'en_AU', NumberFormatter::CURRENCY );
         $desc = [];
-        /** @var \App\Entity\Budget\TemplateTransaction $trans */
+        /** @var TemplateTransaction $trans */
         foreach($this->getTemplateTransactions() as $trans)
         {
             if(!$trans->getTemplate()->getArchived()) {

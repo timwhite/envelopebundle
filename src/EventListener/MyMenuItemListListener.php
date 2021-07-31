@@ -4,7 +4,6 @@ namespace App\EventListener;
 use KevinPapst\AdminLTEBundle\Model\MenuItemModel;
 use KevinPapst\AdminLTEBundle\Event\SidebarMenuEvent;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

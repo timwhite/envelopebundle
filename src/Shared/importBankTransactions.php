@@ -4,6 +4,8 @@ namespace App\Shared;
 
 use App\Entity\Import;
 use App\Entity\Transaction;
+use DateTime;
+use Exception;
 
 class importBankTransactions
 {
@@ -110,7 +112,7 @@ class importBankTransactions
         return array_filter($this->duplicates);
     }
 
-    // Returns transaction we skipped due to it matching a uncleared transaction filter
+    // Returns transaction we skipped due to it matching an uncleared transaction filter
     public function getIgnored()
     {
         return array_filter($this->ignored);
@@ -144,7 +146,7 @@ class importBankTransactions
      * @param $fileType
      *
      * @return bool|object
-     * @throws \Exception
+     * @throws Exception
      */
     private function processRow($row, $fileType)
     {
@@ -162,7 +164,7 @@ class importBankTransactions
 
 
                 $dateparts = explode('/', $row[0], 3);
-                $date = new \DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
+                $date = new DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
                 //$output->writeln($description);
 
                 /*
@@ -208,7 +210,7 @@ class importBankTransactions
                 $description = str_replace("\n", ' ', $description);
                 $fullDescription = str_replace("\n", ' ', $fullDescription);
 
-                $date = new \DateTime($row[0]);
+                $date = new DateTime($row[0]);
 
                 /*
                  * Get the amount. But remove any extra '$' at the start of the string, also remove the , characters
@@ -244,7 +246,7 @@ class importBankTransactions
                 }
                 $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
 
-                $date = new \DateTime($row[0]);
+                $date = new DateTime($row[0]);
 
                 /*
                  * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
@@ -279,7 +281,7 @@ class importBankTransactions
 
                 $description = "${row[3]} - ${row[4]}";
 
-                $date = new \DateTime($row[0]);
+                $date = new DateTime($row[0]);
 
                 $amount = $row[12];
 
@@ -304,7 +306,7 @@ class importBankTransactions
 
 
             default:
-                throw new \Exception('Invalid Account Type');
+                throw new Exception('Invalid Account Type');
 
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
@@ -193,7 +194,7 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
 
     public function getMemberSince()
     {
-        return new \DateTime();
+        return new DateTime();
     }
 
     public function getTitle()
@@ -248,11 +249,11 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     /**
      * Set access_group
      *
-     * @param \App\Entity\AccessGroup $accessGroup
+     * @param AccessGroup $accessGroup
      *
      * @return User
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup = null)
+    public function setAccessGroup(AccessGroup $accessGroup = null)
     {
         $this->access_group = $accessGroup;
 
@@ -262,7 +263,7 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     /**
      * Get access_group
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {

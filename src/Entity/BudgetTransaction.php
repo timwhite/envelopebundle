@@ -60,7 +60,8 @@ class BudgetTransaction
     /**
      * Set transactionID
      *
-     * @param \stdClass $transactionID
+     * @param Transaction $transaction
+     *
      * @return BudgetTransaction
      */
     public function setTransaction($transaction)
@@ -73,7 +74,7 @@ class BudgetTransaction
     /**
      * Get transactionID
      *
-     * @return \stdClass 
+     * @return Transaction
      */
     public function getTransaction()
     {

@@ -2,7 +2,6 @@
 
 namespace App\Form\Type;
 
-use App\Form\Type\BudgetTemplateTransactionType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

@@ -2,20 +2,19 @@
 
 namespace App\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Account;
 use App\Entity\Import;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use App\Entity\Transaction;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use App\Entity\Account;
-use App\Entity\Transaction;
-
 // @TODO Update this to use importBankTransactions
-class ImportTransactionsCommand  extends ContainerAwareCommand
+class ImportTransactionsCommand  extends Command
 {
     private EntityManagerInterface $em;
 
@@ -75,7 +74,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                     $fullDescription = $description;
 
                     $dateparts = explode('/',$row[0],3);
-                    $date = new\DateTime($dateparts[2]."/".$dateparts[1]."/".$dateparts[0]);
+                    $date = new DateTime($dateparts[2]."/".$dateparts[1]."/".$dateparts[0]);
                     //$output->writeln($description);
                 } else {
                     //NAB format date,amount,__,__,Type,Description,Balance,__
@@ -88,11 +87,11 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                     }
                     $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
 
-                    $date = new \DateTime($row[0]);
+                    $date = new DateTime($row[0]);
                 }
 
                 // Limit to transactions new
-                if ($date < new \DateTime("2015-07-01 00:00:00"))
+                if ($date < new DateTime("2015-07-01 00:00:00"))
                 {
                     $output->write('.');
                     continue;

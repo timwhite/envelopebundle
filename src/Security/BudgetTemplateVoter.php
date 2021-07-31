@@ -5,8 +5,8 @@ namespace App\Security;
 
 
 use App\Entity\Budget\Template;
-use App\Entity\Transaction;
 use App\Entity\User;
+use LogicException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -52,7 +52,7 @@ class BudgetTemplateVoter extends Voter
                 return $this->canEdit($template, $user);
         }
 
-        throw new \LogicException('This code should not be reached!');
+        throw new LogicException('This code should not be reached!');
     }
 
     /**

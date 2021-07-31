@@ -2,10 +2,7 @@
 
 namespace App\Entity\Budget;
 
-use App\Entity\Budget\Template;
-
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\BudgetAccount;
 
 /**
  * TemplateTransaction
@@ -134,11 +131,11 @@ class TemplateTransaction
     /**
      * Set budgetAccount
      *
-     * @param \App\Entity\BudgetAccount $budgetAccount
+     * @param BudgetAccount $budgetAccount
      *
      * @return TemplateTransaction
      */
-    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount = null)
+    public function setBudgetAccount(BudgetAccount $budgetAccount = null)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -148,7 +145,7 @@ class TemplateTransaction
     /**
      * Get budgetAccount
      *
-     * @return \App\Entity\BudgetAccount
+     * @return BudgetAccount
      */
     public function getBudgetAccount()
     {

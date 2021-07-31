@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Form\Type\BudgetTransactionType;
+use DateTime;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\Account;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -57,7 +57,7 @@ class TransactionType extends AbstractType
         $resolver->setDefaults( [
             'data_class' => 'App\Entity\Transaction',
             'existing_entity' => true,
-            'date' => new \DateTime(),
+            'date' => new DateTime(),
             'accessgroup' => 0,
         ] );
     }

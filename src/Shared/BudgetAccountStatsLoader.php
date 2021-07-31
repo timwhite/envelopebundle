@@ -3,7 +3,7 @@
 namespace App\Shared;
 
 
-use App\Shared\BudgetAccountStats;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\BudgetAccount;
@@ -16,9 +16,9 @@ class BudgetAccountStatsLoader
     /** @var Request $request */
     private $request;
 
-    /** @var  \DateTime */
+    /** @var  DateTime */
     private $firstTransactionDate;
-    /** @var  \DateTime */
+    /** @var  DateTime */
     private $lastTransactionDate;
     private $totalFortnights;
 
@@ -49,15 +49,15 @@ class BudgetAccountStatsLoader
               AND budget_transaction.amount < 0");
         if ($query->execute()) {
             $result = $query->fetch();
-            $this->firstTransactionDate = new \DateTime($result['mindate']);
-            $this->lastTransactionDate = new \DateTime($result['maxdate']);
+            $this->firstTransactionDate = new DateTime($result['mindate']);
+            $this->lastTransactionDate = new DateTime($result['maxdate']);
         }
 
         if ($this->request->query->get('startdate')) {
-            $this->firstTransactionDate = new \DateTime($this->request->query->get('startdate'));
+            $this->firstTransactionDate = new DateTime($this->request->query->get('startdate'));
         }
         if ($this->request->query->get('enddate')) {
-            $this->lastTransactionDate = new \DateTime($this->request->query->get('enddate'));;
+            $this->lastTransactionDate = new DateTime($this->request->query->get('enddate'));
         }
 
         // Don't calculate the number of fortnights until we have established our date range
@@ -104,8 +104,8 @@ class BudgetAccountStatsLoader
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setNegativeSum($result['negativesum']);
                 $stats->setAverageFortnightlySpend($result['negativesum'] / $this->totalFortnights);
-                $stats->setFirstSpendTransactionDate(new \DateTime($result['mindate']));
-                $stats->setLastSpendTransactionDate(new \DateTime($result['maxdate']));
+                $stats->setFirstSpendTransactionDate(new DateTime($result['mindate']));
+                $stats->setLastSpendTransactionDate(new DateTime($result['maxdate']));
             }
         }
     }
@@ -142,8 +142,8 @@ class BudgetAccountStatsLoader
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setPositiveSum($result['positivesum']);
                 $stats->setAverageFortnightlyPositive($result['positivesum'] / $this->totalFortnights);
-                $stats->setFirstIncomeTransactionDate(new \DateTime($result['mindate']));
-                $stats->setLastIncomeTransactionDate(new \DateTime($result['maxdate']));
+                $stats->setFirstIncomeTransactionDate(new DateTime($result['mindate']));
+                $stats->setLastIncomeTransactionDate(new DateTime($result['maxdate']));
             }
         }
     }
@@ -179,8 +179,8 @@ class BudgetAccountStatsLoader
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setAverageFortnightlyIncome($result['positivesum'] / $this->totalFortnights);
-                $stats->setFirstIncomeTransactionDate(new \DateTime($result['mindate']));
-                $stats->setLastIncomeTransactionDate(new \DateTime($result['maxdate']));
+                $stats->setFirstIncomeTransactionDate(new DateTime($result['mindate']));
+                $stats->setLastIncomeTransactionDate(new DateTime($result['maxdate']));
             }
         }
     }
