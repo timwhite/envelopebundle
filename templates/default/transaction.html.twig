@@ -3,12 +3,6 @@
 {% block page_subtitle %}Update the description of the bank transaction, and add budget transactions to distribute the bank transaction value{% endblock %}
 
 {% block page_content %}
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flashMessage }}
-        </div>
-    {% endfor %}
-
     <div class="row">
         <div class="col-md-6">
             <div class="box">

@@ -1,15 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block page_content %}
-
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flashMessage }}
-        </div>
-    {% endfor %}
-
-
-
     <div class="userinfo">
         <span><img class="img-circle" width="90px" src="{{ user.avatar }}"></span>
         <h2>{{ user.name }}</h2>
