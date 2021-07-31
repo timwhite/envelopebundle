@@ -123,30 +123,3 @@
     </div><!-- row -->
 
 {% endblock %}
-
-{% block javascripts_inline %}
-<script>
-    $('.budgetransactionamount').focus(function () {
-        var $unassigned=$('#unassignedamount').data('unassignedamount');
-            if (!this.value && $unassigned != 0) {
-                this.value = $unassigned;
-            }
-        }
-    )
-
-    $(document).ready(function(){
-        $('.combobox').combobox();
-    });
-</script>
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script src="{{ asset('assets/vendor/bootstrap-combobox/js/bootstrap-combobox.js') }}"></script>
-{% endblock %}
-
-{% block stylesheets %}
-{{ parent() }}
-<link rel="stylesheet"
-      href="{{ asset('assets/vendor/bootstrap-combobox/css/bootstrap-combobox.css') }}">
-{% endblock %}

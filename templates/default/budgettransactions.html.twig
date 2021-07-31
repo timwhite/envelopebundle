@@ -51,20 +51,3 @@
     </div><!-- row -->
 
 {% endblock %}
-
-{% block javascripts_inline %}
-    <script src="{{ asset('assets/vendor/datatables-sorting-datetime-moment/js/datetime-moment.js') }}"></script>
-    <script>
-        $(function () {
-            $.fn.dataTable.moment( 'DD/MM/YY' );
-            $('.datatable').DataTable({
-                "paging": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-                "order": [[ 0, "desc" ]],
-            });
-        });
-    </script>
-{% endblock %}

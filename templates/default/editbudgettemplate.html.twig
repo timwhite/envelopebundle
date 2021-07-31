@@ -104,7 +104,8 @@
 
 {% endblock %}
 
-{% block javascripts_inline %}
+{% block javascripts %}
+    {{ parent() }}
 <script>
     $('.budgettemplatetransactionamount').focus(function () {
                 var $balance = $('#balance').data('balance');
@@ -126,20 +127,5 @@
     }
 
     $('.budgettemplatetransactionamount').change(updateBalance)
-
-    $(document).ready(function () {
-        $('.combobox').combobox();
-    });
 </script>
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script src="{{ asset('assets/vendor/bootstrap-combobox/js/bootstrap-combobox.js') }}"></script>
-{% endblock %}
-
-{% block stylesheets %}
-{{ parent() }}
-<link rel="stylesheet"
-      href="{{ asset('assets/vendor/bootstrap-combobox/css/bootstrap-combobox.css') }}">
 {% endblock %}
