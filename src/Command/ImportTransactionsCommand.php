@@ -43,14 +43,14 @@ class ImportTransactionsCommand  extends Command
 
         if(!file_exists($inputFile)) {
             $output->writeln("Unable to open input file");
-            exit(1);
+            return 1;
         }
 
         $account = $this->em->getRepository(Account::class)
             ->findOneByName($input->getArgument('accountName'));
         if(!$account) {
             $output->writeln("Unable to find that account");
-            exit(1);
+            return 1;
         }
 
 
@@ -140,5 +140,7 @@ class ImportTransactionsCommand  extends Command
             $this->em->flush();
             $output->writeln("*");
         }
+
+        return 0;
     }
 }

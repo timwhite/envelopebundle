@@ -70,6 +70,7 @@ class StoreApiSecretCommand extends Command
         $this->em->flush();
         $output->writeln("<info>API Secret stored successfully</info>");
 
+        return 0;
     }
 
     protected function checkEncryptionKey(OutputInterface $output)

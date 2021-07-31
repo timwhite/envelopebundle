@@ -2,6 +2,7 @@
 
 namespace App\Entity\Budget;
 
+use App\Entity\BudgetAccount;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -131,7 +132,7 @@ class TemplateTransaction
     /**
      * Set budgetAccount
      *
-     * @param BudgetAccount $budgetAccount
+     * @param BudgetAccount|null $budgetAccount
      *
      * @return TemplateTransaction
      */

@@ -75,6 +75,8 @@ class AutoBudgetCommand  extends Command
             }
             $this->em->flush();
         }
+
+        return 0;
     }
 
 

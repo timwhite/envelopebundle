@@ -36,6 +36,8 @@ class UpApiListAccountsCommand extends Command
         ]);
 
         dump(json_decode($result->getContent()));
+
+        return 0;
     }
 
 
