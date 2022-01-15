@@ -149,11 +149,25 @@ class BudgetAccount
     /**
      * Get budget_transactions
      *
-     * @return Collection
+     * @return Collection|BudgetTransaction[]
      */
     public function getBudgetTransactions()
     {
         return $this->budget_transactions;
+    }
+
+    /**
+     * @return BudgetTransaction[]
+     * @throws \Exception
+     */
+    public function getDateOrderedBudgetTransactions()
+    {
+        $iterator = $this->getBudgetTransactions()->getIterator();
+        $iterator->uasort(function (BudgetTransaction $first, BudgetTransaction $second) {
+            return $first->getTransaction()->getDate() > $second->getTransaction()->getDate();
+        });
+
+        return $iterator;
     }
 
     public function getBalance($startdate = null, $enddate = null)
