@@ -42,7 +42,7 @@
                             <td>{{ budgettransaction.transaction.description }}</td>
                             <td align="right" {% if budgettransaction.amount < 0 %}class="text-danger"{% endif %} ><span data-toggle="tooltip" title="{{ budgettransaction.transaction.account }}: {{ budgettransaction.transaction.amount|format_currency('AUD') }} / {{ budgettransaction.transaction.unassignedsum|format_currency('AUD') }}">{{ budgettransaction.amount|format_currency('AUD') }}</span></td>
                             {% set runningTotal = runningTotal + budgettransaction.amount %}
-                            <td>{{ runningTotal |format_currency('AUD') }}</td>
+                            <td align="right" {% if runningTotal < 0 %}class="text-danger"{% endif %}><small>{{ runningTotal |format_currency('AUD') }}</small></td>
 
                         </tr>
                     {% endfor %}
