@@ -36,7 +36,7 @@
                     {% set runningTotal = 0 %}
                     {% for budgettransaction in budgetaccount.dateOrderedBudgetTransactions %}
                         <tr>
-                            <td data-order="{{ budgettransaction.transaction.date|date('U') }}">
+                            <td data-order="{{ budgettransaction.transaction.date|date('U') }}-{{ budgettransaction.transaction.id }}">
                                 <a href="{{ path('envelope_transaction', {'id': budgettransaction.transaction.id}) }}">{{ budgettransaction.transaction.date|date('d/m/y') }}</a>
                             </td>
                             <td>{{ budgettransaction.transaction.description }}</td>
