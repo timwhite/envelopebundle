@@ -14,6 +14,7 @@ class importBankTransactions
         'ANZ' => 'ANZ',
         'UP' => 'UP',
         'Athena' => 'ATHENA',
+        'Heritage' => 'HERITAGE',
     ];
     private $duplicates = [];
     private $ignored = [];
@@ -222,6 +223,34 @@ class importBankTransactions
                 
 
                 break;
+
+            case 'HERITAGE':
+                /**
+                 * Heritage format is 2 header rows of balances, 2nd column is the word "Balance"
+                 * Followed by the real header
+                 * Transction Date, Amount, Reference
+                 * "DD/MM/YYYY","10.00","Name?;Reference?"
+                 */
+                if (sizeof($row) == 4 && $row[1] == "Balance") {
+                    // First 2 balance rows
+                    return false;
+                }
+                if (sizeof($row) == 3 && $row == ["Transaction Date", " Amount", " Reference"]) {
+                    // A real header row
+                    return false;
+                }
+                if (sizeof($row) != 3) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+
+                $description = $fullDescription = trim($row[2]);
+                $amount = trim(str_replace(',', '', $row[1]));
+                $date = DateTime::createFromFormat('d/m/Y', $row[0]);
+
+                break;
+
+
             case 'NAB':
                 /**
                  * Old NAB Format was
@@ -318,7 +347,6 @@ class importBankTransactions
             'extra' => $extra,
         ];
     }
-
 }
 
 
