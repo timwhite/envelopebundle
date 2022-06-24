@@ -231,10 +231,17 @@ class importBankTransactions
                  * "Date","Amount","_",_,"Type","Description","Balance"
                  * String quoting. Date is DD MON YY
                  * "28 Dec 17","-14.95","000000000000",,"MISCELLANEOUS DEBIT","V1234 25/12 KFC","+456.78"
+                 *
+                 * New NAB format (2022-06) is
+                 * Date,Amount,Account Number,,Transaction Type,Transaction Details,Balance,Category,Merchant Name
+                 * No string quoting, Date is DD MON YY
+                 * If no merchant name, then there will be less fields in the row
+                 * 02 Feb 22,-20,1XXXXXXXX, ,MISCELLANEOUS DEBIT,VXXXX 01/02 GOOGLE CLOUD,123.45,Shopping,Google Cloud
+                *  27 Jan 22,8.00,1XXXXXXXX, ,INTER-BANK CREDIT,Internet Wordpress,131.45,Other income
                  */
 
                 //NAB format date,amount,__,__,Type,Description,Balance,__
-                if (sizeof($row) != 7) {
+                if (sizeof($row) != 8 && sizeof($row) != 9) {
                     $this->unknown[] = implode(',', $row);
                     return false;
                 }
