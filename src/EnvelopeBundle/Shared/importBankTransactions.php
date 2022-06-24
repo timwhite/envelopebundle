@@ -237,7 +237,7 @@ class importBankTransactions
                  * No string quoting, Date is DD MON YY
                  * If no merchant name, then there will be less fields in the row
                  * 02 Feb 22,-20,1XXXXXXXX, ,MISCELLANEOUS DEBIT,VXXXX 01/02 GOOGLE CLOUD,123.45,Shopping,Google Cloud
-                *  27 Jan 22,8.00,1XXXXXXXX, ,INTER-BANK CREDIT,Internet Wordpress,131.45,Other income
+                 * 27 Jan 22,8.00,1XXXXXXXX, ,INTER-BANK CREDIT,Internet Wordpress,131.45,Other income
                  */
 
                 //NAB format date,amount,__,__,Type,Description,Balance,__
@@ -245,6 +245,11 @@ class importBankTransactions
                     $this->unknown[] = implode(',', $row);
                     return false;
                 }
+                if ($row[0] === 'Date') {
+                    // Header row
+                    return false;
+                }
+
                 $description = preg_replace("/ {2,}/", " ", $row[5]);
                 if ($description == "") {
                     $description = $row[4];
