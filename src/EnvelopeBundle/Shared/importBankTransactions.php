@@ -169,6 +169,11 @@ class importBankTransactions
                     $this->unknown[] = implode(',', $row);
                     return false;
                 }
+                if ($row[0] === 'Posted Date') {
+                    // Header row
+                    return false;
+                }
+                
                 $description = $fullDescription = $row[2];
                 $date = \DateTime::createFromFormat('d/m/Y', $row[0]);
                 $amount = $row[3] ?: $row[4]; // Either the debit or the credit column will be filled in
