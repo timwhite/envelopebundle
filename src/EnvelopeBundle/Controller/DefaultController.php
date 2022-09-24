@@ -103,7 +103,7 @@ class DefaultController extends Controller
                         ;
                 },
             ])
-            ->add('accountType', ChoiceType::class, ['choices' => importBankTransactions::$accountTypes])
+            ->add('accountType', ChoiceType::class, ['choices' => importBankTransactions::ACCOUNT_TYPES])
             ->add('bankExport', FileType::class)
             ->add('save', SubmitType::class, [ 'label' => 'Import transactions' ] )
             ->getForm();

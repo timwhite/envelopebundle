@@ -7,11 +7,17 @@ use EnvelopeBundle\Entity\Transaction;
 
 class importBankTransactions
 {
-    public static $accountTypes = [
-        'NAB' => 'NAB',
-        'ANZ' => 'ANZ',
-        'UP' => 'UP',
-        'Athena' => 'ATHENA',
+    const ACCOUNT_TYPE_NAB = 'NAB';
+    const ACCOUNT_TYPE_ANZ = 'ANC';
+    const ACCOUNT_TYPE_UP = 'UP';
+    const ACCOUNT_TYPE_ATHENA = 'ATHENA';
+    const ACCOUNT_TYPE_FMC = 'FMC';
+    const ACCOUNT_TYPES = [
+        'NAB' => self::ACCOUNT_TYPE_NAB,
+        'ANZ' => self::ACCOUNT_TYPE_ANZ,
+        'UP' => self::ACCOUNT_TYPE_UP,
+        'Athena' => self::ACCOUNT_TYPE_ATHENA,
+        'FirstMac' => self::ACCOUNT_TYPE_FMC,
     ];
     private $duplicates = [];
     private $ignored = [];
@@ -151,7 +157,24 @@ class importBankTransactions
         $extra = [];
         // ANZ and NAB differ for importing description
         switch ($fileType) {
-            case 'ANZ':
+            case self::ACCOUNT_TYPE_FMC:
+                /**
+                 * FirstMac format is:
+                 *
+                 * Firstline contains the account number, then
+                 * Posted Date,Effective Date,Description,Debit,Credit,Balance
+                 * Empty line
+                 */
+                if (sizeof($row) != 6) {
+                    $this->unknown[] = implode(',', $row);
+                    return false;
+                }
+                $description = $fullDescription = $row[2];
+                $date = \DateTime::createFromFormat('d/m/Y', $row[0]);
+                $amount = $row[3] ?: $row[4]; // Either the debit or the credit column will be filled in
+
+                break;
+            case self::ACCOUNT_TYPE_ANZ:
                 // ANZ format is date,amount,description
                 if (sizeof($row) != 3) {
                     $this->unknown[] = implode(',', $row);
@@ -173,7 +196,7 @@ class importBankTransactions
                 // Remove any , characters in the string, they stuff things up too
                 $amount = str_replace(',', '', $amount);
                 break;
-            case 'ATHENA':
+            case self::ACCOUNT_TYPE_ATHENA:
                 /**
                  * Athena format is:
                  * Date, Description, Detail, Debit, Credit, Balance
@@ -220,7 +243,7 @@ class importBankTransactions
                 
 
                 break;
-            case 'NAB':
+            case self::ACCOUNT_TYPE_NAB:
                 /**
                  * Old NAB Format was
                  * Date,Amount,_,_,Type,Description,Balance,_
@@ -267,7 +290,7 @@ class importBankTransactions
                 $amount = str_replace(',', '', $amount);
                 break;
 
-            case 'UP':
+            case self::ACCOUNT_TYPE_UP:
                 /**
                  * UP Bank CSV Format
                  * Time, BSB/Account number, Transaction Type, Payee, Description, Category, Tags,
