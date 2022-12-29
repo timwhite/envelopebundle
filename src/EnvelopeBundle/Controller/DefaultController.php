@@ -620,7 +620,7 @@ class DefaultController extends Controller
         );
     }
 
-    private function applyBudgetTemplate(Request $request, Template $template, $date, $description)
+    private function applyBudgetTemplate(Request $request, Template $template, \DateTime $date, $description)
     {
         // Get Special bank account
         $em = $this->getDoctrine()->getManager();
@@ -654,7 +654,7 @@ class DefaultController extends Controller
 
         $this->addFlash(
             'success',
-            'Budget Template Applied'
+            'Budget Template Applied - ' . $date->format('Y-m-d') . ' - ' . $description
         );
 
     }
