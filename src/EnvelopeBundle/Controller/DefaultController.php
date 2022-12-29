@@ -605,7 +605,7 @@ class DefaultController extends Controller
                 while ($template->getLastAppliedDate() < $date) {
                     $applyDate = clone $template->getLastAppliedDate();
                     $applyDate->modify('+2 weeks');
-                    $this->applyBudgetTemplate($request, $template, $applyDate, $date);
+                    $this->applyBudgetTemplate($request, $template, $applyDate, $description);
                 }
             } else {
                 $this->applyBudgetTemplate($request, $template, $date, $description);
