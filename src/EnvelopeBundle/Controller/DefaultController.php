@@ -585,7 +585,8 @@ class DefaultController extends Controller
             ->add('date', DateType::class, ['widget' => 'single_text'])
             ->add('description')
             ->add('fortnightly_automatic', CheckboxType::class, [
-                'label' => 'Apply each fortnight from the last applied date until the selected date?'
+                'label' => 'Apply each fortnight from the last applied date until the selected date?',
+                'required' => 'false'
             ])
             ->add('save', SubmitType::class, [ 'label' => 'Apply Budget Template' ] )
             ->getForm();
@@ -606,9 +607,7 @@ class DefaultController extends Controller
                     $applyDate->add(new \DateInterval('+2 weeks'));
                     $this->applyBudgetTemplate($request, $template, $applyDate, $date);
                 }
-
             } else {
-
                 $this->applyBudgetTemplate($request, $template, $date, $description);
             }
 
