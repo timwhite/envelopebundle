@@ -604,7 +604,7 @@ class DefaultController extends Controller
             if ($form->get('fortnightly_automatic')->getData()) {
                 while ($template->getLastAppliedDate() < $date) {
                     $applyDate = clone $template->getLastAppliedDate();
-                    $applyDate->add(new \DateInterval('+2 weeks'));
+                    $applyDate->modify('+2 weeks');
                     $this->applyBudgetTemplate($request, $template, $applyDate, $date);
                 }
             } else {
