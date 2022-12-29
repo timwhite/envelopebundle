@@ -19,6 +19,7 @@ use EnvelopeBundle\Shared\importBankTransactions;
 use EnvelopeBundle\Entity\AccessGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -583,19 +584,33 @@ class DefaultController extends Controller
                 ])
             ->add('date', DateType::class, ['widget' => 'single_text'])
             ->add('description')
+            ->add('fortnightly_automatic', CheckboxType::class, [
+                'label' => 'Apply each fortnight from the last applied date until the selected date?'
+            ])
             ->add('save', SubmitType::class, [ 'label' => 'Apply Budget Template' ] )
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Template $template */
+            $template = $form->get('template')->getData();
+            /** @var \DateTime $date */
+            $date = $form->get('date')->getData();
 
-            $this->applyBudgetTemplate(
-                $request,
-                $form->get('template')->getData(),
-                $form->get('date')->getData(),
-                $form->get('description')->getData()
-            );
+            $description = $form->get('description')->getData();
+
+            if ($form->get('fortnightly_automatic')->getData()) {
+                while ($template->getLastAppliedDate() < $date) {
+                    $applyDate = clone $template->getLastAppliedDate();
+                    $applyDate->add(new \DateInterval('+2 weeks'));
+                    $this->applyBudgetTemplate($request, $template, $applyDate, $date);
+                }
+
+            } else {
+
+                $this->applyBudgetTemplate($request, $template, $date, $description);
+            }
 
             return $this->redirectToRoute('envelope_budget_apply_template');
         }
