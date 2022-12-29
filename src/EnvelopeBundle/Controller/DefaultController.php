@@ -586,7 +586,7 @@ class DefaultController extends Controller
             ->add('description')
             ->add('fortnightly_automatic', CheckboxType::class, [
                 'label' => 'Apply each fortnight from the last applied date until the selected date?',
-                'required' => 'false'
+                'required' => false
             ])
             ->add('save', SubmitType::class, [ 'label' => 'Apply Budget Template' ] )
             ->getForm();
