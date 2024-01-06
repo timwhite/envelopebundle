@@ -162,20 +162,19 @@ class importBankTransactions
                  * FirstMac format is:
                  *
                  * Firstline contains the account number, then
-                 * Posted Date,Effective Date,Description,Debit,Credit,Balance
-                 * Empty line
+                 * Effective Date,Posted Date,Description,Debit,Credit,Balance
                  */
                 if (sizeof($row) != 6) {
                     $this->unknown[] = implode(',', $row);
                     return false;
                 }
-                if ($row[0] === 'Posted Date') {
+                if ($row[1] === 'Posted Date') {
                     // Header row
                     return false;
                 }
                 
                 $description = $fullDescription = $row[2];
-                $date = \DateTime::createFromFormat('d/m/Y', $row[0]);
+                $date = \DateTime::createFromFormat('d/m/Y', $row[1]);
                 $amount = $row[3] ?: $row[4]; // Either the debit or the credit column will be filled in
 
                 break;
