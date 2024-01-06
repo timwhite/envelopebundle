@@ -43,7 +43,7 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     protected $username = null;
 
     /**
-     * @ORM\Column(name="avatar", type="string", length=255, nullable=TRUE)
+     * @ORM\Column(name="avatar", type="string", length=2048, nullable=TRUE)
      */
     protected $avatar;
 
