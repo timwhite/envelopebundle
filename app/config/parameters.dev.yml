@@ -12,4 +12,4 @@ parameters:
     secret: ThisTokenIsNotSoSecretChangeIt
     google_client_id: 699630844600-asjdje680oen59gqvo1vubvk0hinbc7r.apps.googleusercontent.com
     google_client_secret: NotSoSecret
-    api_secret_key_file: "%kernel.root_dir%/secrets/api_secret"
+    api_secret_key_file: '%kernel.root_dir%/secrets/api_secret'
