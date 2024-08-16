@@ -6,40 +6,35 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * BudgetTransaction
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class BudgetTransaction
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * We need EAGER loading due to us displaying the balance on our _toString method, which requires all
      * the transactions
-     * @ORM\ManyToOne(targetEntity="Transaction", inversedBy="budget_transactions", fetch="EAGER")
-     * @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=false)
      */
+    #[ORM\JoinColumn(name: 'transaction_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \Transaction::class, inversedBy: 'budget_transactions', fetch: 'EAGER')]
     private $transaction;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="BudgetAccount", inversedBy="budget_transactions")
-     * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'budget_account_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \BudgetAccount::class, inversedBy: 'budget_transactions')]
     private $budgetAccount;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="Amount", type="decimal", scale=2, nullable=false)
      */
+    #[ORM\Column(name: 'Amount', type: 'decimal', scale: 2, nullable: false)]
     private $amount;
 
 

@@ -6,81 +6,69 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Transactions
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class Transaction
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="Description", type="string", length=255)
      */
+    #[ORM\Column(name: 'Description', type: 'string', length: 255)]
     private $description;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="FullDescription", type="string", length=255)
      */
+    #[ORM\Column(name: 'FullDescription', type: 'string', length: 255)]
     private $fullDescription;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Account")
-     * @ORM\JoinColumn(name="account_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \Account::class)]
     private $account;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="Date", type="date", nullable=false)
      */
+    #[ORM\Column(name: 'Date', type: 'date', nullable: false)]
     private $date;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="Amount", type="decimal", scale=2, nullable=false)
      */
+    #[ORM\Column(name: 'Amount', type: 'decimal', scale: 2, nullable: false)]
     private $amount;
 
     /**
      * Due to us getting the Budget Sum in our _toString, we need EAGER loading
-     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="transaction", cascade="persist", fetch="EAGER")
      */
+    #[ORM\OneToMany(targetEntity: \BudgetTransaction::class, mappedBy: 'transaction', cascade: 'persist', fetch: 'EAGER')]
     private $budget_transactions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Import")
-     * @ORM\JoinColumn(name="import_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\JoinColumn(name: 'import_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \Import::class)]
     private $import;
 
     /**
      * @var array|null
-     *
-     * @ORM\Column(name="extra", type="json", nullable=true)
      */
+    #[ORM\Column(name: 'extra', type: 'json', nullable: true)]
     private $extra;
 
     /**
      * An external immutable ID to match this transaction automatically via an API or similar
      *
      * @var string
-     *
-     * @ORM\Column(type="string", nullable=true, length=512)
      */
+    #[ORM\Column(type: 'string', nullable: true, length: 512)]
     private $externalId;
 
     /**

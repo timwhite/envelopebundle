@@ -9,45 +9,37 @@ use App\Entity\BudgetAccount;
 
 /**
  * TemplateTransaction
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class TemplateTransaction
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255)
      */
+    #[ORM\Column(name: 'description', type: 'string', length: 255)]
     private $description;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="amount", type="decimal", scale=2, nullable=false)
      */
+    #[ORM\Column(name: 'amount', type: 'decimal', scale: 2, nullable: false)]
     private $amount;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BudgetAccount", inversedBy="template_transactions")
-     * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'budget_account_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\BudgetAccount::class, inversedBy: 'template_transactions')]
     private $budgetAccount;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Budget\Template", inversedBy="template_transactions")
-     * @ORM\JoinColumn(name="template_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'template_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Budget\Template::class, inversedBy: 'template_transactions')]
     private $template;
 
 

@@ -6,50 +6,41 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Account
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class Account
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="Name", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: 'Name', type: 'string', length: 255, nullable: false)]
     private $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="account", fetch="EAGER")
-     * @ORM\OrderBy({"date" = "DESC"})
-     */
+    #[ORM\OneToMany(targetEntity: \Transaction::class, mappedBy: 'account', fetch: 'EAGER')]
+    #[ORM\OrderBy(['date' => 'DESC'])]
     private $transactions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="AccessGroup")
-     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
-     */
+    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
     private $access_group;
 
     /**
-     * @ORM\Column(name="budget_transfer", type="boolean", )
      * @var boolean
      */
+    #[ORM\Column(name: 'budget_transfer', type: 'boolean')]
     private $budgetTransfer = false;
 
 
-    /**
-     * @ORM\OneToMany(targetEntity="ExternalConnector", mappedBy="account")
-     */
+    #[ORM\OneToMany(targetEntity: \ExternalConnector::class, mappedBy: 'account')]
     private $externalConnectors;
 
     /**

@@ -2,66 +2,55 @@
 
 namespace App\Entity\Budget;
 
+use App\Entity\Budget\TemplateTransaction;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Budget\TemplateTransaction;
 use App\Entity\AccessGroup;
 
 /**
  * Template
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class Template
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255)
      */
+    #[ORM\Column(name: 'description', type: 'string', length: 255)]
     private $description;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(name="last_applied_date", type="date", nullable=True)
      */
+    #[ORM\Column(name: 'last_applied_date', type: 'date', nullable: true)]
     private $last_applied_date;
 
-    /**
-     * @ORM\OneToMany(targetEntity="TemplateTransaction", mappedBy="template", cascade={"persist","remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'template', targetEntity: TemplateTransaction::class, cascade: ['persist', 'remove'])]
     private $template_transactions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\App\Entity\AccessGroup")
-     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
-     */
+    #[ORM\Column(name: 'Archived', type: 'boolean', nullable: false)]
+    private $archived = false;
+
+    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName:'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
     private $access_group;
 
-
-    /**
-     * @ORM\Column(name="Archived", type="boolean", nullable=false)
-     */
-    private $archived = false;
 
     public function getBalance()
     {

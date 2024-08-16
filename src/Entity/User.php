@@ -18,40 +18,26 @@ use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
 class User implements EquatableInterface
 {
 
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected $firstname;
-    /**
-     * @ORM\Column(type="string", nullable=TRUE)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $lastname;
-    /**
-     * @ORM\Column(type="string", nullable=TRUE)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $email;
 
-    /**
-     * @ORM\Column(name="username", type="string", length=255, unique=true, nullable=TRUE)
-     */
+    #[ORM\Column(name: 'username', type: 'string', length: 255, unique: true, nullable: true)]
     protected $username = null;
 
-    /**
-     * @ORM\Column(name="avatar", type="string", length=2048, nullable=TRUE)
-     */
+    #[ORM\Column(name: 'avatar', type: 'string', length: 2048, nullable: true)]
     protected $avatar;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="AccessGroup")
-     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FAlSE)
-     */
+    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
     private $access_group;
 
     /**

@@ -7,47 +7,41 @@ use EnvelopeBundle\Shared\BudgetAccountStats;
 
 /**
  * Account
- *
- * @ORM\Table()
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
  */
+#[ORM\Table]
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class BudgetAccount
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
      * @TODO unique isn't enforced, and it should be unique with the budgetGroup
-     * @ORM\Column(name="BudgetName", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: 'BudgetName', type: 'string', length: 255, nullable: false)]
     private $budget_name;
 
-    /**
-     * @ORM\OneToMany(targetEntity="BudgetTransaction", mappedBy="budgetAccount")
-     */
+    #[ORM\OneToMany(targetEntity: \BudgetTransaction::class, mappedBy: 'budgetAccount')]
     private $budget_transactions;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
-     */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Budget\TemplateTransaction::class, mappedBy: 'budgetAccount')]
     private $template_transactions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="BudgetGroup", inversedBy="budget_accounts")
-     * @ORM\JoinColumn(name="budget_group", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'budget_group', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \BudgetGroup::class, inversedBy: 'budget_accounts')]
     private $budget_group;
 
-    /** @var  BudgetAccountStats $budgetStats */
+    /**
+     * @var  BudgetAccountStats $budgetStats
+     */
     private $budgetStats;
 
     /**
@@ -109,7 +103,7 @@ class BudgetAccount
         $this->budgetStats = new BudgetAccountStats($this->id);
     }
 
-    /** @ORM\PostLoad */
+    #[ORM\PostLoad]
     public function postLoad()
     {
         if(!$this->budgetStats)

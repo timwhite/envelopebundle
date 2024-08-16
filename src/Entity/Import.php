@@ -6,32 +6,27 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Import
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class Import
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="ImportTime", type="datetime", nullable=false, unique=true)
      */
+    #[ORM\Column(name: 'ImportTime', type: 'datetime', nullable: false, unique: true)]
     private $importTime;
 
 
-    /**
-     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="import")
-     */
+    #[ORM\OneToMany(targetEntity: \Transaction::class, mappedBy: 'import')]
     private $transactions;
 
     public function __construct()

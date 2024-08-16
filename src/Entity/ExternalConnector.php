@@ -5,52 +5,46 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table
- */
+#[ORM\Table]
+#[ORM\Entity]
 class ExternalConnector
 {
     /**
      * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", nullable=false)
-     * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', nullable: false)]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
      * @var Account
-     *
-     * @ORM\ManyToOne(targetEntity="Account", inversedBy="externalConnectors")
      */
+    #[ORM\ManyToOne(targetEntity: \Account::class, inversedBy: 'externalConnectors')]
     private $account;
 
     /**
      * External system ID. e.g. account ID
      *
      * @var string
-     *
-     * @ORM\Column (type="string", length=512, nullable=false)
      */
+    #[ORM\Column(type: 'string', length: 512, nullable: false)]
     private $systemId;
 
     /**
      * Externals system type, e.g. 'UP' for an UP bank account API connection
      *
      * @var string
-     *
-     * @ORM\Column (type="string", length=64, nullable=false)
      */
+    #[ORM\Column(type: 'string', length: 64, nullable: false)]
     private $systemType;
 
     /**
      * External system API credential. This is encoded using a secret key unique to each installation
      *
      * @var string|null
-     *
-     * @ORM\Column (type="string", length=2048, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 2048, nullable: true)]
     private $systemCredential;
 
     /**

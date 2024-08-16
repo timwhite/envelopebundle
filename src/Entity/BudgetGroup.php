@@ -6,37 +6,30 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * BudgetGroup
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class BudgetGroup
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity="BudgetAccount", mappedBy="budget_group")
-     */
+    #[ORM\OneToMany(targetEntity: \BudgetAccount::class, mappedBy: 'budget_group')]
     private $budget_accounts;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="AccessGroup")
-     * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
-     */
+    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
     private $access_group;
 
 

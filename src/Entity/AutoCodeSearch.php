@@ -6,44 +6,30 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * AutoCodeSearch
- *
- * @ORM\Table()
- * @ORM\Entity
  */
+#[ORM\Table]
+#[ORM\Entity]
 class AutoCodeSearch
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="BudgetAccount")
-     * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\JoinColumn(name: 'budget_account_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \BudgetAccount::class)]
     private $budgetAccount;
 
-    /**
-     * @ORM\Column(name="search", type="string", length=255, nullable=false)
-     */
+    #[ORM\Column(name: 'search', type: 'string', length: 255, nullable: false)]
     private $search;
 
-    /**
-     * @ORM\Column(name="description_rename", type="string", length=255, nullable=true)
-     *
-     * The description we rename autocoded transactions
-     */
+    #[ORM\Column(name: 'description_rename', type: 'string', length: 255, nullable: true)] // The description we rename autocoded transactions
     private $rename = null;
 
-    /**
-     * @ORM\Column(name="amount", type="decimal", scale=2, nullable=true)
-     *
-     * An amount for searching exact amounts
-     */
+    #[ORM\Column(name: 'amount', type: 'decimal', scale: 2, nullable: true)] // An amount for searching exact amounts
     private $amount = null;
 
     /**
