@@ -110,7 +110,7 @@ class TransactionController extends AbstractController
         );
     }
 
-    #[Route(path: '/bulkcode', name: 'envelope_bulk_code')]
+    #[Route(path: '/bulkcode', name: 'envelope_bulk_code', methods: ['POST'])]
     public function transactionBulkCodeAction(Request $request, TransactionRepository $transactionRepository, BudgetAccountRepository $budgetAccountRepository): Response
     {
         $bulkTransactions = $request->get('bulktransactions');
