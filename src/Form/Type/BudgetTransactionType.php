@@ -32,7 +32,7 @@ class BudgetTransactionType extends AbstractType
                     // the function returns a QueryBuilder object
     },
             ])
-            ->add('amount', MoneyType::class, ['required' => false, 'currency' => 'AUD', 'attr' => ['class'   => 'budgetransactionamount']])
+            ->add('amount', MoneyType::class, ['required' => false, 'currency' => 'AUD', 'attr' => ['class'   => 'budgetTransactionAmount']])
         ;
 
     }

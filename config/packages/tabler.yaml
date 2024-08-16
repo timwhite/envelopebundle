@@ -19,7 +19,7 @@ tabler:
         # overlap = https://preview.tabler.io/layout-navbar-overlap.html
         navbar_overlap: false
         # true = boxed layout, false = full-screen
-        boxed_layout: false
+        boxed_layout: true
         # false = left to right, true = right to left
         rtl_mode: false
         # true = only avatar, false = show username and title as well

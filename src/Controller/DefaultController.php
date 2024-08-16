@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\BudgetAccountRepository;
 use App\Voter\TransactionVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -36,7 +37,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DefaultController extends AbstractController
 {
-    public function __construct()
+    public function __construct(private EntityManagerInterface $em)
     {
 
     }
@@ -251,7 +252,7 @@ class DefaultController extends AbstractController
                 if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
                     $budgetTransaction->setTransaction(null);
-                    //$em->remove($budgetTransaction);
+                    $this->em->remove($budgetTransaction);
                 }
             }
 
@@ -260,9 +261,8 @@ class DefaultController extends AbstractController
                 $transaction->setFullDescription($transaction->getDescription());
             }
 
-            // @TODO fix this so we can persist transactions
-//            $em->persist($transaction);
-//            $em->flush();
+            $this->em->persist($transaction);
+            $this->em->flush();
 
             $this->addFlash(
                 'success',

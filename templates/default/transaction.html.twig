@@ -5,21 +5,14 @@
 {% block page_content %}
     <div class="row">
         <div class="col-md-6">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Transactions {{ transaction.id }} details</h3>
-                    <div class="box-tools pull-right">
-                        {% if transaction.account %}
-                        <span class="label label-info">{{ transaction.account.name }}</span>
-                        {% endif %}
-                        {% if transaction.unassignedsum != 0 %}
-                        <span class="label label-warning">Unbalanced Transaction</span>
-                        {% endif %}
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
+            <div class="card">
+                {% if transaction.unassignedsum != 0 %}
+                    <div class="ribbon bg-red-lt">Unbalanced Transaction</div>
+                {% endif %}
+                <div class="card-header with-border">
+                    <h3 class="card-title">Transactions {{ transaction.id }} details {% if transaction.account %}<span class="card-subtitle">{{ transaction.account.name }}{% endif %}</span></h3>
                 </div><!-- /.box-header -->
-                <div class="box-body">
-                    {% form_theme addform 'bootstrap_3_layout.html.twig' %}
+                <div class="card-body">
                     {{ form_start(addform) }}
 
                     <strong>Date</strong> {{ transaction.date|format_datetime('short', 'none') }}<br/>
@@ -118,29 +111,17 @@
 
 {% endblock %}
 
-{% block javascripts_inline %}
+{% block javascripts %}
+    {{ parent() }}
 <script>
-    $('.budgetransactionamount').focus(function () {
-        var $unassigned=$('#unassignedamount').data('unassignedamount');
-            if (!this.value && $unassigned != 0) {
-                this.value = $unassigned;
-            }
-        }
-    )
-
-    $(document).ready(function(){
-        $('.combobox').combobox();
+    // When focusing on an empty budgetTransactionAmount input, if there is an unassigned amount, fill it in
+    document.querySelectorAll('.budgetTransactionAmount').forEach((el) => {
+       el.addEventListener('focus', (e) => {
+           let unassignedAmount = Number(document.getElementById("unassignedamount").dataset.unassignedamount);
+           if (!e.target.value && unassignedAmount !== 0) {
+               e.target.value = unassignedAmount;
+           }
+       })
     });
 </script>
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script src="{{ asset('assets/vendor/bootstrap-combobox/js/bootstrap-combobox.js') }}"></script>
-{% endblock %}
-
-{% block stylesheets %}
-{{ parent() }}
-<link rel="stylesheet"
-      href="{{ asset('assets/vendor/bootstrap-combobox/css/bootstrap-combobox.css') }}">
 {% endblock %}
