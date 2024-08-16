@@ -3,7 +3,7 @@
 namespace EnvelopeBundle\EventListener;
 
 use Avanzu\AdminThemeBundle\Event\ShowUserEvent;
-use EnvelopeBundle\Entity\User;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 

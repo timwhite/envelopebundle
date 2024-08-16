@@ -29,7 +29,7 @@ class BudgetTemplateType extends AbstractType
 
         /*if(!$options['existing_entity']) {
 
-            $builder->add('account', 'entity', ["class" => 'EnvelopeBundle\Entity\Account', 'label' => false,]);
+            $builder->add('account', 'entity', ["class" => 'App\Entity\Account', 'label' => false,]);
             $builder->add('amount', 'money', ['label' => false, 'currency' => 'AUD']);
             $builder->add('date', 'date', ['widget' => 'single_text']);
             //$builder->add('fulldescription', null, ['disabled' => $existing, 'label' => false,]);

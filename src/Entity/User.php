@@ -1,9 +1,10 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -14,7 +15,7 @@ use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
  * @ORM\Entity
  */
 
-class User extends OAuthUser implements EquatableInterface,ThemeUser
+class User implements EquatableInterface,ThemeUser
 {
 
     /**
@@ -248,10 +249,10 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     /**
      * Set access_group
      *
-     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @param \App\Entity\AccessGroup $accessGroup
      * @return User
      */
-    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup = null)
+    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup = null)
     {
         $this->access_group = $accessGroup;
 
@@ -261,7 +262,7 @@ class User extends OAuthUser implements EquatableInterface,ThemeUser
     /**
      * Get access_group
      *
-     * @return \EnvelopeBundle\Entity\AccessGroup 
+     * @return \App\Entity\AccessGroup
      */
     public function getAccessGroup()
     {

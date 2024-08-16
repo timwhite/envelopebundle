@@ -1,11 +1,11 @@
 <?php
 
-namespace EnvelopeBundle\Entity\Budget;
+namespace App\Entity\Budget;
 
-use EnvelopeBundle\Entity\Budget\Template;
+use App\Entity\Budget\Template;
 
 use Doctrine\ORM\Mapping as ORM;
-use EnvelopeBundle\Entity\BudgetAccount;
+use App\Entity\BudgetAccount;
 
 /**
  * TemplateTransaction
@@ -39,13 +39,13 @@ class TemplateTransaction
     private $amount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="EnvelopeBundle\Entity\BudgetAccount", inversedBy="template_transactions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BudgetAccount", inversedBy="template_transactions")
      * @ORM\JoinColumn(name="budget_account_id", referencedColumnName="id", nullable=false)
      */
     private $budgetAccount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="EnvelopeBundle\Entity\Budget\Template", inversedBy="template_transactions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Budget\Template", inversedBy="template_transactions")
      * @ORM\JoinColumn(name="template_id", referencedColumnName="id", nullable=false)
      */
     private $template;
@@ -134,10 +134,10 @@ class TemplateTransaction
     /**
      * Set budgetAccount
      *
-     * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccount
+     * @param \App\Entity\BudgetAccount $budgetAccount
      * @return TemplateTransaction
      */
-    public function setBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccount = null)
+    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount = null)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -147,7 +147,7 @@ class TemplateTransaction
     /**
      * Get budgetAccount
      *
-     * @return \EnvelopeBundle\Entity\BudgetAccount 
+     * @return \App\Entity\BudgetAccount
      */
     public function getBudgetAccount()
     {

@@ -1,18 +1,19 @@
 <?php
 
 
-namespace Controller;
+namespace App\Controller;
 
 use Doctrine\DBAL\Types\DecimalType;
-use EnvelopeBundle\Entity\BudgetAccount;
+use App\Entity\BudgetAccount;
 use EnvelopeBundle\Shared\BudgetAccountStats;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class SearchController extends Controller
+class SearchController extends AbstractController
 {
 
     public function searchAction(Request $request) {

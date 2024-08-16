@@ -5,7 +5,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Accounts", label: "Budget Account" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\BudgetAccount
+            - App\Entity\BudgetAccount
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -16,7 +16,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Accounts", label: "Bank Account" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\Account
+            - App\Entity\Account
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -27,7 +27,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Transactions", label: "Budget Transactions" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\BudgetTransaction
+            - App\Entity\BudgetTransaction
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -38,7 +38,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Transactions", label: "Bank Transactions" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\Transaction
+            - App\Entity\Transaction
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -49,7 +49,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Coding", label: "Auto Code Searches" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\AutoCodeSearch
+            - App\Entity\AutoCodeSearch
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -60,7 +60,7 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Template", label: "Budget Templates" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\Budget\Template
+            - App\Entity\Budget\Template
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
@@ -71,32 +71,32 @@ services:
             - { name: sonata.admin, manager_type: orm, group: "Template", label: "Budget Template Transactions" }
         arguments:
             - ~
-            - EnvelopeBundle\Entity\Budget\TemplateTransaction
+            - App\Entity\Budget\TemplateTransaction
             - ~
         calls:
             - [ setTranslationDomain, [EnvelopeBundle]]
 
     sonata.admin.access_group:
         class: EnvelopeBundle\Admin\AccessGroupAdmin
-        arguments: [~, EnvelopeBundle\Entity\AccessGroup, SonataAdminBundle:CRUD]
+        arguments: [~, App\Entity\AccessGroup, SonataAdminBundle:CRUD]
         tags:
             - {name: sonata.admin, manager_type: orm, group: admin, label: AccessGroup}
 
     sonata.admin.user:
         class: EnvelopeBundle\Admin\UserAdmin
-        arguments: [~, EnvelopeBundle\Entity\User, SonataAdminBundle:CRUD]
+        arguments: [~, App\Entity\User, SonataAdminBundle:CRUD]
         tags:
             - {name: sonata.admin, manager_type: orm, group: admin, label: User}
 
     envelope.admin.budget_group:
         class: EnvelopeBundle\Admin\BudgetGroupAdmin
-        arguments: [~, EnvelopeBundle\Entity\BudgetGroup, SonataAdminBundle:CRUD]
+        arguments: [~, App\Entity\BudgetGroup, SonataAdminBundle:CRUD]
         tags:
             - {name: sonata.admin, manager_type: orm, group: "Accounts", label: "Budget Group" }
 
     envelope.admin.external_connector:
         class: EnvelopeBundle\Admin\ExternalConnectorAdmin
-        arguments: [~, EnvelopeBundle\Entity\ExternalConnector, Sonata\AdminBundle\Controller\CRUDController]
+        arguments: [~, App\Entity\ExternalConnector, Sonata\AdminBundle\Controller\CRUDController]
         tags:
             - { name: sonata.admin, manager_type: orm, group: admin, label: ExternalConnector }
         public: true

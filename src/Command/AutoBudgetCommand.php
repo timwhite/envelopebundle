@@ -9,9 +9,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\Transaction;
-use EnvelopeBundle\Entity\BudgetTransaction;
+use App\Entity\Account;
+use App\Entity\Transaction;
+use App\Entity\BudgetTransaction;
 
 
 class AutoBudgetCommand  extends ContainerAwareCommand

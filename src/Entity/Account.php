@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -114,10 +114,10 @@ class Account
     /**
      * Add transactions
      *
-     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     * @param \App\Entity\Transaction $transactions
      * @return Account
      */
-    public function addTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    public function addTransaction(\App\Entity\Transaction $transactions)
     {
         $this->transactions[] = $transactions;
 
@@ -127,9 +127,9 @@ class Account
     /**
      * Remove transactions
      *
-     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     * @param \App\Entity\Transaction $transactions
      */
-    public function removeTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    public function removeTransaction(\App\Entity\Transaction $transactions)
     {
         $this->transactions->removeElement($transactions);
     }
@@ -147,10 +147,10 @@ class Account
     /**
      * Set access_group
      *
-     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @param \App\Entity\AccessGroup $accessGroup
      * @return Account
      */
-    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -160,7 +160,7 @@ class Account
     /**
      * Get access_group
      *
-     * @return \EnvelopeBundle\Entity\AccessGroup 
+     * @return \App\Entity\AccessGroup
      */
     public function getAccessGroup()
     {

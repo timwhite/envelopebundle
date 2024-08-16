@@ -4,5 +4,6 @@ set -e
 chown www-data -R /code/var /code/vendor
 cd /code
 composer install
+composer dumpautoload -o
 
 exec php-fpm "$@"

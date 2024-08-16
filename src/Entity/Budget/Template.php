@@ -1,12 +1,12 @@
 <?php
 
-namespace EnvelopeBundle\Entity\Budget;
+namespace App\Entity\Budget;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use EnvelopeBundle\Entity\Budget\TemplateTransaction;
-use EnvelopeBundle\Entity\AccessGroup;
+use App\Entity\Budget\TemplateTransaction;
+use App\Entity\AccessGroup;
 
 /**
  * Template
@@ -52,7 +52,7 @@ class Template
     private $template_transactions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\EnvelopeBundle\Entity\AccessGroup")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\AccessGroup")
      * @ORM\JoinColumn(name="accessgroup_id", referencedColumnName="id", nullable=FALSE)
      */
     private $access_group;
@@ -175,10 +175,10 @@ class Template
     /**
      * Add template_transactions
      *
-     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      * @return Template
      */
-    public function addTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -188,9 +188,9 @@ class Template
     /**
      * Remove template_transactions
      *
-     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      */
-    public function removeTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
@@ -273,10 +273,10 @@ class Template
     /**
      * Set access_group
      *
-     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @param \App\Entity\AccessGroup $accessGroup
      * @return Template
      */
-    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -286,7 +286,7 @@ class Template
     /**
      * Get access_group
      *
-     * @return \EnvelopeBundle\Entity\AccessGroup
+     * @return \App\Entity\AccessGroup
      */
     public function getAccessGroup()
     {

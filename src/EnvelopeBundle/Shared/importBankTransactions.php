@@ -2,8 +2,8 @@
 
 namespace EnvelopeBundle\Shared;
 
-use EnvelopeBundle\Entity\Import;
-use EnvelopeBundle\Entity\Transaction;
+use App\Entity\Import;
+use App\Entity\Transaction;
 
 class importBankTransactions
 {
@@ -68,7 +68,7 @@ class importBankTransactions
                 if (!$importDuplicates) {
                     // Attempt to detect duplicate transaction
                     $query = $em->createQuery('
-                      SELECT t FROM EnvelopeBundle\Entity\Transaction t
+                      SELECT t FROM App\Entity\Transaction t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
                       AND t.amount = :amount

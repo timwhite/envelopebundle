@@ -5,7 +5,7 @@ namespace EnvelopeBundle\Shared;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
-use EnvelopeBundle\Entity\BudgetAccount;
+use App\Entity\BudgetAccount;
 
 class BudgetAccountStatsLoader
 {

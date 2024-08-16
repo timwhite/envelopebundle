@@ -3,8 +3,8 @@
 namespace EnvelopeBundle\Shared;
 
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Entity\AutoCodeSearch;
-use EnvelopeBundle\Entity\BudgetTransaction;
+use App\Entity\AutoCodeSearch;
+use App\Entity\BudgetTransaction;
 
 class autoCodeTransactions
 {

@@ -1,16 +1,16 @@
 <?php
 
-namespace EnvelopeBundle\DataFixtures\ORM;
+namespace App\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\Budget\Template;
-use EnvelopeBundle\Entity\Budget\TemplateTransaction;
-use EnvelopeBundle\Entity\BudgetAccount;
-use EnvelopeBundle\Entity\BudgetGroup;
+use Doctrine\Persistence\ObjectManager;
+use App\Entity\Account;
+use App\Entity\Budget\Template;
+use App\Entity\Budget\TemplateTransaction;
+use App\Entity\BudgetAccount;
+use App\Entity\BudgetGroup;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 

@@ -1,43 +1,50 @@
 <?php
 
-namespace Controller;
+namespace App\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\AutoCodeSearch;
-use EnvelopeBundle\Entity\Budget\Template;
-use EnvelopeBundle\Entity\BudgetAccount;
-use EnvelopeBundle\Entity\BudgetTransaction;
-use EnvelopeBundle\Entity\Transaction;
+use App\Entity\Account;
+use App\Entity\AutoCodeSearch;
+use App\Entity\Budget\Template;
+use App\Entity\BudgetAccount;
+use App\Entity\BudgetTransaction;
+use App\Entity\Transaction;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
 use EnvelopeBundle\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
-use EnvelopeBundle\Entity\AccessGroup;
+use App\Entity\AccessGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
+    public function __construct()
+    {
+
+    }
+
+    #[Route('/', name: 'dashboard')]
     public function dashboardAction()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if ($this->isGranted('IS_AUTHENTICATED')) {
             return $this->render(
-                'EnvelopeBundle:Default:welcome.html.twig'
+                'EnvelopeBundle:Default:dashboard.html.twig'
             );
         }
         return $this->render(
-            'EnvelopeBundle:Default:dashboard.html.twig'
+            'welcome.html.twig'
         );
     }
 

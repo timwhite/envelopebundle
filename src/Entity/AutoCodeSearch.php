@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -82,10 +82,10 @@ class AutoCodeSearch
     /**
      * Set budgetAccount
      *
-     * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccount
+     * @param \App\Entity\BudgetAccount $budgetAccount
      * @return AutoCodeSearch
      */
-    public function setBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccount)
+    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -95,7 +95,7 @@ class AutoCodeSearch
     /**
      * Get budgetAccount
      *
-     * @return \EnvelopeBundle\Entity\BudgetAccount 
+     * @return \App\Entity\BudgetAccount
      */
     public function getBudgetAccount()
     {

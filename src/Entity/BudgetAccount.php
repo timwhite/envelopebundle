@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Shared\BudgetAccountStats;
@@ -37,7 +37,7 @@ class BudgetAccount
     private $budget_transactions;
 
     /**
-     * @ORM\OneToMany(targetEntity="EnvelopeBundle\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
+     * @ORM\OneToMany(targetEntity="App\Entity\Budget\TemplateTransaction", mappedBy="budgetAccount")
      */
     private $template_transactions;
 
@@ -121,10 +121,10 @@ class BudgetAccount
     /**
      * Add budget_transactions
      *
-     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     * @param \App\Entity\BudgetTransaction $budgetTransactions
      * @return BudgetAccount
      */
-    public function addBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    public function addBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
 
@@ -134,9 +134,9 @@ class BudgetAccount
     /**
      * Remove budget_transactions
      *
-     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     * @param \App\Entity\BudgetTransaction $budgetTransactions
      */
-    public function removeBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    public function removeBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions->removeElement($budgetTransactions);
     }
@@ -220,10 +220,10 @@ class BudgetAccount
     /**
      * Set budget_group
      *
-     * @param \EnvelopeBundle\Entity\BudgetGroup $budgetGroup
+     * @param \App\Entity\BudgetGroup $budgetGroup
      * @return BudgetAccount
      */
-    public function setBudgetGroup(\EnvelopeBundle\Entity\BudgetGroup $budgetGroup)
+    public function setBudgetGroup(\App\Entity\BudgetGroup $budgetGroup)
     {
         $this->budget_group = $budgetGroup;
 
@@ -233,7 +233,7 @@ class BudgetAccount
     /**
      * Get budget_group
      *
-     * @return \EnvelopeBundle\Entity\BudgetGroup 
+     * @return \App\Entity\BudgetGroup
      */
     public function getBudgetGroup()
     {
@@ -245,10 +245,10 @@ class BudgetAccount
     /**
      * Add template_transactions
      *
-     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      * @return BudgetAccount
      */
-    public function addTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -258,9 +258,9 @@ class BudgetAccount
     /**
      * Remove template_transactions
      *
-     * @param \EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions
+     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      */
-    public function removeTemplateTransaction(\EnvelopeBundle\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
@@ -280,7 +280,7 @@ class BudgetAccount
         // NB: This should probably be handled by the view, instead of hard coding a locale here
         $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
         $desc = [];
-        /** @var \EnvelopeBundle\Entity\Budget\TemplateTransaction $trans */
+        /** @var \App\Entity\Budget\TemplateTransaction $trans */
         foreach($this->getTemplateTransactions() as $trans)
         {
             if(!$trans->getTemplate()->getArchived()) {

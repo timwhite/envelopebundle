@@ -1,12 +1,11 @@
 <?php
 
-namespace EnvelopeBundle\DataFixtures\ORM;
+namespace App\DataFixtures\ORM;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use EnvelopeBundle\Entity\AutoCodeSearch;
+use App\Entity\AutoCodeSearch;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 

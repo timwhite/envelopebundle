@@ -3,7 +3,7 @@
 
 namespace EnvelopeBundle\Command;
 
-use EnvelopeBundle\Entity\ExternalConnector;
+use App\Entity\ExternalConnector;
 use EnvelopeBundle\Service\ApiImportService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;

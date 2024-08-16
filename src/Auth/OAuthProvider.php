@@ -1,15 +1,16 @@
 <?php
 
-namespace EnvelopeBundle\Auth;
+namespace App\Auth;
 
 
+use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use EnvelopeBundle\Entity\User;
+use App\Entity\User;
 
 
-class OAuthProvider extends OAuthUserProvider
+class OAuthProvider implements OAuthAwareUserProviderInterface
 {
     protected $session, $doctrine, $admins;
 

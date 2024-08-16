@@ -1,6 +1,4 @@
 ---
-version: '3'
-
 # http://geekyplatypus.com/dockerise-your-php-application-with-nginx-and-php7-fpm/
 services:
     web:

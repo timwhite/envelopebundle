@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -89,10 +89,10 @@ class BudgetGroup
     /**
      * Add budget_accounts
      *
-     * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccounts
+     * @param \App\Entity\BudgetAccount $budgetAccounts
      * @return BudgetGroup
      */
-    public function addBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccounts)
+    public function addBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts[] = $budgetAccounts;
 
@@ -102,9 +102,9 @@ class BudgetGroup
     /**
      * Remove budget_accounts
      *
-     * @param \EnvelopeBundle\Entity\BudgetAccount $budgetAccounts
+     * @param \App\Entity\BudgetAccount $budgetAccounts
      */
-    public function removeBudgetAccount(\EnvelopeBundle\Entity\BudgetAccount $budgetAccounts)
+    public function removeBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts->removeElement($budgetAccounts);
     }
@@ -152,10 +152,10 @@ class BudgetGroup
     /**
      * Set access_group
      *
-     * @param \EnvelopeBundle\Entity\AccessGroup $accessGroup
+     * @param \App\Entity\AccessGroup $accessGroup
      * @return BudgetGroup
      */
-    public function setAccessGroup(\EnvelopeBundle\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -165,7 +165,7 @@ class BudgetGroup
     /**
      * Get access_group
      *
-     * @return \EnvelopeBundle\Entity\AccessGroup 
+     * @return \App\Entity\AccessGroup
      */
     public function getAccessGroup()
     {

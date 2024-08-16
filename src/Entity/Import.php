@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -81,10 +81,10 @@ class Import
     /**
      * Add transactions
      *
-     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     * @param \App\Entity\Transaction $transactions
      * @return Import
      */
-    public function addTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    public function addTransaction(\App\Entity\Transaction $transactions)
     {
         $this->transactions[] = $transactions;
 
@@ -94,9 +94,9 @@ class Import
     /**
      * Remove transactions
      *
-     * @param \EnvelopeBundle\Entity\Transaction $transactions
+     * @param \App\Entity\Transaction $transactions
      */
-    public function removeTransaction(\EnvelopeBundle\Entity\Transaction $transactions)
+    public function removeTransaction(\App\Entity\Transaction $transactions)
     {
         $this->transactions->removeElement($transactions);
     }

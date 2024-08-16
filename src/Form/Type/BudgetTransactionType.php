@@ -2,7 +2,7 @@
 namespace EnvelopeBundle\Form\Type;
 
 use Doctrine\ORM\EntityRepository;
-use EnvelopeBundle\Entity\BudgetAccount;
+use App\Entity\BudgetAccount;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;

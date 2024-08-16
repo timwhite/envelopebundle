@@ -2,7 +2,7 @@
 
 namespace EnvelopeBundle\Command;
 
-use EnvelopeBundle\Entity\Import;
+use App\Entity\Import;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,8 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use EnvelopeBundle\Entity\Account;
-use EnvelopeBundle\Entity\Transaction;
+use App\Entity\Account;
+use App\Entity\Transaction;
 
 // @TODO Update this to use importBankTransactions
 class ImportTransactionsCommand  extends ContainerAwareCommand
@@ -97,7 +97,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 {
                     // Attempt to detect duplicate transaction
                     $query = $em->createQuery('
-                      SELECT t FROM EnvelopeBundle\Entity\Transaction t
+                      SELECT t FROM App\Entity\Transaction t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
                       AND t.amount = :amount

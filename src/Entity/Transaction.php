@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -188,10 +188,10 @@ class Transaction
     /**
      * Set account
      *
-     * @param \EnvelopeBundle\Entity\Account $account
+     * @param \App\Entity\Account $account
      * @return Transaction
      */
-    public function setAccount(\EnvelopeBundle\Entity\Account $account = null)
+    public function setAccount(\App\Entity\Account $account = null)
     {
         $this->account = $account;
 
@@ -201,7 +201,7 @@ class Transaction
     /**
      * Get account
      *
-     * @return \EnvelopeBundle\Entity\Account 
+     * @return \App\Entity\Account
      */
     public function getAccount()
     {
@@ -267,10 +267,10 @@ class Transaction
     /**
      * Add budget_transactions
      *
-     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     * @param \App\Entity\BudgetTransaction $budgetTransactions
      * @return Transaction
      */
-    public function addBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    public function addBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
         $budgetTransactions->setTransaction($this);
@@ -281,9 +281,9 @@ class Transaction
     /**
      * Remove budget_transactions
      *
-     * @param \EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions
+     * @param \App\Entity\BudgetTransaction $budgetTransactions
      */
-    public function removeBudgetTransaction(\EnvelopeBundle\Entity\BudgetTransaction $budgetTransactions)
+    public function removeBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions->removeElement($budgetTransactions);
     }
@@ -306,10 +306,10 @@ class Transaction
     /**
      * Set import
      *
-     * @param \EnvelopeBundle\Entity\Import $import
+     * @param \App\Entity\Import $import
      * @return Transaction
      */
-    public function setImport(\EnvelopeBundle\Entity\Import $import = null)
+    public function setImport(\App\Entity\Import $import = null)
     {
         $this->import = $import;
         $this->import->addTransaction($this);
@@ -320,7 +320,7 @@ class Transaction
     /**
      * Get import
      *
-     * @return \EnvelopeBundle\Entity\Import 
+     * @return \App\Entity\Import
      */
     public function getImport()
     {
