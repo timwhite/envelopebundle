@@ -16,9 +16,6 @@ envelope_import:
     path:   /import/
     defaults: { _controller: EnvelopeBundle:Default:import }
 
-envelope_transactions_unbalanced:
-    path:   /transaction/list/unbalanced
-    defaults: { _controller: EnvelopeBundle:Default:transactionsListUnbalanced}
 
 
 envelope_transactions:

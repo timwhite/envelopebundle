@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\BudgetAccountRepository;
+use App\Repository\TransactionRepository;
 use App\Voter\TransactionVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -73,24 +74,6 @@ class DefaultController extends AbstractController
         );
     }
 
-    #[Route('/budgettransactions/{accountid}', name: 'envelope_budgettransactions')]
-    public function budgetTransactionList(BudgetAccountRepository $budgetAccountRepository, $accountid = null): Response
-    {
-        $budgetAccounts = $budgetAccountRepository->getUserBudgetAccounts($this->getUser(), $accountid);
-
-
-        // Load Stats and inject into entity
-        # @TODO come back and turn this into a service and enable it
-        #$budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
-        #$budgetAccountStatsLoader->loadBudgetAccountStats();
-
-        return $this->render(
-            'default/budgettransactions.html.twig',
-            [
-                'budgetaccounts' => $budgetAccounts,
-            ]
-        );
-    }
 
     private function importForm($accessGroup)
     {
@@ -187,6 +170,7 @@ class DefaultController extends AbstractController
      */
     private function getUnbalancedTransactionsQuery($accessgroupid)
     {
+        // Replace this with TransactionRepository->getUnbalancedTransactions()
         return $this->getDoctrine()->getManager()->createQuery(
             'SELECT t
             FROM EnvelopeBundle:Transaction t
@@ -203,94 +187,8 @@ class DefaultController extends AbstractController
     }
 
 
-    public function transactionsListUnBalancedAction(Request $request)
-    {
-        $session = $request->getSession();
 
-        $query = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
 
-        // Get form for coding transactions
-        $transaction = new Transaction();
-        $transaction->setDate(new \DateTime());
-        $form = $this->createForm(TransactionType::class, $transaction, [
-            'existing_entity' => false,
-            "accessgroup" => $session->get('accessgroupid')
-        ]);
-
-        return $this->render(
-            'EnvelopeBundle:Default:unbalancedTransactions.html.twig',
-            [
-                'unbalancedtransactions' => $query->getResult(),
-                'codingForm' => $form->createView()
-            ]
-        );
-    }
-
-    #[Route(path: '/transaction/new', name: 'envelope_transaction_new')]
-    public function transactionNew(Request $request)
-    {
-        $transaction = new Transaction();
-        $transaction->setDate(new \DateTime());
-
-        return $this->transactionList($transaction, $request, false);
-    }
-
-    #[Route(path: '/transaction/{id}', name: 'envelope_transaction')]
-    #[IsGranted(TransactionVoter::EDIT, 'transaction')]
-    public function transactionList(Transaction $transaction, Request $request, $existing = true)
-    {
-        $form = $this->createForm(TransactionType::class, $transaction, [
-            'existing_entity' => $existing,
-            "accessgroup" => $this->getUser()->getAccessGroup()
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            foreach ($transaction->getBudgetTransactions() as $budgetTransaction) {
-                if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
-                    $transaction->removeBudgetTransaction($budgetTransaction);
-                    $budgetTransaction->setTransaction(null);
-                    $this->em->remove($budgetTransaction);
-                }
-            }
-
-            if(!$existing)
-            {
-                $transaction->setFullDescription($transaction->getDescription());
-            }
-
-            $this->em->persist($transaction);
-            $this->em->flush();
-
-            $this->addFlash(
-                'success',
-                'Transaction Updated'
-            );
-
-            if($request->query->get('return') == 'transactions' && $transaction->getUnassignedSum() == 0)
-            {
-                return $this->redirectToRoute('envelope_transactions');
-            }
-
-            if($request->query->get('return') == 'unbalanced_transactions' && $transaction->getUnassignedSum() == 0)
-            {
-                return $this->redirectToRoute('envelope_transactions_unbalanced');
-            }
-
-            // Redirecting ensures form is rebuilt completely with refreshed objects
-            return $this->redirectToRoute('envelope_transaction', ['id' => $transaction->getId()]);
-        }
-
-        return $this->render(
-            'default/transaction.html.twig',
-            [
-                'transaction' => $transaction,
-                'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
-            ]
-        );
-    }
 
     public function autoCodeAction(Request $request)
     {
@@ -775,29 +673,5 @@ class DefaultController extends AbstractController
         );
     }
 
-    public function transactionBulkCodeAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
 
-        $bulkTransactions = $request->get('bulktransactions');
-        $budgetAccountId = $request->get('transaction')['budget_transactions'][0]['budgetaccount'];
-        /** @var BudgetAccount $budgetAccount */
-        $budgetAccount = $em->getRepository(BudgetAccount::class)->find($budgetAccountId);
-        // @TODO ensure all transactions and budgetAccounts are in the correct group
-        foreach($bulkTransactions as $transactionId) {
-            /** @var Transaction $transaction */
-            $transaction = $em->getRepository(Transaction::class)->find($transactionId);
-            $budgetTransaction = new BudgetTransaction();
-            $budgetTransaction->setBudgetAccount($budgetAccount);
-            $budgetTransaction->setAmount($transaction->getUnassignedSum());
-            $transaction->addBudgetTransaction($budgetTransaction);
-            $em->persist($budgetTransaction);
-            $em->persist($transaction);
-            $this->addFlash('success', $transaction->getDescription() . ' assigned '. $budgetTransaction->getAmount() . ' to ' . $budgetAccount->getBudgetName());
-        }
-        $em->flush();
-
-        return $this->redirectToRoute('envelope_transactions_unbalanced');
-
-    }
 }

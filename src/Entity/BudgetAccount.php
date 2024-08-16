@@ -29,14 +29,14 @@ class BudgetAccount
     #[ORM\Column(name: 'BudgetName', type: 'string', length: 255, nullable: false)]
     private $budget_name;
 
-    #[ORM\OneToMany(targetEntity: \BudgetTransaction::class, mappedBy: 'budgetAccount')]
+    #[ORM\OneToMany(targetEntity: BudgetTransaction::class, mappedBy: 'budgetAccount')]
     private $budget_transactions;
 
     #[ORM\OneToMany(targetEntity: \App\Entity\Budget\TemplateTransaction::class, mappedBy: 'budgetAccount')]
     private $template_transactions;
 
     #[ORM\JoinColumn(name: 'budget_group', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: \BudgetGroup::class, inversedBy: 'budget_accounts')]
+    #[ORM\ManyToOne(targetEntity: BudgetGroup::class, inversedBy: 'budget_accounts')]
     private $budget_group;
 
     /**

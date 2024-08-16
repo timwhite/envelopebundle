@@ -26,5 +26,9 @@ return static function (RectorConfig $rectorConfig): void {
         new AnnotationToAttribute(\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity::class),
         new AnnotationToAttribute(\Ibericode\Vat\Bundle\Validator\Constraints\VatNumber::class),
     ]);
+    $rectorConfig->rules([
+        \Rector\Php74\Rector\FuncCall\MoneyFormatToNumberFormatRector::class
+    ]);
+
 
 };
