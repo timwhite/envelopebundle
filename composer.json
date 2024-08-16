@@ -26,7 +26,8 @@
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
         "doctrine/dbal": "^3",
-        "doctrine/doctrine-bundle": "^2.12"
+        "doctrine/doctrine-bundle": "^2.12",
+        "hwi/oauth-bundle": "^2.2"
     },
     "conflict": {
 	"symfony/symfony": "*"

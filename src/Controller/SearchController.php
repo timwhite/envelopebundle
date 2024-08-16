@@ -1,7 +1,7 @@
 <?php
 
 
-namespace EnvelopeBundle\Controller;
+namespace Controller;
 
 use Doctrine\DBAL\Types\DecimalType;
 use EnvelopeBundle\Entity\BudgetAccount;

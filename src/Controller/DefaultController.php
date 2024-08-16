@@ -1,6 +1,6 @@
 <?php
 
-namespace EnvelopeBundle\Controller;
+namespace Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
