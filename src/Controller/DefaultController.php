@@ -52,7 +52,7 @@ class DefaultController extends AbstractController
     public function dashboard()
     {
         return $this->render(
-            'EnvelopeBundle:Default:dashboard.html.twig'
+            'Default/dashboard.html.twig'
         );
     }
 

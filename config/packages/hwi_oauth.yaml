@@ -22,3 +22,7 @@ hwi_oauth:
       client_id:           '%env(HWI_GOOGLE_CLIENT_ID)%'
       client_secret:       '%env(HWI_GOOGLE_CLIENT_SECRET)%'
       scope:               "email profile"
+#      paths:
+#        avatar: picture
+      options:
+        approval_prompt: force

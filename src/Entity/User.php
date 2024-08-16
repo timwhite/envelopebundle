@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,8 +13,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Class User
  */
 
-#[ORM\Entity]
-class User implements EquatableInterface, UserInterface
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundle\Model\UserInterface
 {
 
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -175,7 +176,7 @@ class User implements EquatableInterface, UserInterface
 
     public function getTitle(): string
     {
-        return '';
+        return $this->email;
     }
 
     public function getName(): string

@@ -23,7 +23,7 @@ tabler:
         # false = left to right, true = right to left
         rtl_mode: false
         # true = only avatar, false = show username and title as well
-        user_menu_condensed: true
+        user_menu_condensed: false
         # url to your company logo (if not with a protocol, the asset() helper will be used to create the url
         logo_url: ~
 
@@ -33,7 +33,7 @@ tabler:
         breadcrumb_menu: false
 
     routes:
-        tabler_welcome: home
+        tabler_welcome: dashboard
         tabler_login: login
         tabler_login_check: login_check
         tabler_registration: registration

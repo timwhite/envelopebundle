@@ -14,6 +14,8 @@ security:
             security: false
         main:
             lazy: true
+            logout:
+                path: /logout
             oauth:
                 resource_owners:
                     google:             "/login/check-google"
