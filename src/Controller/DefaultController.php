@@ -26,6 +26,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 class DefaultController extends AbstractController
@@ -35,16 +36,23 @@ class DefaultController extends AbstractController
 
     }
 
-    #[Route('/', name: 'dashboard')]
-    public function dashboardAction()
+    #[Route('/login', name: 'login')]
+    public function login()
     {
         if ($this->isGranted('IS_AUTHENTICATED')) {
-            return $this->render(
-                'EnvelopeBundle:Default:dashboard.html.twig'
-            );
+            return $this->redirectToRoute('dashboard');
         }
         return $this->render(
-            'welcome.html.twig'
+            'login.html.twig'
+        );
+    }
+
+    #[Route('/', name: 'dashboard')]
+    #[IsGranted('IS_AUTHENTICATED')]
+    public function dashboard()
+    {
+        return $this->render(
+            'EnvelopeBundle:Default:dashboard.html.twig'
         );
     }
 

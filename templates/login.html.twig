@@ -1,0 +1,17 @@
+{% extends '@Tabler/security.html.twig' %}
+
+{% block login_social_auth %}
+    <div class="hr-text">{{ 'or'|trans({}, 'TablerBundle') }}</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <a href="{{ path('hwi_oauth_service_redirect', {'service': 'google' }) }}" class="btn btn-white w-100">
+                    <i class="icon fab fa-google text-google"></i> Sign in using Google
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block login_form %}{% endblock %}
+{% block login_actions %}{% endblock %}

@@ -27,4 +27,4 @@ services:
         arguments:
             $class: App\Entity\User
             $properties:
-                'google': 'google'
+                'google': 'username'

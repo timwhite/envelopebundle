@@ -12,10 +12,10 @@ use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
 
 /**
  * Class User
- * @ORM\Entity
  */
 
-class User implements EquatableInterface,ThemeUser
+#[ORM\Entity]
+class User implements EquatableInterface
 {
 
     /**
@@ -76,7 +76,7 @@ class User implements EquatableInterface,ThemeUser
             ) = unserialize($serialized);
     }
 
-    public function isEqualTo(UserInterface $user)
+    public function isEqualTo(UserInterface $user): bool
     {
         if ($this->getId() === $user->getId()) {
             return true;
