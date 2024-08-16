@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\AccessGroup;
+use App\Entity\Account;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -45,7 +47,7 @@ final class ExternalConnectorAdmin extends AbstractAdmin
             ->add('systemId')
             ->add('systemType')
             ->add('systemCredential')
-            ->add('account', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Account' ] )
+            ->add('account', 'entity', [ 'class' => Account::class ] )
         ;
     }
 

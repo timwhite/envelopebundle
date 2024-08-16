@@ -15,7 +15,7 @@ use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
-use EnvelopeBundle\Form\Type\TransactionType;
+use App\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
@@ -284,7 +284,7 @@ class DefaultController extends AbstractController
         }
 
         return $this->render(
-            'EnvelopeBundle:Default:transaction.html.twig',
+            'default/transaction.html.twig',
             [
                 'transaction' => $transaction,
                 'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()

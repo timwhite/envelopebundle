@@ -2,21 +2,22 @@
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\Budget\Template;
+use App\Entity\BudgetAccount;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
-class TransactionAdmin extends Admin
+class TemplateTransactionAdmin extends Admin
 {
     // Fields to be shown on create/edit forms
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
+            ->add('template', 'entity', [ 'class' => Template::class ] )
+            ->add('budgetAccount', 'entity', [ 'class' => BudgetAccount::class ] )
             ->add('description')
-            ->add('date')
-            ->add('fullDescription')
-            ->add('account', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Account' ] )
             ->add('amount')
         ;
     }
@@ -25,9 +26,10 @@ class TransactionAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
+            ->add('template')
+            ->add('budgetAccount')
             ->add('description')
-            ->add('date')
-            ->add('account')
+            ->add('amount')
         ;
     }
 
@@ -35,12 +37,11 @@ class TransactionAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('date')
             ->addIdentifier('description')
-            ->add('fullDescription')
-            ->add('account')
             ->add('amount')
-            ->add('unassignedSum')
+            ->add('budgetAccount')
+            ->add('template')
+
         ;
     }
 }

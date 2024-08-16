@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\BudgetAccount;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -15,7 +16,7 @@ class AutoCodeSearchAdmin extends Admin
         $formMapper
             ->add('search', 'text', [ 'label' => 'Search Text' ] )
             ->add('rename', 'text', [ 'label' => 'Transaction Description Rename', 'required' => false ] )
-            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
+            ->add('budgetAccount', 'entity', [ 'class' => BudgetAccount::class ] )
         ;
     }
 

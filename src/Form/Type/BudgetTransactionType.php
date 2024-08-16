@@ -1,6 +1,8 @@
 <?php
-namespace EnvelopeBundle\Form\Type;
+namespace App\Form\Type;
 
+use App\Entity\BudgetGroup;
+use App\Entity\BudgetTransaction;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\BudgetAccount;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -22,7 +24,7 @@ class BudgetTransactionType extends AbstractType
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('a');
                     return $qb
-                        ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
+                        ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
                         ->andWhere('g.access_group = :accessgroup')
                         ->setParameter('accessgroup', $accessgroup)
         ;
@@ -38,7 +40,7 @@ class BudgetTransactionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults( [
-            'data_class' => 'EnvelopeBundle\Entity\BudgetTransaction',
+            'data_class' => BudgetTransaction::class,
             'accessgroup' => 0
         ] );
     }

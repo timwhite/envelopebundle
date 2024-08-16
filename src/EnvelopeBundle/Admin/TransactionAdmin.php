@@ -2,19 +2,23 @@
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\Account;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
-class AccountAdmin extends Admin
+class TransactionAdmin extends Admin
 {
     // Fields to be shown on create/edit forms
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', [ 'label' => 'Account Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
+            ->add('description')
+            ->add('date')
+            ->add('fullDescription')
+            ->add('account', 'entity', [ 'class' => Account::class ] )
+            ->add('amount')
         ;
     }
 
@@ -22,7 +26,9 @@ class AccountAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('name')
+            ->add('description')
+            ->add('date')
+            ->add('account')
         ;
     }
 
@@ -30,9 +36,12 @@ class AccountAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('name')
-            ->add('balance')
-            ->add('accessGroup')
+            ->add('date')
+            ->addIdentifier('description')
+            ->add('fullDescription')
+            ->add('account')
+            ->add('amount')
+            ->add('unassignedSum')
         ;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\AccessGroup;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -47,7 +48,7 @@ class BudgetGroupAdmin extends Admin
     {
         $formMapper
             ->add('name', 'text', [ 'label' => 'Budget Group Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => 'EnvelopeBundle\Entity\AccessGroup' ] )
+            ->add('accessGroup',  'entity', [ 'class' => AccessGroup::class ] )
         ;
     }
 

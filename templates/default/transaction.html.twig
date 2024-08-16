@@ -22,7 +22,7 @@
                     {% form_theme addform 'bootstrap_3_layout.html.twig' %}
                     {{ form_start(addform) }}
 
-                    <strong>Date</strong> {{ transaction.date|localizeddate('short', 'none') }}<br/>
+                    <strong>Date</strong> {{ transaction.date|format_datetime('short', 'none') }}<br/>
 
                     {% if addform.account is defined %}
                             <label>Bank Account</label>

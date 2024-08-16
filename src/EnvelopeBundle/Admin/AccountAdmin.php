@@ -2,20 +2,20 @@
 
 namespace EnvelopeBundle\Admin;
 
+use App\Entity\AccessGroup;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
-class BudgetTransactionAdmin extends Admin
+class AccountAdmin extends Admin
 {
     // Fields to be shown on create/edit forms
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('transaction', 'entity', [ 'class' => 'EnvelopeBundle\Entity\Transaction' ] )
-            ->add('budgetAccount', 'entity', [ 'class' => 'EnvelopeBundle\Entity\BudgetAccount' ] )
-            ->add('amount')
+            ->add('name', 'text', [ 'label' => 'Account Name' ] )
+            ->add('accessGroup',  'entity', [ 'class' => AccessGroup::class ] )
         ;
     }
 
@@ -23,8 +23,7 @@ class BudgetTransactionAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('transaction')
-            ->add('budgetAccount')
+            ->add('name')
         ;
     }
 
@@ -32,10 +31,9 @@ class BudgetTransactionAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('id')
-            ->add('transaction')
-            ->add('budgetAccount')
-            ->add('amount')
+            ->addIdentifier('name')
+            ->add('balance')
+            ->add('accessGroup')
         ;
     }
 }

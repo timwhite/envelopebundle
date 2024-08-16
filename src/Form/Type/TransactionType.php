@@ -1,7 +1,8 @@
 <?php
 
-namespace EnvelopeBundle\Form\Type;
+namespace App\Form\Type;
 
+use App\Entity\Transaction;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\Account;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -54,7 +55,7 @@ class TransactionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults( [
-            'data_class' => 'EnvelopeBundle\Entity\Transaction',
+            'data_class' => Transaction::class,
             'existing_entity' => true,
             'date' => new \DateTime(),
             'accessgroup' => 0,
