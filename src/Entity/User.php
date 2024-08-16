@@ -2,48 +2,46 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Avanzu\AdminThemeBundle\Model\UserInterface as ThemeUser;
 
 /**
  * Class User
  */
 
 #[ORM\Entity]
-class User implements EquatableInterface
+class User implements EquatableInterface, UserInterface
 {
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    protected $id;
+    protected int $id;
 
     #[ORM\Column(type: 'string')]
-    protected $firstname;
+    protected string $firstname;
     #[ORM\Column(type: 'string', nullable: true)]
-    protected $lastname;
+    protected ?string $lastname;
     #[ORM\Column(type: 'string', nullable: true)]
-    protected $email;
+    protected ?string $email;
 
     #[ORM\Column(name: 'username', type: 'string', length: 255, unique: true, nullable: true)]
-    protected $username = null;
+    protected ?string $username = null;
 
     #[ORM\Column(name: 'avatar', type: 'string', length: 2048, nullable: true)]
-    protected $avatar;
+    protected ?string $avatar;
 
     #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
-    private $access_group;
+    #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
+    private AccessGroup $access_group;
 
     /**
      * @see \Serializable::serialize()
      */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize( [
             $this->id,
@@ -54,7 +52,7 @@ class User implements EquatableInterface
     /**
      * @see \Serializable::unserialize()
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
         list (
             $this->id,
@@ -82,7 +80,7 @@ class User implements EquatableInterface
      * @param string $firstname
      * @return User
      */
-    public function setFirstname($firstname)
+    public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
 
@@ -94,7 +92,7 @@ class User implements EquatableInterface
      *
      * @return string 
      */
-    public function getFirstname()
+    public function getFirstname(): string
     {
         return $this->firstname;
     }
@@ -105,7 +103,7 @@ class User implements EquatableInterface
      * @param string $lastname
      * @return User
      */
-    public function setLastname($lastname)
+    public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
 
@@ -114,10 +112,8 @@ class User implements EquatableInterface
 
     /**
      * Get lastname
-     *
-     * @return string 
      */
-    public function getLastname()
+    public function getLastname(): ?string
     {
         return $this->lastname;
     }
@@ -128,7 +124,7 @@ class User implements EquatableInterface
      * @param string $email
      * @return User
      */
-    public function setEmail($email)
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
@@ -137,10 +133,9 @@ class User implements EquatableInterface
 
     /**
      * Get email
-     *
-     * @return string 
+
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -151,7 +146,7 @@ class User implements EquatableInterface
      * @param string $username
      * @return User
      */
-    public function setUsername($username)
+    public function setUsername(string $username): static
     {
         $this->username = $username;
 
@@ -163,38 +158,33 @@ class User implements EquatableInterface
      *
      * @return integer 
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getIdentifier()
-    {
-        return $this->getUsername();
-    }
-
-    public function isOnline()
+    public function isOnline(): bool
     {
         return true;
     }
 
-    public function getMemberSince()
+    public function getMemberSince(): DateTime
     {
-        return new \DateTime();
+        return new DateTime();
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return '';
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->getFirstname() . " " . $this->getLastname();
     }
 
 
-    public function getRoles()
+    public function getRoles(): array
     {
         $roles = [];
         if ($this->access_group != null)
@@ -214,7 +204,7 @@ class User implements EquatableInterface
      * @param string $avatar
      * @return User
      */
-    public function setAvatar($avatar)
+    public function setAvatar(string $avatar): static
     {
         $this->avatar = $avatar;
 
@@ -224,21 +214,16 @@ class User implements EquatableInterface
 
     /**
      * Get avatar
-     *
-     * @return string
      */
-    public function getAvatar()
+    public function getAvatar(): ?string
     {
         return $this->avatar;
     }
 
     /**
      * Set access_group
-     *
-     * @param \App\Entity\AccessGroup $accessGroup
-     * @return User
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup = null)
+    public function setAccessGroup(AccessGroup $accessGroup = null): static
     {
         $this->access_group = $accessGroup;
 
@@ -247,11 +232,18 @@ class User implements EquatableInterface
 
     /**
      * Get access_group
-     *
-     * @return \App\Entity\AccessGroup
      */
-    public function getAccessGroup()
+    public function getAccessGroup(): AccessGroup
     {
         return $this->access_group;
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
     }
 }

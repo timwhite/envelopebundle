@@ -24,14 +24,14 @@ services:
         command: /usr/local/bin/docker-php-entrypoint-composer
 
     db:
-        image: mariadb
+        image: mariadb:10.5
         volumes:
             - ./db_initial:/docker-entrypoint-initdb.d/
         environment:
-            MYSQL_DATABASE: budget
-            MYSQL_USER: budget
-            MYSQL_PASS: budget
-            MYSQL_ROOT_PASSWORD: ThisIsARootPassword
+            MARIADB_DATABASE: budget
+            MARIADB_USER: budget
+            MARIADB_PASSWORD: budget
+            MARIADB_ROOT_PASSWORD: ThisIsARootPassword
 
     adminer:
         image: adminer
