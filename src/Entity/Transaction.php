@@ -50,11 +50,11 @@ class Transaction
     /**
      * Due to us getting the Budget Sum in our _toString, we need EAGER loading
      */
-    #[ORM\OneToMany(targetEntity: \BudgetTransaction::class, mappedBy: 'transaction', cascade: 'persist', fetch: 'EAGER')]
+    #[ORM\OneToMany(mappedBy: 'transaction', targetEntity: BudgetTransaction::class, cascade: ['persist'], fetch: 'EAGER')]
     private $budget_transactions;
 
     #[ORM\JoinColumn(name: 'import_id', referencedColumnName: 'id', nullable: true)]
-    #[ORM\ManyToOne(targetEntity: \Import::class)]
+    #[ORM\ManyToOne(targetEntity: Import::class)]
     private $import;
 
     /**

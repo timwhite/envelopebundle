@@ -1,12 +1,3 @@
-avanzu_admin_profile:
-    path: /profile/{userid}/
-    defaults: { _controller: EnvelopeBundle:Default:profile }
-
-avanzu_admin_logout:
-    path: /logout
-
-# redirecting the admin home
-
 envelope_autocode:
     path:   /autocode/
     defaults: { _controller: EnvelopeBundle:Default:autoCode }
@@ -50,10 +41,6 @@ envelope_transactionAddBudgetTransaction:
 envelope_budgets:
     path:   /budgetaccounts/
     defaults: { _controller: EnvelopeBundle:Default:budgetAccountList}
-
-envelope_budgettransactions:
-    path:   /budgettransactions/{accountid}
-    defaults: { _controller: EnvelopeBundle:Default:budgetTransactionList, accountid: null}
 
 envelope_budget_templates:
     path:   /budgets/templates/

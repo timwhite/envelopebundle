@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Repository\BudgetAccountRepository;
+use App\Voter\TransactionVoter;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -19,12 +22,14 @@ use EnvelopeBundle\Shared\importBankTransactions;
 use App\Entity\AccessGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -52,55 +57,36 @@ class DefaultController extends AbstractController
     public function dashboard()
     {
         return $this->render(
-            'Default/dashboard.html.twig'
+            'default/dashboard.html.twig'
         );
     }
 
-    public function profileAction($userid)
+    #[Route('/profile', name: 'profile')]
+    public function profile(): Response
     {
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
-        $qb->select('u')
-            ->from('EnvelopeBundle:User', 'u');
-
-        $qb->where('u.username = :username')
-            ->setParameter('username', $userid);
-
-        return $this->render(
-            'EnvelopeBundle:Default:profile.html.twig',
+            return $this->render(
+            'default/profile.html.twig',
             [
-                'user' => $qb->getQuery()->getResult()[0],
+                'user' => $this->getUser(),
             ]
         );
     }
 
-    public function budgetTransactionListAction(Request $request, $accountid = null)
+    #[Route('/budgettransactions/{accountid}', name: 'envelope_budgettransactions')]
+    public function budgetTransactionList(BudgetAccountRepository $budgetAccountRepository, $accountid = null): Response
     {
-        $session = $request->getSession();
+        $budgetAccounts = $budgetAccountRepository->getUserBudgetAccounts($this->getUser(), $accountid);
 
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
-        $qb->select('a')
-            ->from('EnvelopeBundle:BudgetAccount', 'a')
-            ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
-            ->andWhere('g.access_group = :accessgroup')
-            ->setParameter('accessgroup', $session->get('accessgroupid'))
-        ;
-
-        if ($accountid) {
-            $qb->andWhere('a.id = :id')
-                ->setParameter('id', $accountid);
-
-        }
-
-        $budgetaccounts = $qb->getQuery()->getResult();
 
         // Load Stats and inject into entity
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
-        $budgetAccountStatsLoader->loadBudgetAccountStats();
+        # @TODO come back and turn this into a service and enable it
+        #$budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
+        #$budgetAccountStatsLoader->loadBudgetAccountStats();
 
         return $this->render(
-            'EnvelopeBundle:Default:budgettransactions.html.twig',
+            'default/budgettransactions.html.twig',
             [
-                'budgetaccounts' => $budgetaccounts,
+                'budgetaccounts' => $budgetAccounts,
             ]
         );
     }
@@ -239,46 +225,22 @@ class DefaultController extends AbstractController
         );
     }
 
-    public function transactionListAction(Request $request, $id)
+    #[Route(path: '/transaction/new', name: 'envelope_transaction_new')]
+    public function transactionNew(Request $request)
     {
-        $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
-        if ($id == 'new') {
-            $existing = false;
-            $transaction = new Transaction();
-            $transaction->setDate(new \DateTime());
-        } else {
-            $existing = true;
+        $transaction = new Transaction();
+        $transaction->setDate(new \DateTime());
 
-            $query = $em->createQuery(
-                'SELECT t
-                    FROM EnvelopeBundle:Transaction t
-                    JOIN EnvelopeBundle:Account a
-                    WITH t.account = a
-                    WHERE t.id = :id
-                    AND a.access_group = :accessgroup
-                    '
-            );
+        return $this->transactionList($transaction, $request, false);
+    }
 
-            $query->setParameters(
-                [
-                    "id" => $id,
-                    "accessgroup" => $session->get('accessgroupid')
-                ]
-            );
-
-            try {
-                $transaction = $query->getSingleResult();
-            } catch(NoResultException $e) {
-                $this->addFlash('warning', "No transaction with that ID available to you");
-                return $this->render(
-                    'EnvelopeBundle:Default:dashboard.html.twig');
-            }
-        }
-
+    #[Route(path: '/transaction/{id}', name: 'envelope_transaction')]
+    #[IsGranted(TransactionVoter::EDIT, 'transaction')]
+    public function transactionList(Transaction $transaction, Request $request, $existing = true)
+    {
         $form = $this->createForm(TransactionType::class, $transaction, [
             'existing_entity' => $existing,
-            "accessgroup" => $session->get('accessgroupid')
+            "accessgroup" => $this->getUser()->getAccessGroup()
         ]);
 
         $form->handleRequest($request);
@@ -289,18 +251,18 @@ class DefaultController extends AbstractController
                 if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
                     $budgetTransaction->setTransaction(null);
-                    $em->remove($budgetTransaction);
+                    //$em->remove($budgetTransaction);
                 }
             }
 
-            if($id == 'new')
+            if(!$existing)
             {
                 $transaction->setFullDescription($transaction->getDescription());
             }
 
-
-            $em->persist($transaction);
-            $em->flush();
+            // @TODO fix this so we can persist transactions
+//            $em->persist($transaction);
+//            $em->flush();
 
             $this->addFlash(
                 'success',
@@ -326,7 +288,6 @@ class DefaultController extends AbstractController
             [
                 'transaction' => $transaction,
                 'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
-                'transactionid' => $id,
             ]
         );
     }

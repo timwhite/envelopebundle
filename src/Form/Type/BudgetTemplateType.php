@@ -41,7 +41,7 @@ class BudgetTemplateType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults( [
-            'data_class' => 'EnvelopeBundle\Entity\Budget\Template',
+            'data_class' => Template::class,
             'existing_entity' => true,
             'accessgroup' => 0,
         ] );

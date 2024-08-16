@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends '@Tabler/layout-horizontal.html.twig' %}
 {% block page_title %}Bank transactions{% endblock %}
 {% block page_subtitle %}Browse bank transactions by account, and view the unassigned amount{% endblock %}
 
@@ -36,11 +36,11 @@
                                 </td>
                                 <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
                                     <span data-toggle="tooltip"
-                                          title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
-                                    {{ transaction.amount|localizedcurrency('AUD') }}
+                                          title="{{ transaction.PositiveBudgetSum|format_currency('AUD') }} / {{ transaction.NegativeBudgetSum|format_currency('AUD') }}">
+                                    {{ transaction.amount|format_currency('AUD') }}
                                     </span>
                                 </td>
-                                <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                <td align="right">{{ transaction.unassignedsum|format_currency('AUD') }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -64,7 +64,7 @@
                         <h3 class="box-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
 
                         <div class="box-tools pull-right">
-                            <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|localizedcurrency('AUD') }}</span>
+                            <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|format_currency('AUD') }}</span>
                             <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
                                     title="Collapse"><i class="fa fa-minus"></i></button>
                         </div>
@@ -91,11 +91,11 @@
                                     </td>
                                     <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
                                 <span data-toggle="tooltip"
-                                      title="{{ transaction.PositiveBudgetSum|localizedcurrency('AUD') }} / {{ transaction.NegativeBudgetSum|localizedcurrency('AUD') }}">
-                                {{ transaction.amount|localizedcurrency('AUD') }}
+                                      title="{{ transaction.PositiveBudgetSum|format_currency('AUD') }} / {{ transaction.NegativeBudgetSum|format_currency('AUD') }}">
+                                {{ transaction.amount|format_currency('AUD') }}
                                 </span>
                                     </td>
-                                    <td align="right">{{ transaction.unassignedsum|localizedcurrency('AUD') }}</td>
+                                    <td align="right">{{ transaction.unassignedsum|format_currency('AUD') }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -126,7 +126,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    Net Position: {{ networth |localizedcurrency('AUD') }}
+                    Net Position: {{ networth |format_currency('AUD') }}
                 </div>
                 <div class="box-footer">
                 </div>

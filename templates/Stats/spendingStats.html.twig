@@ -28,7 +28,7 @@
                         {% for transaction in excludedtransactions %}
                             <tr>
                                 <td>{{ transaction.description  }}</td>
-                                <td>{{ transaction.sumamount|localizedcurrency('AUD') }}</td>
+                                <td>{{ transaction.sumamount|format_currency('AUD') }}</td>
                             </tr>
                         {% endfor %}
                     </table>

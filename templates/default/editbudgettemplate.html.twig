@@ -1,4 +1,4 @@
-{% extends 'EnvelopeBundle:Default:base.html.twig' %}
+{% extends '@Tabler/layout-horizontal.html.twig' %}
 
 {% block page_title %}{% endblock %}
 {% block page_subtitle %}{% endblock %}
@@ -84,7 +84,7 @@
                             {% if addform.amount is not defined %}
                         <li>
                                 <strong class="col-xs-9" style="text-align: right">Balance</strong>
-                                <span id="balance" data-balance="{{ template.balance }}" style="text-align: center" class="col-xs-3"> {{ template.balance|localizedcurrency('AUD') }}</span>
+                                <span id="balance" data-balance="{{ template.balance }}" style="text-align: center" class="col-xs-3"> {{ template.balance|format_currency('AUD') }}</span>
                         </li>
                             {% endif %}
 
