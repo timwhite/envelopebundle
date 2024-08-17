@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Account.
  */
 #[ORM\Table]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
 {
     /**

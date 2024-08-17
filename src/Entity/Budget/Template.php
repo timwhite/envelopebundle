@@ -3,7 +3,6 @@
 namespace App\Entity\Budget;
 
 use App\Entity\AccessGroup;
-use App\Entity\BudgetAccount;
 use App\Repository\BudgetTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,45 +15,33 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: BudgetTemplateRepository::class)]
 class Template
 {
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private $id;
+    private ?int $id;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
-    private $name;
+    private string $name;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'description', type: 'string', length: 255)]
-    private $description;
+    private string $description;
 
-    /**
-     * @var \DateTime
-     */
     #[ORM\Column(name: 'last_applied_date', type: 'date', nullable: true)]
-    private $last_applied_date;
+    private ?\DateTime $last_applied_date;
 
     #[ORM\OneToMany(mappedBy: 'template', targetEntity: TemplateTransaction::class, cascade: ['persist', 'remove'])]
-    private $template_transactions;
+    private Collection $template_transactions;
 
     #[ORM\Column(name: 'Archived', type: 'boolean', nullable: false)]
-    private $archived = false;
+    private bool $archived = false;
 
     #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
-    private $access_group;
+    private AccessGroup $access_group;
 
-    public function getBalance()
+    public function getBalance(): string
     {
-        $balance = 0;
+        $balance = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
             $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
@@ -62,9 +49,9 @@ class Template
         return $balance;
     }
 
-    public function getPositiveSum()
+    public function getPositiveSum(): string
     {
-        $sum = 0;
+        $sum = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
             if ($transaction->getAmount() > 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
@@ -74,9 +61,9 @@ class Template
         return $sum;
     }
 
-    public function getNegativeSum()
+    public function getNegativeSum(): string
     {
-        $sum = 0;
+        $sum = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
             if ($transaction->getAmount() < 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
@@ -88,22 +75,16 @@ class Template
 
     /**
      * Get id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
      * Set name.
-     *
-     * @param string $name
-     *
-     * @return Budget:Template
      */
-    public function setName($name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -112,22 +93,16 @@ class Template
 
     /**
      * Get name.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Set description.
-     *
-     * @param string $description
-     *
-     * @return Budget:Template
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -136,10 +111,8 @@ class Template
 
     /**
      * Get description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -167,7 +140,7 @@ class Template
      *
      * @return Template
      */
-    public function addTemplateTransaction(TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(TemplateTransaction $templateTransactions): static
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -177,7 +150,7 @@ class Template
     /**
      * Remove template_transactions.
      */
-    public function removeTemplateTransaction(TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(TemplateTransaction $templateTransactions): void
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
@@ -187,7 +160,7 @@ class Template
      *
      * @return Collection
      */
-    public function getTemplateTransactions()
+    public function getTemplateTransactions(): ArrayCollection|Collection
     {
         return $this->template_transactions;
     }
@@ -199,7 +172,7 @@ class Template
      *
      * @return Template
      */
-    public function setLastAppliedDate($lastAppliedDate)
+    public function setLastAppliedDate($lastAppliedDate): static
     {
         $this->last_applied_date = $lastAppliedDate;
 
@@ -208,10 +181,8 @@ class Template
 
     /**
      * Get last_applied_date.
-     *
-     * @return \DateTime
      */
-    public function getLastAppliedDate()
+    public function getLastAppliedDate(): ?\DateTime
     {
         return $this->last_applied_date;
     }
@@ -237,12 +208,8 @@ class Template
 
     /**
      * Set archived.
-     *
-     * @param bool $archived
-     *
-     * @return BudgetAccount
      */
-    public function setArchived($archived)
+    public function setArchived(bool $archived): static
     {
         $this->archived = $archived;
 
@@ -251,10 +218,8 @@ class Template
 
     /**
      * Get archived.
-     *
-     * @return bool
      */
-    public function getArchived()
+    public function getArchived(): bool
     {
         return $this->archived;
     }
@@ -264,7 +229,7 @@ class Template
      *
      * @return Template
      */
-    public function setAccessGroup(AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup): static
     {
         $this->access_group = $accessGroup;
 
@@ -273,10 +238,8 @@ class Template
 
     /**
      * Get access_group.
-     *
-     * @return AccessGroup
      */
-    public function getAccessGroup()
+    public function getAccessGroup(): AccessGroup
     {
         return $this->access_group;
     }

@@ -1,9 +1,13 @@
 {% extends 'base.html.twig' %}
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{% block page_title %}Apply Budget Templates{% endblock %}
+{% block page_subtitle %}Apply your regular templated budget transactions{% endblock %}
+
 {% block page_content %}
+    <div class="row card-row">
+        <div class="card">
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}
-{% block page_title %}Apply Budget Templates{% endblock %}
-{% block page_subtitle %}Apply your regular templated budget transactions{% endblock %}

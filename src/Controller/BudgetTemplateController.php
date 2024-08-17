@@ -5,11 +5,19 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Budget\Template;
+use App\Entity\BudgetTransaction;
+use App\Entity\Transaction;
 use App\Form\Type\BudgetTemplateType;
+use App\Repository\AccountRepository;
 use App\Repository\BudgetTemplateRepository;
 use App\Voter\BudgetTemplateVoter;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,7 +25,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class BudgetTemplateController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly AccountRepository $accountRepository)
     {
     }
 
@@ -71,12 +79,12 @@ class BudgetTemplateController extends AbstractController
         $budgetTemplate = new Template();
         $budgetTemplate->setAccessGroup($this->getUser()->getAccessGroup());
 
-        return $this->budgetTemplateEditAction($request, $budgetTemplate, false);
+        return $this->budgetTemplateEdit($request, $budgetTemplate, false);
     }
 
     #[Route(path: '/budgets/template/edit/{id}', name: 'envelope_budget_template_edit')]
     #[IsGranted(BudgetTemplateVoter::EDIT, 'template')]
-    public function budgetTemplateEditAction(Request $request, Template $template, $existing = true)
+    public function budgetTemplateEdit(Request $request, Template $template, $existing = true)
     {
         $form = $this->createForm(BudgetTemplateType::class, $template, [
             'existing_entity' => $existing,
@@ -138,6 +146,107 @@ class BudgetTemplateController extends AbstractController
                 'template' => $template,
                 'addform' => $form->createView(),
             ]
+        );
+    }
+
+    #[Route(path: '/budgets/templates/apply', name: 'envelope_budget_apply_template')]
+    public function applyBudgetTemplate(Request $request): Response
+    {
+        $user = $this->getUser();
+        $form = $this->createFormBuilder(['date' => new \DateTime()])
+            ->add('template', EntityType::class, [
+                'class' => Template::class,
+                'query_builder' => function (EntityRepository $repository) use ($user) {
+                    // EnvelopeBundle:BudgetAccount is the entity we are selecting
+                    $qb = $repository->createQueryBuilder('t');
+
+                    return $qb
+                        ->andWhere('t.archived = 0')
+                        ->andWhere('t.access_group = :accessgroup')
+                        ->setParameter('accessgroup', $user->getAccessGroup())
+                    ;
+                },
+            ])
+            ->add('date', DateType::class, ['widget' => 'single_text'])
+            ->add('description')
+            ->add('fortnightly_automatic', CheckboxType::class, [
+                'label' => 'Apply each fortnight from the last applied date until the selected date?',
+                'required' => false,
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Apply Budget Template'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Template $template */
+            $template = $form->get('template')->getData();
+            $this->denyAccessUnlessGranted(BudgetTemplateVoter::EDIT, $template);
+
+            /** @var \DateTime $date */
+            $date = $form->get('date')->getData();
+
+            $description = $form->get('description')->getData();
+
+            if ($form->get('fortnightly_automatic')->getData()) {
+                if (null === $template->getLastAppliedDate()) {
+                    $this->addFlash('error', "Can't apply fortnightly automatic until at least one manual apply has been done");
+
+                    return $this->render(
+                        'default/applybudgettemplate.html.twig',
+                        ['form' => $form->createView()]
+                    );
+                }
+                while ($template->getLastAppliedDate() < $date) {
+                    $applyDate = clone $template->getLastAppliedDate();
+                    $applyDate->modify('+2 weeks');
+                    $this->applyTemplate($template, $applyDate, $description);
+                }
+            } else {
+                $this->applyTemplate($template, $date, $description);
+            }
+
+            return $this->redirectToRoute('envelope_budget_apply_template');
+        }
+
+        return $this->render(
+            'default/applybudgettemplate.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
+
+    private function applyTemplate(Template $template, \DateTime $date, $description): void
+    {
+        // Get Special bank account
+        $budgetTransferAccount = $this->accountRepository->getBudgetTransferAccount();
+
+        // Create bank transaction for $0
+        $transferTransaction = new Transaction();
+        $transferTransaction->setDate($date)
+            ->setAccount($budgetTransferAccount)
+            ->setAmount('0')
+            ->setDescription($description)
+            ->setFullDescription('Budget Template Transaction - '.$template->getDescription());
+        $this->entityManager->persist($transferTransaction);
+
+        // Loop through template transactions
+        // For each transaction, create a budget transaction linked to bank transaction
+        foreach ($template->getTemplateTransactions() as $templateTransaction) {
+            $budgetTransaction = new BudgetTransaction();
+            $budgetTransaction->setAmount($templateTransaction->getAmount())
+                ->setBudgetAccount($templateTransaction->getBudgetAccount())
+                ->setTransaction($transferTransaction);
+            $this->entityManager->persist($budgetTransaction);
+        }
+
+        // Update last applied date
+        $template->setLastAppliedDate($date);
+        $this->entityManager->persist($template);
+        $this->entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Budget Template ('.$template->getName().') Applied - '.$date->format('Y-m-d').' - '.$description
         );
     }
 }

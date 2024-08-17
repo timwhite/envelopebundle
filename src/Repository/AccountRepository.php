@@ -14,13 +14,19 @@ class AccountRepository extends ServiceEntityRepository
         parent::__construct($registry, Account::class);
     }
 
-    public function getUsersAccounts()
+    /**
+     * @return Account[]
+     */
+    public function getUsersAccounts(): array
     {
-        return $this->createQueryBuilder('a')
-            ->where('a.access_group = :accessGroup')
-            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup())
-            ->getQuery()->getResult();
+        return $this->findBy(['access_group' => $this->security->getUser()->getAccessGroup()]);
     }
 
-
+    public function getBudgetTransferAccount(): Account
+    {
+        return $this->findOneBy([
+            'access_group' => $this->security->getUser()->getAccessGroup(),
+            'budgetTransfer' => true,
+        ]);
+    }
 }
