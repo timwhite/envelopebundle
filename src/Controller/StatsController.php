@@ -2,54 +2,48 @@
 
 namespace App\Controller;
 
-use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
+use App\Repository\BudgetAccountRepository;
+use App\Repository\TransactionRepository;
+use App\Service\BudgetAccountStatsLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
 class StatsController extends AbstractController
 {
+    public function __construct(
+        private readonly BudgetAccountRepository $budgetAccountRepository,
+        private readonly BudgetAccountStatsLoader $budgetAccountStatsLoader,
+        private readonly TransactionRepository $transactionRepository,
+    ) {
+    }
+
+    #[Route('/stats', name: 'envelope_budget_stats')]
     public function budgetStatsAction(Request $request)
     {
-        $session = $request->getSession();
+        $budgetaccounts = $this->budgetAccountRepository->getUserBudgetAccounts();
 
-        $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
-        $qb->select('a')
-            ->from('EnvelopeBundle:BudgetAccount', 'a')
-            ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'a.budget_group = g')
-            ->andWhere('g.access_group = :accessgroup')
-            ->setParameter('accessgroup', $session->get('accessgroupid'));
+        if ($request->query->get('startdate')) {
+            $startDate = new \DateTime($request->query->get('startdate'));
+        } else {
+            $startDate = new \DateTime($this->transactionRepository->findUserFirstTransactionDate());
+        }
+        if ($request->query->get('enddate')) {
+            $endDate = new \DateTime($request->query->get('enddate'));
+        } else {
+            $endDate = new \DateTime($this->transactionRepository->findUserLastTransactionDate());
+        }
 
-        $budgetaccounts = $qb->getQuery()->getResult();
-
-        $budgetAccountStatsLoader = new BudgetAccountStatsLoader($this->getDoctrine()->getManager(), $request);
-        $budgetAccountStatsLoader->loadBudgetAccountStats();
+        $this->budgetAccountStatsLoader->loadBudgetAccountStats($startDate, $endDate);
 
         return $this->render(
-            'EnvelopeBundle:Default:budgetaccountstats.html.twig',
+            'default/budgetaccountstats.html.twig',
             [
                 'budgetaccounts' => $budgetaccounts,
-                'startdate' => $budgetAccountStatsLoader->getFirstTransactionDate(),
-                'enddate' => $budgetAccountStatsLoader->getLastTransactionDate(),
+                'startdate' => $this->budgetAccountStatsLoader->getFirstTransactionDate(),
+                'enddate' => $this->budgetAccountStatsLoader->getLastTransactionDate(),
             ]
         );
-    }
-
-    private function findFirstTransactionDate()
-    {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
-            ->select('MIN(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    private function findLastTransactionDate()
-    {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
-            ->select('MAX(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 
     public function spendingStatsAction(Request $request)
@@ -59,12 +53,12 @@ class StatsController extends AbstractController
         if ($request->query->get('startdate')) {
             $startdate = new \DateTime($request->query->get('startdate'));
         } else {
-            $startdate = new \DateTime($this->findFirstTransactionDate());
+            $startdate = new \DateTime($this->transactionRepository->findUserFirstTransactionDate());
         }
         if ($request->query->get('enddate')) {
             $enddate = new \DateTime($request->query->get('enddate'));
         } else {
-            $enddate = new \DateTime($this->findLastTransactionDate());
+            $enddate = new \DateTime($this->transactionRepository->findUserLastTransactionDate());
         }
 
         $excludeDescriptions = [

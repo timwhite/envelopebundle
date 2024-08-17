@@ -17,7 +17,7 @@ class BudgetTransactionController extends AbstractController
     #[Route('/budgettransactions/{accountid}', name: 'envelope_budgettransactions')]
     public function budgetTransactionList(BudgetAccountRepository $budgetAccountRepository, $accountid = null): Response
     {
-        $budgetAccounts = $budgetAccountRepository->getUserBudgetAccounts($this->getUser(), $accountid);
+        $budgetAccounts = $budgetAccountRepository->getUserBudgetAccounts($accountid);
 
         // Load Stats and inject into entity
         // @TODO come back and turn this into a service and enable it

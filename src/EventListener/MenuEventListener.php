@@ -62,13 +62,13 @@ class MenuEventListener implements EventSubscriberInterface
                 'envelope_budget_apply_template' => 'Apply Budget Template',
                 'envelope_import' => 'Import',
                 'envelope_autocode' => 'Auto Code Transactions',
-                //                'stats' => [
-                //                    'label' => "Statistics",
-                //                     'children' => [
-                //                         'envelope_budget_stats'=> ['label'=>'Fortnight Trends'],
-                //                         'envelope_budget_stats_spending'=> ['label'=>'Spending Breakdown'],
-                //                     ]
-                //                ]
+                'stats' => [
+                    'label' => 'Statistics',
+                    'children' => [
+                        'envelope_budget_stats' => ['label' => 'Fortnight Trends'],
+                        //                                         'envelope_budget_stats_spending'=> ['label'=>'Spending Breakdown'],
+                    ],
+                ],
             ];
         }
         $menuItems = [];

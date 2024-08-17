@@ -17,12 +17,15 @@ class BudgetAccountRepository extends ServiceEntityRepository
         parent::__construct($registry, BudgetAccount::class);
     }
 
-    public function getUserBudgetAccounts(User $user, ?int $accountId = null)
+    /**
+     * @return BudgetAccount[]|null
+     */
+    public function getUserBudgetAccounts(?int $accountId = null): ?array
     {
         $query = $this->createQueryBuilder('a')
             ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
             ->andWhere('g.access_group = :accessGroup')
-            ->setParameter('accessGroup', $user->getAccessGroup());
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup());
 
         if ($accountId) {
             $query->andWhere('a.id = :accountId')

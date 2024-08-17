@@ -1,30 +1,22 @@
 <?php
 
-namespace EnvelopeBundle\Shared;
+namespace App\Service;
 
-
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpFoundation\Request;
 use App\Entity\BudgetAccount;
+use App\Repository\BudgetAccountRepository;
+use App\Repository\BudgetTransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class BudgetAccountStatsLoader
 {
-    /** @var  EntityManager $em */
-    private $em;
-
-    /** @var Request $request */
-    private $request;
-
-    /** @var  \DateTime */
+    /** @var \DateTime */
     private $firstTransactionDate;
-    /** @var  \DateTime */
+    /** @var \DateTime */
     private $lastTransactionDate;
     private $totalFortnights;
 
-    public function __construct(EntityManager $em, Request $request)
+    public function __construct(private EntityManagerInterface $entityManager, private BudgetAccountRepository $budgetAccountRepository, private BudgetTransactionRepository $budgetTransactionRepository)
     {
-        $this->em = $em;
-        $this->request = $request;
     }
 
     public function getFirstTransactionDate()
@@ -39,66 +31,21 @@ class BudgetAccountStatsLoader
 
     private function loadDateRange()
     {
-        $query = $this->em->getConnection()->prepare("
-            SELECT MAX(`date`) as maxdate, MIN(`date`) as mindate
-            FROM budget_transaction
-            JOIN transaction ON transaction_id = transaction.id
-            WHERE
-              transaction.amount != 0
-              AND budget_transaction.amount < 0");
-        if ($query->execute()) {
-            $result = $query->fetch();
-            $this->firstTransactionDate = new \DateTime($result['mindate']);
-            $this->lastTransactionDate = new \DateTime($result['maxdate']);
-        }
-
-        if ($this->request->query->get('startdate')) {
-            $this->firstTransactionDate = new \DateTime($this->request->query->get('startdate'));
-        }
-        if ($this->request->query->get('enddate')) {
-            $this->lastTransactionDate = new \DateTime($this->request->query->get('enddate'));;
-        }
-
         // Don't calculate the number of fortnights until we have established our date range
         $this->totalFortnights = $this->lastTransactionDate->diff($this->firstTransactionDate)->days / 14.0;
 
-        // Load all Budget Accounts to set common data
-        $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
-        /** @var BudgetAccount $budgetAccounts */
-        $budgetAccounts = $budgetAccountRepo->findAll();
-        /** @var BudgetAccountStats $stats */
+        $budgetAccounts = $this->budgetAccountRepository->getUserBudgetAccounts();
         foreach ($budgetAccounts as $budgetAccount) {
             $stats = $budgetAccount->getBudgetStats();
             $stats->setFirstTransactionDate($this->firstTransactionDate);
             $stats->setLastTransactionDate($this->lastTransactionDate);
         }
-
     }
 
     private function loadNegativeSums()
     {
-
-        $query = $this->em->getConnection()->prepare("
-            SELECT budgetName, budget_account_id, MIN(date) as mindate, MAX(date) as maxdate, SUM(budget_transaction.amount) as negativesum
-            FROM budget_transaction
-            JOIN transaction ON transaction_id = transaction.id
-            JOIN budget_account on budget_account_id = budget_account.id
-            WHERE
-              transaction.amount != 0
-              AND budget_transaction.amount < 0
-              AND date >= :startdate
-              AND date <= :enddate
-            GROUP BY budget_account_id");
-        $query->execute(
-            [
-                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
-                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
-            ]
-        );
-        foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
-            /** @var BudgetAccount $budgetAccount */
-            $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
+        foreach ($this->budgetTransactionRepository->getNegativeBudgetSums($this->firstTransactionDate, $this->lastTransactionDate) as $result) {
+            $budgetAccount = $this->budgetAccountRepository->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setNegativeSum($result['negativesum']);
@@ -109,34 +56,10 @@ class BudgetAccountStatsLoader
         }
     }
 
-    private function loadPositiveSums()
+    private function loadPositiveSums(): void
     {
-
-        $query = $this->em->getConnection()->prepare("
-            SELECT budgetName,
-                budget_account_id,
-                MIN(date) as mindate,
-                MAX(date) as maxdate,
-                SUM(budget_transaction.amount) as positivesum
-            FROM budget_transaction
-            JOIN transaction ON transaction_id = transaction.id
-            JOIN budget_account on budget_account_id = budget_account.id
-            WHERE
-              transaction.amount = 0
-              AND budget_transaction.amount > 0
-              AND date >= :startdate
-              AND date <= :enddate
-            GROUP BY budget_account_id");
-        $query->execute(
-            [
-                'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
-                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
-            ]
-        );
-        foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
-            /** @var BudgetAccount $budgetAccount */
-            $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
+        foreach ($this->budgetTransactionRepository->getPositiveBudgetSums($this->firstTransactionDate, $this->lastTransactionDate) as $result) {
+            $budgetAccount = $this->budgetAccountRepository->find($result['budget_account_id']);
             if ($budgetAccount) {
                 $stats = $budgetAccount->getBudgetStats();
                 $stats->setPositiveSum($result['positivesum']);
@@ -149,8 +72,7 @@ class BudgetAccountStatsLoader
 
     private function loadIncomeSums()
     {
-
-        $query = $this->em->getConnection()->prepare("
+        $query = $this->entityManager->getConnection()->prepare('
             SELECT budgetName,
                 budget_account_id,
                 MIN(date) as mindate,
@@ -164,15 +86,15 @@ class BudgetAccountStatsLoader
               AND budget_transaction.amount > 0
               AND date >= :startdate
               AND date <= :enddate
-            GROUP BY budget_account_id");
+            GROUP BY budget_account_id');
         $query->execute(
             [
                 'startdate' => $this->firstTransactionDate->format('Y-m-d H:i:s'),
-                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s')
+                'enddate' => $this->lastTransactionDate->format('Y-m-d H:i:s'),
             ]
         );
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->entityManager->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -186,7 +108,7 @@ class BudgetAccountStatsLoader
 
     private function loadWeeklySums()
     {
-        $query = $this->em->getConnection()->prepare("
+        $query = $this->entityManager->getConnection()->prepare('
           SELECT
            YEARWEEK(transaction.date, 3) AS yearweeknum,
             budgetName,
@@ -197,10 +119,10 @@ class BudgetAccountStatsLoader
             JOIN budget_account on budget_account_id = budget_account.id
 
             GROUP BY budget_account_id, yearweeknum
-              ORDER BY yearweeknum, budget_account_id");
+              ORDER BY yearweeknum, budget_account_id');
         $query->execute();
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->entityManager->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -212,7 +134,7 @@ class BudgetAccountStatsLoader
 
     private function loadWeeklySpends()
     {
-        $query = $this->em->getConnection()->prepare("
+        $query = $this->entityManager->getConnection()->prepare('
           SELECT
            YEARWEEK(transaction.date, 3) AS yearweeknum,
             budgetName,
@@ -223,10 +145,10 @@ class BudgetAccountStatsLoader
             JOIN budget_account on budget_account_id = budget_account.id
             WHERE budget_transaction.amount < 0
             GROUP BY budget_account_id, yearweeknum
-            ORDER BY yearweeknum, budget_account_id");
+            ORDER BY yearweeknum, budget_account_id');
         $query->execute();
         foreach ($query as $result) {
-            $budgetAccountRepo = $this->em->getRepository('EnvelopeBundle:BudgetAccount');
+            $budgetAccountRepo = $this->entityManager->getRepository('EnvelopeBundle:BudgetAccount');
             /** @var BudgetAccount $budgetAccount */
             $budgetAccount = $budgetAccountRepo->find($result['budget_account_id']);
             if ($budgetAccount) {
@@ -237,16 +159,17 @@ class BudgetAccountStatsLoader
     }
 
     /**
-     * Loads Stats and Injects them into BudgetAccount objects (which can be retrieved through normal methods)
+     * Loads Stats and Injects them into BudgetAccount objects (which can be retrieved through normal methods).
      */
-    public function loadBudgetAccountStats()
+    public function loadBudgetAccountStats(\DateTime $startDate, \DateTime $endDate)
     {
+        $this->firstTransactionDate = $startDate;
+        $this->lastTransactionDate = $endDate;
         $this->loadDateRange();
         $this->loadPositiveSums();
         $this->loadNegativeSums();
-        $this->loadIncomeSums();
-        $this->loadWeeklySums();
-        $this->loadWeeklySpends();
-
+        //        $this->loadIncomeSums();
+        //        $this->loadWeeklySums();
+        //        $this->loadWeeklySpends();
     }
 }
