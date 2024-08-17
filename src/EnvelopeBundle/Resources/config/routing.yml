@@ -16,10 +16,6 @@ envelope_import:
     path:   /import/
     defaults: { _controller: EnvelopeBundle:Default:import }
 
-envelope_transaction_new:
-    path:   /transaction/new
-    defaults: { _controller: EnvelopeBundle:Default:transactionList, id: 'new'}
-
 envelope_transaction:
     path:   /transaction/{id}
     defaults: { _controller: EnvelopeBundle:Default:transactionList}

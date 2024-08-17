@@ -8,50 +8,35 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Transactions
+ * Transactions.
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 class Transaction
 {
-    /**
-     * @var integer
-     */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private int $id;
+    private ?int $id = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'Description', type: 'string', length: 255)]
     private string $description;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'FullDescription', type: 'string', length: 255)]
-    private string $fullDescription;
+    private string $fullDescription = '';
 
     #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: Account::class)]
-    private Account $account;
+    private ?Account $account = null;
 
-    /**
-     * @var \DateTime
-     */
     #[ORM\Column(name: 'Date', type: 'date', nullable: false)]
     private \DateTime $date;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'Amount', type: 'decimal', scale: 2, nullable: false)]
-    private string $amount;
+    private string $amount = '0';
 
     /**
-     * Due to us getting the Budget Sum in our _toString, we need EAGER loading
+     * Due to us getting the Budget Sum in our _toString, we need EAGER loading.
      */
     #[ORM\OneToMany(mappedBy: 'transaction', targetEntity: BudgetTransaction::class, cascade: ['persist'], fetch: 'EAGER')]
     private Collection $budget_transactions;
@@ -60,34 +45,26 @@ class Transaction
     #[ORM\ManyToOne(targetEntity: Import::class)]
     private ?Import $import;
 
-    /**
-     * @var array|null
-     */
     #[ORM\Column(name: 'extra', type: 'json', nullable: true)]
     private ?array $extra;
 
     /**
-     * An external immutable ID to match this transaction automatically via an API or similar
-     *
-     * @var string
+     * An external immutable ID to match this transaction automatically via an API or similar.
      */
     #[ORM\Column(type: 'string', length: 512, nullable: true)]
     private string $externalId;
 
     /**
-     * Get id
-     *
-     * @return integer 
+     * Get id.
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * Set description
+     * Set description.
      *
-     * @param string $description
      * @return Transaction
      */
     public function setDescription(string $description): static
@@ -98,9 +75,7 @@ class Transaction
     }
 
     /**
-     * Get description
-     *
-     * @return string 
+     * Get description.
      */
     public function getDescription(): string
     {
@@ -108,9 +83,8 @@ class Transaction
     }
 
     /**
-     * Set fullDescription
+     * Set fullDescription.
      *
-     * @param string $fullDescription
      * @return Transaction
      */
     public function setFullDescription(string $fullDescription): static
@@ -121,9 +95,7 @@ class Transaction
     }
 
     /**
-     * Get fullDescription
-     *
-     * @return string 
+     * Get fullDescription.
      */
     public function getFullDescription(): string
     {
@@ -131,9 +103,8 @@ class Transaction
     }
 
     /**
-     * Set date
+     * Set date.
      *
-     * @param \DateTime $date
      * @return Transaction
      */
     public function setDate(\DateTime $date): static
@@ -144,9 +115,7 @@ class Transaction
     }
 
     /**
-     * Get date
-     *
-     * @return \DateTime 
+     * Get date.
      */
     public function getDate(): \DateTime
     {
@@ -154,9 +123,8 @@ class Transaction
     }
 
     /**
-     * Set amount
+     * Set amount.
      *
-     * @param string $amount
      * @return Transaction
      */
     public function setAmount(string $amount): static
@@ -167,9 +135,7 @@ class Transaction
     }
 
     /**
-     * Get amount
-     *
-     * @return string 
+     * Get amount.
      */
     public function getAmount(): string
     {
@@ -177,12 +143,11 @@ class Transaction
     }
 
     /**
-     * Set account
+     * Set account.
      *
-     * @param Account $account
      * @return Transaction
      */
-    public function setAccount(Account $account = null): static
+    public function setAccount(?Account $account = null): static
     {
         $this->account = $account;
 
@@ -190,11 +155,9 @@ class Transaction
     }
 
     /**
-     * Get account
-     *
-     * @return Account
+     * Get account.
      */
-    public function getAccount(): Account
+    public function getAccount(): ?Account
     {
         return $this->account;
     }
@@ -205,34 +168,34 @@ class Transaction
     public function getBudgetSum(): int|string
     {
         $balance = 0;
-        foreach($this->budget_transactions as $transaction)
-        {
+        foreach ($this->budget_transactions as $transaction) {
             $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
+
         return $balance;
     }
 
     public function getPositiveBudgetSum(): int|string
     {
         $sum = 0;
-        foreach($this->getBudgetTransactions() as $transaction)
-        {
-            if($transaction->getAmount() > 0) {
+        foreach ($this->getBudgetTransactions() as $transaction) {
+            if ($transaction->getAmount() > 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
+
         return $sum;
     }
 
     public function getNegativeBudgetSum(): int|string
     {
         $sum = 0;
-        foreach($this->getBudgetTransactions() as $transaction)
-        {
-            if($transaction->getAmount() < 0) {
+        foreach ($this->getBudgetTransactions() as $transaction) {
+            if ($transaction->getAmount() < 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
+
         return $sum;
     }
 
@@ -244,11 +207,12 @@ class Transaction
     public function getUnassignedSumFormatted(): string
     {
         setlocale(LC_MONETARY, 'en_AU');
+
         return number_format(round($this->getUnassignedSum(), 2, PHP_ROUND_HALF_ODD), 2, '.', '');
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -256,9 +220,8 @@ class Transaction
     }
 
     /**
-     * Add budget_transactions
+     * Add budget_transactions.
      *
-     * @param BudgetTransaction $budgetTransactions
      * @return Transaction
      */
     public function addBudgetTransaction(BudgetTransaction $budgetTransactions): static
@@ -270,9 +233,7 @@ class Transaction
     }
 
     /**
-     * Remove budget_transactions
-     *
-     * @param BudgetTransaction $budgetTransactions
+     * Remove budget_transactions.
      */
     public function removeBudgetTransaction(BudgetTransaction $budgetTransactions): void
     {
@@ -280,9 +241,7 @@ class Transaction
     }
 
     /**
-     * Get budget_transactions
-     *
-     * @return ArrayCollection|Collection
+     * Get budget_transactions.
      */
     public function getBudgetTransactions(): ArrayCollection|Collection
     {
@@ -291,16 +250,15 @@ class Transaction
 
     public function __toString()
     {
-        return $this->getDescription() . ': ' .$this->getBudgetSum() . '/' . $this->getAmount();
+        return $this->getDescription().': '.$this->getBudgetSum().'/'.$this->getAmount();
     }
 
     /**
-     * Set import
+     * Set import.
      *
-     * @param Import $import
      * @return Transaction
      */
-    public function setImport(Import $import = null): static
+    public function setImport(?Import $import = null): static
     {
         $this->import = $import;
         $this->import->addTransaction($this);
@@ -309,49 +267,32 @@ class Transaction
     }
 
     /**
-     * Get import
-     *
-     * @return Import
+     * Get import.
      */
     public function getImport(): ?Import
     {
         return $this->import;
     }
 
-    /**
-     * @return array|null
-     */
     public function getExtra(): ?array
     {
         return $this->extra;
     }
 
-    /**
-     * @param array|null $extra
-     */
     public function setExtra(?array $extra): void
     {
         $this->extra = $extra;
     }
 
-    /**
-     * @return string
-     */
     public function getExternalId(): string
     {
         return $this->externalId;
     }
 
-    /**
-     * @param string $externalId
-     *
-     * @return Transaction
-     */
     public function setExternalId(string $externalId): Transaction
     {
         $this->externalId = $externalId;
+
         return $this;
     }
-
-
 }
