@@ -58,8 +58,8 @@ class MenuEventListener implements EventSubscriberInterface
                         ],
                     ],
                 ],
-                //                'envelope_budget_templates' => "Budget Templates",
-                //                'envelope_budget_apply_template' => "Apply Budget Template",
+                'envelope_budget_templates' => 'Budget Templates',
+                'envelope_budget_apply_template' => 'Apply Budget Template',
                 'envelope_import' => 'Import',
                 'envelope_autocode' => 'Auto Code Transactions',
                 //                'stats' => [

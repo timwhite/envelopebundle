@@ -6,7 +6,7 @@
 
 {% block page_actions %}
     <div class="btn-list">
-        <a href="{{ path('envelope_budget_template_edit', {'id': 'new'}) }}" class="btn btn-green">
+        <a href="{{ path('envelope_budget_template_new') }}" class="btn btn-green">
             New Template
         </a>
     </div>
@@ -75,7 +75,7 @@
 
 
                         <div class="card-tools pull-left">
-                            <form action="{{ path('envelope_budget_template_clone', {'templateid': budgettemplate.id}) }}"
+                            <form action="{{ path('envelope_budget_template_clone', {'id': budgettemplate.id}) }}"
                                   method="post">
                                 <a href="{{ path('envelope_budget_template_edit', {'id': budgettemplate.id}) }}"
                                    class="btn btn-default btn-card-tool"><i class="fa fa-pencil"></i> Edit Template</a>

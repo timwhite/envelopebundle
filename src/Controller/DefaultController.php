@@ -2,52 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\AccessGroup;
 use App\Entity\Account;
 use App\Entity\Budget\Template;
 use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
-use EnvelopeBundle\Form\Type\BudgetTemplateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
 {
-    #[Route(path: '/budgets/templates/clone/{templateid}', name: 'envelope_budget_template_clone')]
-    public function budgetTemplateCloneAction(Request $request, $templateid): Response
-    {
-        $session = $request->getSession();
-        $budgetTemplateRepo = $this->getDoctrine()->getManager()->getRepository('EnvelopeBundle:Budget\Template');
-
-        /** @var Template $budgetTemplate */
-        $budgetTemplate = $budgetTemplateRepo->find($templateid);
-        if ($budgetTemplate && $budgetTemplate->getAccessGroup()->getId() == $session->get('accessgroupid')) {
-            $newBudgetTemplate = clone $budgetTemplate;
-            $this->getDoctrine()->getManager()->persist($newBudgetTemplate);
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash(
-                'success',
-                'Budget Template '.$budgetTemplate->getName().' cloned'
-            );
-        } else {
-            $this->addFlash(
-                'error',
-                "Budget Template $templateid doesn't exist to clone"
-            );
-        }
-
-        return $this->redirectToRoute('envelope_budget_templates');
-    }
-
     #[Route(path: '/budgets/templates/apply', name: 'envelope_budget_apply_template')]
     public function applyBudgetTemplateAction(Request $request)
     {
@@ -139,146 +109,6 @@ class DefaultController extends AbstractController
         $this->addFlash(
             'success',
             'Budget Template Applied - '.$date->format('Y-m-d').' - '.$description
-        );
-    }
-
-    #[Route(path: '/budgets/template/delete/{id}', name: 'envelope_budget_template_delete', methods: ['POST'])]
-    public function budgetTemplateDeleteAction(Request $request, $id)
-    {
-        $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
-            'SELECT t
-                    FROM EnvelopeBundle:Budget\Template t
-                    WHERE t.id = :id
-                    AND t.access_group = :accessgroup
-                    '
-        );
-
-        $query->setParameters(
-            [
-                'id' => $id,
-                'accessgroup' => $session->get('accessgroupid'),
-            ]
-        );
-
-        try {
-            $budgetTemplate = $query->getSingleResult();
-        } catch (NoResultException $e) {
-            $this->addFlash('warning', 'No budget template with that ID available to you');
-
-            return $this->redirectToRoute('envelope_budget_templates');
-        }
-        $this->addFlash('success', 'Budget '.$budgetTemplate->getName().' Deleted');
-        $em->remove($budgetTemplate);
-        $em->flush();
-
-        return $this->redirectToRoute('envelope_budget_templates');
-    }
-
-    #[Route(path: '/budgets/template/edit/{id}', name: 'envelope_budget_template_edit')]
-    public function budgetTemplateEditAction(Request $request, $id)
-    {
-        $session = $request->getSession();
-        $em = $this->getDoctrine()->getManager();
-        if ('new' == $id) {
-            $existing = false;
-            $budgetTemplate = new Template();
-
-            // Set access group for new templates
-            $accessGroup = $em->getRepository(AccessGroup::class)->find($session->get('accessgroupid'));
-            $budgetTemplate->setAccessGroup($accessGroup);
-        } else {
-            $existing = true;
-
-            $query = $em->createQuery(
-                'SELECT t
-                    FROM EnvelopeBundle:Budget\Template t
-                    WHERE t.id = :id
-                    AND t.access_group = :accessgroup
-                    '
-            );
-
-            $query->setParameters(
-                [
-                    'id' => $id,
-                    'accessgroup' => $session->get('accessgroupid'),
-                ]
-            );
-
-            try {
-                $budgetTemplate = $query->getSingleResult();
-            } catch (NoResultException $e) {
-                $this->addFlash('warning', 'No budget template with that ID available to you');
-
-                return $this->render(
-                    'EnvelopeBundle:Default:dashboard.html.twig');
-            }
-        }
-
-        $form = $this->createForm(BudgetTemplateType::class, $budgetTemplate, ['existing_entity' => $existing, 'accessgroup' => $session->get('accessgroupid')]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($budgetTemplate->getTemplateTransactions() as $templateTransaction) {
-                if (
-                    null == $templateTransaction->getBudgetAccount()
-                    || null == $templateTransaction->getAmount()
-                    || null == $templateTransaction->getDescription()
-                ) {
-                    if ($templateTransaction->getId()) {
-                        $em->refresh($templateTransaction);
-                        $this->addFlash(
-                            'warning',
-                            'Removing Template Transaction - '.$templateTransaction
-                        );
-                    }
-                    $budgetTemplate->removeTemplateTransaction($templateTransaction);
-                    // $templateTransaction->setTemplate(null);
-                    $em->remove($templateTransaction);
-                }
-                // Ensure that transactions are correctly linked to the template (not sure why this is needed in this case)
-                elseif (null == $templateTransaction->getTemplate()) {
-                    $templateTransaction->setTemplate($budgetTemplate);
-                    $em->persist($templateTransaction);
-                }
-            }
-
-            /*            if($id == 'new')
-                        {
-                            $budgetTemplate->setFullDescription($budgetTemplate->getDescription());
-                        }*/
-
-            $em->persist($budgetTemplate);
-            $em->flush();
-
-            $this->addFlash(
-                'success',
-                'Budget Template Updated'
-            );
-
-            /*
-             * Now that we have removed some transactions, we need a complete reload to get the ID's correct in the
-             * form, correct solution is to redirect back to this page afresh, also ensures we don't have duplicate POST
-             * issues if they try to refresh the page
-             */
-            return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
-        }
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash(
-                'error',
-                'Changes not saved. Please fix errors'
-            );
-        }
-
-        return $this->render(
-            'EnvelopeBundle:Default:editbudgettemplate.html.twig',
-            [
-                'template' => $budgetTemplate,
-                'addform' => $form->createView(),
-                'templateid' => $id,
-            ]
         );
     }
 }

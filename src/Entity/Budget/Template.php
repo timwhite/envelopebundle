@@ -3,6 +3,7 @@
 namespace App\Entity\Budget;
 
 use App\Entity\AccessGroup;
+use App\Entity\BudgetAccount;
 use App\Repository\BudgetTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

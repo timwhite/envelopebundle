@@ -5,20 +5,18 @@
 
 
 {% block page_content %}
-    <div class="row">
+    <div class="row row-cards">
         <div class="col-sm-12">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Budget Template {{ template.id }} details</h3>
-                    <div class="box-tools pull-right">
-                        {% if template.balance != 0 %}
-                        <span class="label label-warning">Unbalanced Template</span>
-                        {% endif %}
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Budget Template {{ template.name}} ({{ template.id }}) details
+                        <span class="card-subtitle">
+                    {% if template.balance != 0 %}<span class="badge bg-red">Unbalanced Template</span>{% endif %}
+                            </span>
+                    </h3>
                 </div><!-- /.box-header -->
-                <div class="box-body">
-                    {% form_theme addform 'bootstrap_3_layout.html.twig' %}
+                <div class="card-body">
+
                     {{ form_start(addform) }}
                     <strong>Name</strong>
                     {{ form_row(addform.name) }}
@@ -52,30 +50,30 @@
                     <ol>
                         <li style="border-bottom: 2px solid black" class="clearfix"></li>
                             {% for templatetransaction in addform.template_transactions %}
-                                <li>
-                                    <span class="col-xs-3">
+                                <li class="input-group">
+                                    <span class="w-25 me-3">
                                         {{ form_widget(templatetransaction.description) }}
                                         {{ form_errors(templatetransaction.description) }}
                                     </span>
-                                    <span class="col-xs-6">
+                                    <span class="w-25 me-3">
                                     {{ form_widget(templatetransaction.budgetaccount, { 'attr': {'class': 'combobox'} }) }}
                                     {{ form_errors(templatetransaction.budgetaccount) }}
                                     </span>
-                                    <span class="col-xs-3">
+                                    <span class="w-auto">
                                     {{ form_widget(templatetransaction.amount) }}
                                     {{ form_errors(templatetransaction.amount) }}
                                     </span>
                                 </li>
                             {% endfor %}
-                            <li>
+                            <li class="input-group">
                                 {% set formindex = addform.template_transactions|length %}
-                                <span class="col-xs-3">
+                                <span class="w-25 me-3">
                                         {{ form_widget(addform.template_transactions.vars.prototype.description)|replace({'__name__': formindex})|raw }}
                                 </span>
-                                <span class="col-xs-6">
+                                <span class="w-25 me-3">
                                 {{ form_widget(addform.template_transactions.vars.prototype.budgetaccount, { 'attr': {'class': 'combobox'} })|replace({'__name__': formindex})|raw }}
                                 </span>
-                                <span class="col-xs-3">
+                                <span class="w-auto">
                                 {{ form_widget(addform.template_transactions.vars.prototype.amount)|replace({'__name__': formindex})|raw }}
                                 </span>
 
@@ -94,7 +92,7 @@
                     {{ form_end(addform) }}
 
                 </div>
-                <div class="box-footer">
+                <div class="card-footer">
                 </div><!-- box-footer -->
             </div><!-- /.box -->
         </div><!-- col -->
@@ -104,42 +102,38 @@
 
 {% endblock %}
 
-{% block javascripts_inline %}
+{% block javascripts %}
+    {{ parent() }}
 <script>
-    $('.budgettemplatetransactionamount').focus(function () {
-                var $balance = $('#balance').data('balance');
-                if (!this.value && $balance != 0) {
-                    this.value = -$balance;
-                }
-                updateBalance();
+    document.querySelectorAll('.budgettemplatetransactionamount').forEach((el) => {
+        el.addEventListener('focus', (e) => {
+            let balance = Number(document.getElementById('balance').dataset.balance);
+            if (!e.target.value && balance !== 0 ) {
+                e.target.value = -balance;
             }
-    )
+            updateBalance()
+        })
+    });
 
-    var balance = 0;
+    let balance = 0;
 
     function updateBalance() {
         balance = 0;
-        $('.budgettemplatetransactionamount').each(function () {
-            balance += +(this.value)
+        document.querySelectorAll(('.budgettemplatetransactionamount')).forEach((el) => {
+            balance += Number(el.value)
         })
-        $('#balance').data('balance', balance).text('$' + balance);
+
+        document.getElementById('balance').dataset.balance = balance;
+        document.getElementById('balance').textContent = '$' + balance;
     }
 
-    $('.budgettemplatetransactionamount').change(updateBalance)
-
-    $(document).ready(function () {
-        $('.combobox').combobox();
+    document.querySelectorAll('.budgettemplatetransactionamount').forEach((el) => {
+        el.addEventListener('change', updateBalance)
     });
+
+    // @TODO bring back combobox?
+    // $(document).ready(function () {
+    //     $('.combobox').combobox();
+    // });
 </script>
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script src="{{ asset('assets/vendor/bootstrap-combobox/js/bootstrap-combobox.js') }}"></script>
-{% endblock %}
-
-{% block stylesheets %}
-{{ parent() }}
-<link rel="stylesheet"
-      href="{{ asset('assets/vendor/bootstrap-combobox/css/bootstrap-combobox.css') }}">
 {% endblock %}

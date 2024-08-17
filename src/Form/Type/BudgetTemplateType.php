@@ -1,7 +1,9 @@
 <?php
 
-namespace EnvelopeBundle\Form\Type;
+namespace App\Form\Type;
 
+use App\Entity\Budget\Template;
+use EnvelopeBundle\Form\Type\BudgetTemplateTransactionType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -18,14 +20,13 @@ class BudgetTemplateType extends AbstractType
 
         $builder->add('template_transactions', CollectionType::class, [
             'entry_type' => BudgetTemplateTransactionType::class,
-            'allow_add'    => true,
+            'allow_add' => true,
             'by_reference' => false,
             'allow_delete' => true,
-            //'delete_empty' => true,
+            // 'delete_empty' => true,
             'label' => false,
-            'entry_options' => ['accessgroup' => $options['accessgroup']]
-
-        ] );
+            'entry_options' => ['accessgroup' => $options['accessgroup']],
+        ]);
 
         /*if(!$options['existing_entity']) {
 
@@ -35,16 +36,16 @@ class BudgetTemplateType extends AbstractType
             //$builder->add('fulldescription', null, ['disabled' => $existing, 'label' => false,]);
         }*/
 
-        $builder->add('save', SubmitType::class, [ 'label' => 'Update Template' ] );
+        $builder->add('save', SubmitType::class, ['label' => 'Update Template']);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults( [
+        $resolver->setDefaults([
             'data_class' => Template::class,
             'existing_entity' => true,
             'accessgroup' => 0,
-        ] );
+        ]);
     }
 
     public function getBlockPrefix()
