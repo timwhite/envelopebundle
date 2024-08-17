@@ -1,22 +1,14 @@
 <?php
 
-
 namespace App\Controller;
 
-use Doctrine\DBAL\Types\DecimalType;
-use App\Entity\BudgetAccount;
-use EnvelopeBundle\Shared\BudgetAccountStats;
-use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class SearchController extends AbstractController
 {
-
-    public function searchAction(Request $request) {
+    public function searchAction(Request $request)
+    {
         $searchTerm = $request->query->get('q');
         $session = $request->getSession();
 
@@ -28,19 +20,18 @@ class SearchController extends AbstractController
             ->andWhere('t.fullDescription LIKE :search OR t.description LIKE :search')
             ->setParameters([
                 'accessgroup' => $session->get('accessgroupid'),
-                    'search' => "%$searchTerm%"
-                ]
+                'search' => "%$searchTerm%",
+            ]
             )
         ;
         $transactions = $qb->getQuery()->getResult();
-
 
         // Find all transactions that match in description or full description
         return $this->render(
             'EnvelopeBundle:Search:results.html.twig',
             [
                 'transactions' => $transactions,
-                'searchterm' => $searchTerm
+                'searchterm' => $searchTerm,
             ]
         );
     }

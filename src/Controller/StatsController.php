@@ -2,15 +2,9 @@
 
 namespace App\Controller;
 
-use Doctrine\DBAL\Types\DecimalType;
-use App\Entity\BudgetAccount;
-use EnvelopeBundle\Shared\BudgetAccountStats;
 use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class StatsController extends AbstractController
 {
@@ -58,7 +52,8 @@ class StatsController extends AbstractController
             ->getSingleScalarResult();
     }
 
-    public function spendingStatsAction(Request $request) {
+    public function spendingStatsAction(Request $request)
+    {
         $session = $request->getSession();
 
         if ($request->query->get('startdate')) {
@@ -67,13 +62,13 @@ class StatsController extends AbstractController
             $startdate = new \DateTime($this->findFirstTransactionDate());
         }
         if ($request->query->get('enddate')) {
-            $enddate = new \DateTime($request->query->get('enddate'));;
+            $enddate = new \DateTime($request->query->get('enddate'));
         } else {
             $enddate = new \DateTime($this->findLastTransactionDate());
         }
 
         $excludeDescriptions = [
-            'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings'
+            'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings',
         ];
 
         $query = $this->getDoctrine()->getManager()->getConnection()->prepare("
@@ -86,7 +81,7 @@ class StatsController extends AbstractController
               JOIN `account` ON `transaction`.`account_id` = `account`.`id`
             WHERE `amount` < 0
               AND `account`.`accessgroup_id` = :accessgroup
-              AND `Description` NOT IN ('". implode("','", $excludeDescriptions) ."')
+              AND `Description` NOT IN ('".implode("','", $excludeDescriptions)."')
               AND `transaction`.`date` >= :startdate
               AND `transaction`.`date` <= :enddate
               GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
@@ -99,25 +94,24 @@ class StatsController extends AbstractController
             [
                 'accessgroup' => $session->get('accessgroupid'),
                 'startdate' => $startdate->format('Y-m-d'),
-                'enddate' => $enddate->format('Y-m-d')
+                'enddate' => $enddate->format('Y-m-d'),
             ]
         )) {
-
-            foreach($query as $result) {
-                if($result['numtransactions'] > 1) {
+            foreach ($query as $result) {
+                if ($result['numtransactions'] > 1) {
                     $results[] = [
                         'value' => abs($result['sumamount']),
-                        'label' => "${result['description']} (${result['avgamount']} / ${result['numtransactions']})"
+                        'label' => "{$result['description']} ({$result['avgamount']} / {$result['numtransactions']})",
                     ];
-                }else{
+                } else {
                     $excluded_transactions[] = $result;
                 }
                 $total = bcadd($total, $result['sumamount'], 2);
             }
         }
 
-        foreach($results as $key => $result) {
-            $results[$key]['label'] .= " " . round($result['value'] / $total * 100) . "%";
+        foreach ($results as $key => $result) {
+            $results[$key]['label'] .= ' '.round($result['value'] / $total * 100).'%';
         }
 
         return $this->render(
@@ -129,8 +123,6 @@ class StatsController extends AbstractController
                 'enddate' => $enddate,
             ]
         );
-
-
     }
 
     /* Spending location Query
@@ -143,5 +135,4 @@ AND `Description` NOT IN ('Fortnight Savings', 'Fortnight Cash', 'Credit Card Tr
 GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
 ORDER BY SUM(`amount`) ASC
     */
-
 }

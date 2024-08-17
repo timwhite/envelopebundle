@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use App\Form\Type\TransactionType;
@@ -22,7 +21,6 @@ class TransactionController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em)
     {
-
     }
 
     #[Route(path: '/transaction/list', name: 'envelope_transactions')]
@@ -32,7 +30,7 @@ class TransactionController extends AbstractController
             'default/transactions.html.twig',
             [
                 'accounts' => $accountRepository->getUsersAccounts(),
-                //'unbalancedtransactions' => $transactionRepository->getUnbalancedTransactions()
+                // 'unbalancedtransactions' => $transactionRepository->getUnbalancedTransactions()
             ]
         );
     }
@@ -46,30 +44,27 @@ class TransactionController extends AbstractController
         return $this->transactionList($transaction, $request, false);
     }
 
-
     #[Route(path: '/transaction/{id}', name: 'envelope_transaction')]
     #[IsGranted(TransactionVoter::EDIT, 'transaction')]
     public function transactionList(Transaction $transaction, Request $request, $existing = true): Response
     {
         $form = $this->createForm(TransactionType::class, $transaction, [
             'existing_entity' => $existing,
-            "accessgroup" => $this->getUser()->getAccessGroup()
+            'accessgroup' => $this->getUser()->getAccessGroup(),
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             foreach ($transaction->getBudgetTransactions() as $budgetTransaction) {
-                if ($budgetTransaction->getBudgetAccount() == null || $budgetTransaction->getAmount() == null) {
+                if (null == $budgetTransaction->getBudgetAccount() || null == $budgetTransaction->getAmount()) {
                     $transaction->removeBudgetTransaction($budgetTransaction);
                     $budgetTransaction->setTransaction(null);
                     $this->em->remove($budgetTransaction);
                 }
             }
 
-            if(!$existing)
-            {
+            if (!$existing) {
                 $transaction->setFullDescription($transaction->getDescription());
             }
 
@@ -81,13 +76,11 @@ class TransactionController extends AbstractController
                 'Transaction Updated'
             );
 
-            if($request->query->get('return') == 'transactions' && $transaction->getUnassignedSum() == 0)
-            {
+            if ('transactions' == $request->query->get('return') && 0 == $transaction->getUnassignedSum()) {
                 return $this->redirectToRoute('envelope_transactions');
             }
 
-            if($request->query->get('return') == 'unbalanced_transactions' && $transaction->getUnassignedSum() == 0)
-            {
+            if ('unbalanced_transactions' == $request->query->get('return') && 0 == $transaction->getUnassignedSum()) {
                 return $this->redirectToRoute('envelope_transactions_unbalanced');
             }
 
@@ -99,7 +92,7 @@ class TransactionController extends AbstractController
             'default/transaction.html.twig',
             [
                 'transaction' => $transaction,
-                'addform' => $form->createView(),//$this->transactionAddBudgetTransactionForm($id)->createView()
+                'addform' => $form->createView(), // $this->transactionAddBudgetTransactionForm($id)->createView()
             ]
         );
     }
@@ -112,14 +105,14 @@ class TransactionController extends AbstractController
         $transaction->setDate(new \DateTime());
         $form = $this->createForm(TransactionType::class, $transaction, [
             'existing_entity' => false,
-            "accessgroup" => $this->getUser()->getAccessGroup()
+            'accessgroup' => $this->getUser()->getAccessGroup(),
         ]);
 
         return $this->render(
             'default/unbalancedTransactions.html.twig',
             [
                 'unbalancedtransactions' => $transactionRepository->getUnbalancedTransactions(),
-                'codingForm' => $form->createView()
+                'codingForm' => $form->createView(),
             ]
         );
     }
@@ -133,7 +126,7 @@ class TransactionController extends AbstractController
         $budgetAccount = $budgetAccountRepository->find($budgetAccountId);
         $this->denyAccessUnlessGranted(BudgetAccountVoter::EDIT, $budgetAccount);
 
-        foreach($bulkTransactions as $transactionId) {
+        foreach ($bulkTransactions as $transactionId) {
             /** @var Transaction $transaction */
             $transaction = $transactionRepository->find($transactionId);
             $this->denyAccessUnlessGranted(TransactionVoter::EDIT, $transaction);
@@ -145,11 +138,9 @@ class TransactionController extends AbstractController
 
             $transactionRepository->persistTransaction($transaction);
 
-            $this->addFlash('success', $transaction->getDescription() . ' assigned '. $budgetTransaction->getAmount() . ' to ' . $budgetAccount->getBudgetName());
+            $this->addFlash('success', $transaction->getDescription().' assigned '.$budgetTransaction->getAmount().' to '.$budgetAccount->getBudgetName());
         }
 
         return $this->redirectToRoute('envelope_transactions_unbalanced');
     }
-
-
 }

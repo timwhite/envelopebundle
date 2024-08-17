@@ -2,30 +2,23 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Repository\AccountRepository;
-use App\Repository\BudgetAccountRepository;
-use App\Repository\TransactionRepository;
-use App\Voter\TransactionVoter;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Query;
+use App\Entity\AccessGroup;
 use App\Entity\Account;
 use App\Entity\AutoCodeSearch;
 use App\Entity\Budget\Template;
 use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
+use App\Repository\TransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
-use App\Form\Type\TransactionType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
-use EnvelopeBundle\Shared\BudgetAccountStatsLoader;
 use EnvelopeBundle\Shared\importBankTransactions;
-use App\Entity\AccessGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -36,12 +29,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
 class DefaultController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em)
     {
-
     }
 
     #[Route('/login', name: 'login')]
@@ -50,6 +41,7 @@ class DefaultController extends AbstractController
         if ($this->isGranted('IS_AUTHENTICATED')) {
             return $this->redirectToRoute('dashboard');
         }
+
         return $this->render(
             'login.html.twig'
         );
@@ -67,7 +59,7 @@ class DefaultController extends AbstractController
     #[Route('/profile', name: 'profile')]
     public function profile(): Response
     {
-            return $this->render(
+        return $this->render(
             'default/profile.html.twig',
             [
                 'user' => $this->getUser(),
@@ -75,24 +67,24 @@ class DefaultController extends AbstractController
         );
     }
 
-
     private function importForm($accessGroup)
     {
         return $form = $this->createFormBuilder()
             ->add('account', EntityType::class, [
                 'class' => Account::class,
-                'query_builder' => function(EntityRepository $repository) use ($accessGroup) {
+                'query_builder' => function (EntityRepository $repository) use ($accessGroup) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('a');
+
                     return $qb
                         ->andWhere('a.access_group = :accessgroup')
                         ->setParameter('accessgroup', $accessGroup)
-                        ;
+                    ;
                 },
             ])
             ->add('accountType', ChoiceType::class, ['choices' => importBankTransactions::ACCOUNT_TYPES])
             ->add('bankExport', FileType::class)
-            ->add('save', SubmitType::class, [ 'label' => 'Import transactions' ] )
+            ->add('save', SubmitType::class, ['label' => 'Import transactions'])
             ->getForm();
     }
 
@@ -124,10 +116,7 @@ class DefaultController extends AbstractController
             $ignored = $bankImport->getIgnored();
             $unknown = $bankImport->getUnknown();
             $import = $bankImport->getImport();
-
-
         }
-
 
         return $this->render(
             'EnvelopeBundle:Default:imports.html.twig',
@@ -143,11 +132,7 @@ class DefaultController extends AbstractController
         );
     }
 
-
-
     /**
-     * @param $accessgroupid
-     *
      * @return Query
      */
     private function getUnbalancedTransactionsQuery($accessgroupid)
@@ -168,10 +153,6 @@ class DefaultController extends AbstractController
         )->setParameters(['accessgroup' => $accessgroupid]);
     }
 
-
-
-
-
     public function autoCodeAction(Request $request)
     {
         $session = $request->getSession();
@@ -179,7 +160,7 @@ class DefaultController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $form = $this->createFormBuilder()
-            ->add('save', SubmitType::class, [ 'label' => 'Auto code transactions' ] )
+            ->add('save', SubmitType::class, ['label' => 'Auto code transactions'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -203,7 +184,7 @@ class DefaultController extends AbstractController
           ')
             ->setParameters(
                 [
-                    'accessgroup' => $accessGroup
+                    'accessgroup' => $accessGroup,
                 ])
             ->getResult();
 
@@ -224,14 +205,15 @@ class DefaultController extends AbstractController
         $accessGroup = $session->get('accessgroupid');
         $em = $this->getDoctrine()->getManager();
 
-        if ($id == 'new') {
+        if ('new' == $id) {
             $search = new AutoCodeSearch();
         } else {
             /** @var AutoCodeSearch $search */
-            $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+            $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id' => $id]);
             if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
                 // Attempt to edit an search that assigns to a budget other than ours
                 $this->addFlash('error', 'No access to a search with that id');
+
                 return $this->redirectToRoute('envelope_autocode');
             }
         }
@@ -239,22 +221,22 @@ class DefaultController extends AbstractController
         $form = $this->createFormBuilder($search)
             ->add('budgetAccount', EntityType::class, [
                 'class' => BudgetAccount::class,
-                'query_builder' => function(EntityRepository $repository) use($accessGroup) {
+                'query_builder' => function (EntityRepository $repository) use ($accessGroup) {
                     $qb = $repository->createQueryBuilder('b');
+
                     return $qb
                         ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'b.budget_group = g')
                         ->Where('g.access_group = :accessgroup')
                         ->setParameter('accessgroup', $accessGroup);
                 },
             ])
-            ->add('search',null,['label' => "Search (SQL LIKE %% search string)"])
+            ->add('search', null, ['label' => 'Search (SQL LIKE %% search string)'])
             ->add('rename')
-            ->add('amount', null, ['label' => "Optional Amount to restrict search to"])
-            ->add('save', SubmitType::class, [ 'label' => 'Save' ] )
+            ->add('amount', null, ['label' => 'Optional Amount to restrict search to'])
+            ->add('save', SubmitType::class, ['label' => 'Save'])
             ->getForm();
 
         $form->handleRequest($request);
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($search);
@@ -266,13 +248,12 @@ class DefaultController extends AbstractController
             );
 
             return $this->redirectToRoute('envelope_autocode');
-
         }
 
         return $this->render(
             'EnvelopeBundle:Default:autoCodeSearch.html.twig',
             [
-                'form' => $form->createView()
+                'form' => $form->createView(),
             ]
         );
     }
@@ -284,10 +265,11 @@ class DefaultController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         /** @var AutoCodeSearch $search */
-        $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id'=>$id]);
+        $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id' => $id]);
         if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
             // Attempt to delete an search that assigns to a budget other than ours
             $this->addFlash('error', 'No access to a search with that id');
+
             return $this->redirectToRoute('envelope_autocode');
         }
 
@@ -330,7 +312,7 @@ class DefaultController extends AbstractController
             $startdate = new \DateTime($this->findFirstTransactionDate());
         }
         if ($request->query->get('enddate')) {
-            $enddate = new \DateTime($request->query->get('enddate'));;
+            $enddate = new \DateTime($request->query->get('enddate'));
         } else {
             $enddate = new \DateTime($this->findLastTransactionDate());
         }
@@ -361,20 +343,21 @@ class DefaultController extends AbstractController
 
         /** @var Template $budgetTemplate */
         $budgetTemplate = $budgetTemplateRepo->find($templateid);
-        if($budgetTemplate && $budgetTemplate->getAccessGroup()->getId() == $session->get('accessgroupid')) {
+        if ($budgetTemplate && $budgetTemplate->getAccessGroup()->getId() == $session->get('accessgroupid')) {
             $newBudgetTemplate = clone $budgetTemplate;
             $this->getDoctrine()->getManager()->persist($newBudgetTemplate);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash(
                 'success',
-                'Budget Template ' . $budgetTemplate->getName() . ' cloned'
+                'Budget Template '.$budgetTemplate->getName().' cloned'
             );
-        }else{
+        } else {
             $this->addFlash(
                 'error',
                 "Budget Template $templateid doesn't exist to clone"
             );
         }
+
         return $this->redirectToRoute('envelope_budget_templates');
     }
 
@@ -389,7 +372,7 @@ class DefaultController extends AbstractController
         );
         $query->setParameters(
             [
-                "accessgroup" => $session->get('accessgroupid')
+                'accessgroup' => $session->get('accessgroupid'),
             ]
         );
 
@@ -428,23 +411,24 @@ class DefaultController extends AbstractController
         $form = $this->createFormBuilder(['date' => new \DateTime()])
             ->add('template', EntityType::class, [
                 'class' => Template::class,
-                'query_builder' => function(EntityRepository $repository) use ($session) {
+                'query_builder' => function (EntityRepository $repository) use ($session) {
                     // EnvelopeBundle:BudgetAccount is the entity we are selecting
                     $qb = $repository->createQueryBuilder('t');
+
                     return $qb
                         ->andWhere('t.archived = 0')
                         ->andWhere('t.access_group = :accessgroup')
                         ->setParameter('accessgroup', $session->get('accessgroupid'))
-                        ;
+                    ;
                 },
-                ])
+            ])
             ->add('date', DateType::class, ['widget' => 'single_text'])
             ->add('description')
             ->add('fortnightly_automatic', CheckboxType::class, [
                 'label' => 'Apply each fortnight from the last applied date until the selected date?',
-                'required' => false
+                'required' => false,
             ])
-            ->add('save', SubmitType::class, [ 'label' => 'Apply Budget Template' ] )
+            ->add('save', SubmitType::class, ['label' => 'Apply Budget Template'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -490,7 +474,7 @@ class DefaultController extends AbstractController
             ->setAccount($budgetTransferAccount)
             ->setAmount(0)
             ->setDescription($description)
-            ->setFullDescription("Budget Template Transaction - " . $template->getDescription());
+            ->setFullDescription('Budget Template Transaction - '.$template->getDescription());
         $em->persist($transferTransaction);
 
         // Loop through template transactions
@@ -510,13 +494,12 @@ class DefaultController extends AbstractController
 
         $this->addFlash(
             'success',
-            'Budget Template Applied - ' . $date->format('Y-m-d') . ' - ' . $description
+            'Budget Template Applied - '.$date->format('Y-m-d').' - '.$description
         );
-
     }
 
-
-    public function budgetTemplateDeleteAction(Request $request, $id) {
+    public function budgetTemplateDeleteAction(Request $request, $id)
+    {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
@@ -529,29 +512,30 @@ class DefaultController extends AbstractController
 
         $query->setParameters(
             [
-                "id" => $id,
-                "accessgroup" => $session->get('accessgroupid')
+                'id' => $id,
+                'accessgroup' => $session->get('accessgroupid'),
             ]
         );
 
         try {
             $budgetTemplate = $query->getSingleResult();
-        } catch(NoResultException $e) {
-            $this->addFlash('warning', "No budget template with that ID available to you");
+        } catch (NoResultException $e) {
+            $this->addFlash('warning', 'No budget template with that ID available to you');
+
             return $this->redirectToRoute('envelope_budget_templates');
         }
-        $this->addFlash('success', "Budget " . $budgetTemplate->getName() . " Deleted");
+        $this->addFlash('success', 'Budget '.$budgetTemplate->getName().' Deleted');
         $em->remove($budgetTemplate);
         $em->flush();
-        return $this->redirectToRoute('envelope_budget_templates');
 
+        return $this->redirectToRoute('envelope_budget_templates');
     }
 
     public function budgetTemplateEditAction(Request $request, $id)
     {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
-        if ($id == 'new') {
+        if ('new' == $id) {
             $existing = false;
             $budgetTemplate = new Template();
 
@@ -571,15 +555,16 @@ class DefaultController extends AbstractController
 
             $query->setParameters(
                 [
-                    "id" => $id,
-                    "accessgroup" => $session->get('accessgroupid')
+                    'id' => $id,
+                    'accessgroup' => $session->get('accessgroupid'),
                 ]
             );
 
             try {
                 $budgetTemplate = $query->getSingleResult();
-            } catch(NoResultException $e) {
-                $this->addFlash('warning', "No budget template with that ID available to you");
+            } catch (NoResultException $e) {
+                $this->addFlash('warning', 'No budget template with that ID available to you');
+
                 return $this->render(
                     'EnvelopeBundle:Default:dashboard.html.twig');
             }
@@ -590,37 +575,34 @@ class DefaultController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             foreach ($budgetTemplate->getTemplateTransactions() as $templateTransaction) {
                 if (
-                        $templateTransaction->getBudgetAccount() == null
-                        || $templateTransaction->getAmount() == null
-                        || $templateTransaction->getDescription() == null
+                    null == $templateTransaction->getBudgetAccount()
+                    || null == $templateTransaction->getAmount()
+                    || null == $templateTransaction->getDescription()
                 ) {
-                    if($templateTransaction->getId())
-                    {
+                    if ($templateTransaction->getId()) {
                         $em->refresh($templateTransaction);
                         $this->addFlash(
                             'warning',
-                            'Removing Template Transaction - ' . $templateTransaction
+                            'Removing Template Transaction - '.$templateTransaction
                         );
                     }
                     $budgetTemplate->removeTemplateTransaction($templateTransaction);
-                    //$templateTransaction->setTemplate(null);
+                    // $templateTransaction->setTemplate(null);
                     $em->remove($templateTransaction);
                 }
                 // Ensure that transactions are correctly linked to the template (not sure why this is needed in this case)
-                elseif ($templateTransaction->getTemplate() == null) {
+                elseif (null == $templateTransaction->getTemplate()) {
                     $templateTransaction->setTemplate($budgetTemplate);
                     $em->persist($templateTransaction);
                 }
             }
 
-/*            if($id == 'new')
-            {
-                $budgetTemplate->setFullDescription($budgetTemplate->getDescription());
-            }*/
-
+            /*            if($id == 'new')
+                        {
+                            $budgetTemplate->setFullDescription($budgetTemplate->getDescription());
+                        }*/
 
             $em->persist($budgetTemplate);
             $em->flush();
@@ -637,13 +619,12 @@ class DefaultController extends AbstractController
              */
             return $this->redirectToRoute('envelope_budget_template_edit', ['id' => $budgetTemplate->getId()]);
         }
-        if($form->isSubmitted() && ! $form->isValid()) {
+        if ($form->isSubmitted() && !$form->isValid()) {
             $this->addFlash(
                 'error',
                 'Changes not saved. Please fix errors'
             );
         }
-
 
         return $this->render(
             'EnvelopeBundle:Default:editbudgettemplate.html.twig',
@@ -654,6 +635,4 @@ class DefaultController extends AbstractController
             ]
         );
     }
-
-
 }
