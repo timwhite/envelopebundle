@@ -12,10 +12,6 @@ envelope_autocode_delete_search:
     methods:  [POST]
 
 
-envelope_import:
-    path:   /import/
-    defaults: { _controller: EnvelopeBundle:Default:import }
-
 envelope_transaction:
     path:   /transaction/{id}
     defaults: { _controller: EnvelopeBundle:Default:transactionList}

@@ -3,20 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Class User
+ * Class User.
  */
-
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundle\Model\UserInterface
 {
-
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
@@ -44,10 +40,10 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
      */
     public function serialize(): string
     {
-        return serialize( [
+        return serialize([
             $this->id,
-            $this->username
-        ] );
+            $this->username,
+        ]);
     }
 
     /**
@@ -55,10 +51,10 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
      */
     public function unserialize($serialized): void
     {
-        list (
+        list(
             $this->id,
             $this->username
-            ) = unserialize($serialized);
+        ) = unserialize($serialized);
     }
 
     public function isEqualTo(UserInterface $user): bool
@@ -72,13 +68,12 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
 
     public function __toString()
     {
-        return $this->firstname . " " . $this->lastname;
+        return $this->firstname.' '.$this->lastname;
     }
 
     /**
-     * Set firstname
+     * Set firstname.
      *
-     * @param string $firstname
      * @return User
      */
     public function setFirstname(string $firstname): static
@@ -89,9 +84,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Get firstname
-     *
-     * @return string 
+     * Get firstname.
      */
     public function getFirstname(): string
     {
@@ -99,9 +92,8 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Set lastname
+     * Set lastname.
      *
-     * @param string $lastname
      * @return User
      */
     public function setLastname(string $lastname): static
@@ -112,7 +104,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Get lastname
+     * Get lastname.
      */
     public function getLastname(): ?string
     {
@@ -120,9 +112,8 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Set email
+     * Set email.
      *
-     * @param string $email
      * @return User
      */
     public function setEmail(string $email): static
@@ -133,8 +124,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Get email
-
+     * Get email.
      */
     public function getEmail(): ?string
     {
@@ -142,9 +132,8 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Set username
+     * Set username.
      *
-     * @param string $username
      * @return User
      */
     public function setUsername(string $username): static
@@ -155,9 +144,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Get id
-     *
-     * @return integer 
+     * Get id.
      */
     public function getId(): int
     {
@@ -169,9 +156,9 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
         return true;
     }
 
-    public function getMemberSince(): DateTime
+    public function getMemberSince(): \DateTime
     {
-        return new DateTime();
+        return new \DateTime();
     }
 
     public function getTitle(): string
@@ -181,28 +168,25 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
 
     public function getName(): string
     {
-        return $this->getFirstname() . " " . $this->getLastname();
+        return $this->getFirstname().' '.$this->getLastname();
     }
-
 
     public function getRoles(): array
     {
         $roles = [];
-        if ($this->access_group != null)
-        {
+        if (null != $this->access_group) {
             $roles[] = 'ROLE_USER';
         }
-        if ($this->email == "timwhite88@gmail.com")
-        {
+        if ('timwhite88@gmail.com' == $this->email) {
             $roles[] = 'ROLE_ADMIN';
         }
+
         return $roles;
     }
 
     /**
-     * Set avatar
+     * Set avatar.
      *
-     * @param string $avatar
      * @return User
      */
     public function setAvatar(string $avatar): static
@@ -212,9 +196,8 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
         return $this;
     }
 
-
     /**
-     * Get avatar
+     * Get avatar.
      */
     public function getAvatar(): ?string
     {
@@ -222,9 +205,9 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Set access_group
+     * Set access_group.
      */
-    public function setAccessGroup(AccessGroup $accessGroup = null): static
+    public function setAccessGroup(?AccessGroup $accessGroup = null): static
     {
         $this->access_group = $accessGroup;
 
@@ -232,7 +215,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     /**
-     * Get access_group
+     * Get access_group.
      */
     public function getAccessGroup(): AccessGroup
     {
@@ -244,6 +227,11 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     }
 
     public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
+    public function getUsername(): ?string
     {
         return $this->username;
     }

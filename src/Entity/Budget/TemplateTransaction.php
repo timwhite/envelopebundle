@@ -2,20 +2,18 @@
 
 namespace App\Entity\Budget;
 
-use App\Entity\Budget\Template;
-
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\BudgetAccount;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * TemplateTransaction
+ * TemplateTransaction.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class TemplateTransaction
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -35,18 +33,17 @@ class TemplateTransaction
     private $amount;
 
     #[ORM\JoinColumn(name: 'budget_account_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: \App\Entity\BudgetAccount::class, inversedBy: 'template_transactions')]
+    #[ORM\ManyToOne(targetEntity: BudgetAccount::class, inversedBy: 'template_transactions')]
     private $budgetAccount;
 
     #[ORM\JoinColumn(name: 'template_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Budget\Template::class, inversedBy: 'template_transactions')]
+    #[ORM\ManyToOne(targetEntity: Template::class, inversedBy: 'template_transactions')]
     private $template;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -54,9 +51,10 @@ class TemplateTransaction
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return TemplateTransaction
      */
     public function setDescription($description)
@@ -67,9 +65,9 @@ class TemplateTransaction
     }
 
     /**
-     * Get description
+     * Get description.
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -77,9 +75,10 @@ class TemplateTransaction
     }
 
     /**
-     * Set amount
+     * Set amount.
      *
      * @param string $amount
+     *
      * @return TemplateTransaction
      */
     public function setAmount($amount)
@@ -90,20 +89,18 @@ class TemplateTransaction
     }
 
     /**
-     * Get amount
+     * Get amount.
      *
-     * @return string 
+     * @return string
      */
     public function getAmount()
     {
         return $this->amount;
     }
 
-
     /**
-     * Set template
+     * Set template.
      *
-     * @param Template $template
      * @return TemplateTransaction
      */
     public function setTemplate(Template $template)
@@ -114,7 +111,7 @@ class TemplateTransaction
     }
 
     /**
-     * Get template
+     * Get template.
      *
      * @return Template
      */
@@ -124,12 +121,11 @@ class TemplateTransaction
     }
 
     /**
-     * Set budgetAccount
+     * Set budgetAccount.
      *
-     * @param \App\Entity\BudgetAccount $budgetAccount
      * @return TemplateTransaction
      */
-    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount = null)
+    public function setBudgetAccount(?BudgetAccount $budgetAccount = null)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -137,9 +133,9 @@ class TemplateTransaction
     }
 
     /**
-     * Get budgetAccount
+     * Get budgetAccount.
      *
-     * @return \App\Entity\BudgetAccount
+     * @return BudgetAccount
      */
     public function getBudgetAccount()
     {
@@ -148,8 +144,11 @@ class TemplateTransaction
 
     public function __toString()
     {
-        $string = "Empty Account";
-        if($this->budgetAccount) $string = $this->budgetAccount->getBudgetName();
-        return $string . ": " . $this->description . ": "  . $this->amount;
+        $string = 'Empty Account';
+        if ($this->budgetAccount) {
+            $string = $this->budgetAccount->getBudgetName();
+        }
+
+        return $string.': '.$this->description.': '.$this->amount;
     }
 }

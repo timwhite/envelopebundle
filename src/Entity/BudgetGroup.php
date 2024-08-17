@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * BudgetGroup
+ * BudgetGroup.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class BudgetGroup
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -32,12 +34,10 @@ class BudgetGroup
     #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
     private $access_group;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -45,9 +45,10 @@ class BudgetGroup
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return BudgetGroup
      */
     public function setName($name)
@@ -58,9 +59,9 @@ class BudgetGroup
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -71,21 +72,21 @@ class BudgetGroup
     {
         return $this->getName() ?? '';
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->budget_accounts = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budget_accounts = new ArrayCollection();
     }
 
     /**
-     * Add budget_accounts
+     * Add budget_accounts.
      *
-     * @param \App\Entity\BudgetAccount $budgetAccounts
      * @return BudgetGroup
      */
-    public function addBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
+    public function addBudgetAccount(BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts[] = $budgetAccounts;
 
@@ -93,19 +94,17 @@ class BudgetGroup
     }
 
     /**
-     * Remove budget_accounts
-     *
-     * @param \App\Entity\BudgetAccount $budgetAccounts
+     * Remove budget_accounts.
      */
-    public function removeBudgetAccount(\App\Entity\BudgetAccount $budgetAccounts)
+    public function removeBudgetAccount(BudgetAccount $budgetAccounts)
     {
         $this->budget_accounts->removeElement($budgetAccounts);
     }
 
     /**
-     * Get budget_accounts
+     * Get budget_accounts.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getBudgetAccounts()
     {
@@ -115,40 +114,39 @@ class BudgetGroup
     public function getBudgetSum($startdate = null, $enddate = null)
     {
         $balance = 0;
-        foreach($this->getBudgetAccounts() as $account)
-        {
+        foreach ($this->getBudgetAccounts() as $account) {
             $balance = bcadd($balance, $account->getBalance($startdate, $enddate), 2);
         }
+
         return $balance;
     }
 
     public function getPositiveBudgetSum($startdate = null, $enddate = null)
     {
         $balance = 0;
-        foreach($this->getBudgetAccounts() as $account)
-        {
+        foreach ($this->getBudgetAccounts() as $account) {
             $balance = bcadd($balance, $account->getPositiveBalance($startdate, $enddate), 2);
         }
+
         return $balance;
     }
 
     public function getNegativeBudgetSum($startdate = null, $enddate = null)
     {
         $balance = 0;
-        foreach($this->getBudgetAccounts() as $account)
-        {
+        foreach ($this->getBudgetAccounts() as $account) {
             $balance = bcadd($balance, $account->getNegativeBalance($startdate, $enddate), 2);
         }
+
         return $balance;
     }
 
     /**
-     * Set access_group
+     * Set access_group.
      *
-     * @param \App\Entity\AccessGroup $accessGroup
      * @return BudgetGroup
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -156,9 +154,9 @@ class BudgetGroup
     }
 
     /**
-     * Get access_group
+     * Get access_group.
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {

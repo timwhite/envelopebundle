@@ -70,6 +70,7 @@
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*",
         "rector/rector": "^1.2",
-        "friendsofphp/php-cs-fixer": "^3.62"
+        "friendsofphp/php-cs-fixer": "^3.62",
+        "symfony/maker-bundle": "^1.60"
     }
 }

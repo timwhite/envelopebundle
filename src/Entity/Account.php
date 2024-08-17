@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Account
+ * Account.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class Account
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -34,19 +36,18 @@ class Account
     private $access_group;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'budget_transfer', type: 'boolean')]
     private $budgetTransfer = false;
-
 
     #[ORM\OneToMany(targetEntity: \ExternalConnector::class, mappedBy: 'account')]
     private $externalConnectors;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -54,9 +55,10 @@ class Account
     }
 
     /**
-     * Set accountName
+     * Set accountName.
      *
      * @param string $name
+     *
      * @return Account
      */
     public function setName($name)
@@ -67,9 +69,9 @@ class Account
     }
 
     /**
-     * Get accountName
+     * Get accountName.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -78,7 +80,7 @@ class Account
 
     public function __toString()
     {
-        return (string)$this->getName();
+        return (string) $this->getName();
     }
 
     /**
@@ -87,28 +89,28 @@ class Account
     public function getBalance()
     {
         $balance = 0;
-        foreach($this->transactions as $transaction)
-        {
+        foreach ($this->transactions as $transaction) {
             $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
+
         return $balance;
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->transactions = new ArrayCollection();
+        $this->externalConnectors = new ArrayCollection();
     }
 
     /**
-     * Add transactions
+     * Add transactions.
      *
-     * @param \App\Entity\Transaction $transactions
      * @return Account
      */
-    public function addTransaction(\App\Entity\Transaction $transactions)
+    public function addTransaction(Transaction $transactions)
     {
         $this->transactions[] = $transactions;
 
@@ -116,19 +118,17 @@ class Account
     }
 
     /**
-     * Remove transactions
-     *
-     * @param \App\Entity\Transaction $transactions
+     * Remove transactions.
      */
-    public function removeTransaction(\App\Entity\Transaction $transactions)
+    public function removeTransaction(Transaction $transactions)
     {
         $this->transactions->removeElement($transactions);
     }
 
     /**
-     * Get transactions
+     * Get transactions.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTransactions()
     {
@@ -136,12 +136,11 @@ class Account
     }
 
     /**
-     * Set access_group
+     * Set access_group.
      *
-     * @param \App\Entity\AccessGroup $accessGroup
      * @return Account
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -149,9 +148,9 @@ class Account
     }
 
     /**
-     * Get access_group
+     * Get access_group.
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {
@@ -159,9 +158,10 @@ class Account
     }
 
     /**
-     * Set budgetTransfer
+     * Set budgetTransfer.
      *
-     * @param boolean $budgetTransfer
+     * @param bool $budgetTransfer
+     *
      * @return Account
      */
     public function setBudgetTransfer($budgetTransfer)
@@ -172,12 +172,47 @@ class Account
     }
 
     /**
-     * Get budgetTransfer
+     * Get budgetTransfer.
      *
-     * @return boolean 
+     * @return bool
      */
     public function getBudgetTransfer()
     {
         return $this->budgetTransfer;
+    }
+
+    public function isBudgetTransfer(): ?bool
+    {
+        return $this->budgetTransfer;
+    }
+
+    /**
+     * @return Collection<int, ExternalConnector>
+     */
+    public function getExternalConnectors(): Collection
+    {
+        return $this->externalConnectors;
+    }
+
+    public function addExternalConnector(ExternalConnector $externalConnector): static
+    {
+        if (!$this->externalConnectors->contains($externalConnector)) {
+            $this->externalConnectors->add($externalConnector);
+            $externalConnector->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExternalConnector(ExternalConnector $externalConnector): static
+    {
+        if ($this->externalConnectors->removeElement($externalConnector)) {
+            // set the owning side to null (unless already changed)
+            if ($externalConnector->getAccount() === $this) {
+                $externalConnector->setAccount(null);
+            }
+        }
+
+        return $this;
     }
 }

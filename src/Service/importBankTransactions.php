@@ -1,18 +1,19 @@
 <?php
 
-namespace EnvelopeBundle\Shared;
+namespace App\Service;
 
 use App\Entity\Import;
 use App\Entity\Transaction;
+use Doctrine\ORM\EntityManagerInterface;
 
 class importBankTransactions
 {
-    const ACCOUNT_TYPE_NAB = 'NAB';
-    const ACCOUNT_TYPE_ANZ = 'ANC';
-    const ACCOUNT_TYPE_UP = 'UP';
-    const ACCOUNT_TYPE_ATHENA = 'ATHENA';
-    const ACCOUNT_TYPE_FMC = 'FMC';
-    const ACCOUNT_TYPES = [
+    public const ACCOUNT_TYPE_NAB = 'NAB';
+    public const ACCOUNT_TYPE_ANZ = 'ANC';
+    public const ACCOUNT_TYPE_UP = 'UP';
+    public const ACCOUNT_TYPE_ATHENA = 'ATHENA';
+    public const ACCOUNT_TYPE_FMC = 'FMC';
+    public const ACCOUNT_TYPES = [
         'NAB' => self::ACCOUNT_TYPE_NAB,
         'ANZ' => self::ACCOUNT_TYPE_ANZ,
         'UP' => self::ACCOUNT_TYPE_UP,
@@ -25,31 +26,33 @@ class importBankTransactions
     private $import;
 
     private $uncleared_searches = [
-        'OUTSTANDING TRANS'
+        'OUTSTANDING TRANS',
     ];
 
-    public function importBankFile($em, $inputFile, $account, $accountType, $importDuplicates = false)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
-        if (($handle = fopen($inputFile, "r")) !== FALSE) {
+    }
+
+    public function importBankFile($inputFile, $account, $accountType, $importDuplicates = false)
+    {
+        if (($handle = fopen($inputFile, 'r')) !== false) {
             $this->import = new Import();
-            $em->persist($this->import);
-            $em->flush();
+            $this->entityManager->persist($this->import);
+            $this->entityManager->flush();
 
             // @TODO check header rows?
-            while (($row = fgetcsv($handle)) !== FALSE) {
+            while (($row = fgetcsv($handle)) !== false) {
                 $processRow = $this->processRow($row, $accountType);
                 if (!$processRow) {
                     // Row's we've added to ignored already
                     continue;
                 }
 
-
-                if($this->checkUnclearedTransaction($processRow->fullDescription))
-                {
+                if ($this->checkUnclearedTransaction($processRow->fullDescription)) {
                     $this->ignored[] = [
                         'date' => $processRow->date,
                         'fullDescription' => $processRow->fullDescription,
-                        'amount' =>$processRow->amount
+                        'amount' => $processRow->amount,
                     ];
                     continue;
                 }
@@ -67,7 +70,7 @@ class importBankTransactions
 
                 if (!$importDuplicates) {
                     // Attempt to detect duplicate transaction
-                    $query = $em->createQuery('
+                    $query = $this->entityManager->createQuery('
                       SELECT t FROM App\Entity\Transaction t
                       WHERE t.account = :account
                       AND t.fullDescription = :fulldesc
@@ -80,15 +83,15 @@ class importBankTransactions
                             'fulldesc' => $processRow->fullDescription,
                             'amount' => $processRow->amount,
                             'tdate' => $processRow->date,
-                            'import' => $this->import->getId()
+                            'import' => $this->import->getId(),
                         ]
                     );
                     $results = $query->getResult();
                     if (sizeof($results) > 0) {
                         $this->duplicates[] = [
-                            "date" => $processRow->date,
-                            "fullDescription" => $processRow->fullDescription,
-                            "amount" =>$processRow->amount
+                            'date' => $processRow->date,
+                            'fullDescription' => $processRow->fullDescription,
+                            'amount' => $processRow->amount,
                         ];
                         continue;
                     }
@@ -103,12 +106,10 @@ class importBankTransactions
                 $transaction->setImport($this->import);
                 $transaction->setExtra($processRow->extra);
 
-                $em->persist($transaction);
+                $this->entityManager->persist($transaction);
             }
-            $em->flush();
-
+            $this->entityManager->flush();
         }
-
     }
 
     public function getDuplicates()
@@ -123,7 +124,7 @@ class importBankTransactions
     }
 
     // Returns rows that we don't know
-    public  function getUnknown()
+    public function getUnknown()
     {
         return array_filter($this->unknown);
     }
@@ -133,23 +134,24 @@ class importBankTransactions
         return $this->import;
     }
 
-    private function checkUnclearedTransaction($fullDescription) {
-        foreach($this->uncleared_searches as $search) {
-            if(strpos($fullDescription, $search) !== false) return true; // stop on first true result
+    private function checkUnclearedTransaction($fullDescription)
+    {
+        foreach ($this->uncleared_searches as $search) {
+            if (false !== strpos($fullDescription, $search)) {
+                return true;
+            } // stop on first true result
         }
         // Check for a Debit transaction with no description, this is uncleared
-        if($fullDescription == 'EFTPOS DEBIT:')
-        {
+        if ('EFTPOS DEBIT:' == $fullDescription) {
             return true;
         }
+
         return false;
     }
 
     /**
-     * @param $row
-     * @param $fileType
-     *
      * @return bool|object
+     *
      * @throws \Exception
      */
     private function processRow($row, $fileType)
@@ -158,21 +160,22 @@ class importBankTransactions
         // ANZ and NAB differ for importing description
         switch ($fileType) {
             case self::ACCOUNT_TYPE_FMC:
-                /**
+                /*
                  * FirstMac format is:
                  *
                  * Firstline contains the account number, then
                  * Effective Date,Posted Date,Description,Debit,Credit,Balance
                  */
-                if (sizeof($row) != 6) {
+                if (6 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
+
                     return false;
                 }
-                if ($row[1] === 'Posted Date') {
+                if ('Posted Date' === $row[1]) {
                     // Header row
                     return false;
                 }
-                
+
                 $description = $fullDescription = $row[2];
                 $date = \DateTime::createFromFormat('d/m/Y', $row[1]);
                 $amount = $row[3] ?: $row[4]; // Either the debit or the credit column will be filled in
@@ -180,17 +183,17 @@ class importBankTransactions
                 break;
             case self::ACCOUNT_TYPE_ANZ:
                 // ANZ format is date,amount,description
-                if (sizeof($row) != 3) {
+                if (3 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
+
                     return false;
                 }
-                $description = preg_replace("/ {2,}/", " ", $row[2]);
+                $description = preg_replace('/ {2,}/', ' ', $row[2]);
                 $fullDescription = $description;
 
-
                 $dateparts = explode('/', $row[0], 3);
-                $date = new \DateTime($dateparts[2] . "/" . $dateparts[1] . "/" . $dateparts[0]);
-                //$output->writeln($description);
+                $date = new \DateTime($dateparts[2].'/'.$dateparts[1].'/'.$dateparts[0]);
+                // $output->writeln($description);
 
                 /*
                      * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
@@ -201,7 +204,7 @@ class importBankTransactions
                 $amount = str_replace(',', '', $amount);
                 break;
             case self::ACCOUNT_TYPE_ATHENA:
-                /**
+                /*
                  * Athena format is:
                  * Date, Description, Detail, Debit, Credit, Balance
                  * Date is "DD MON YY"
@@ -211,25 +214,26 @@ class importBankTransactions
                  * 01 Feb 2021,Loan repayment (EFT),"Savings
                  * Payment from T S White",$0.00,$650.00,-$176828.49
                  * 01 Feb 2021,Loan repayment (direct debit),"",$0.00,$162.04,-$177478.49
-
+                 *
                  */
-                if (sizeof($row) != 6) {
+                if (6 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
+
                     return false;
                 }
 
-                if ($row[0] === 'Date') {
+                if ('Date' === $row[0]) {
                     // Header row
                     return false;
                 }
 
                 // Try the detail field as the description
                 $description = $row[2];
-                if ($description == "") {
+                if ('' == $description) {
                     // If detail is empty, just use the type instead
                     $description = $row[1];
                 }
-                $fullDescription = $row[1] . ': ' . $row[2];
+                $fullDescription = $row[1].': '.$row[2];
 
                 // Turn newlines into spaces
                 $description = str_replace("\n", ' ', $description);
@@ -240,15 +244,14 @@ class importBankTransactions
                 /*
                  * Get the amount. But remove any extra '$' at the start of the string, also remove the , characters
                  */
-                $debit = - str_replace(',', '', ltrim($row[3], '-$'));
+                $debit = -str_replace(',', '', ltrim($row[3], '-$'));
                 $credit = str_replace(',', '', ltrim($row[4], '$'));
 
                 $amount = $debit + $credit;
-                
 
                 break;
             case self::ACCOUNT_TYPE_NAB:
-                /**
+                /*
                  * Old NAB Format was
                  * Date,Amount,_,_,Type,Description,Balance,_
                  * No string quoting, date was DD-MON-YY
@@ -267,21 +270,22 @@ class importBankTransactions
                  * 27 Jan 22,8.00,1XXXXXXXX, ,INTER-BANK CREDIT,Internet Wordpress,131.45,Other income
                  */
 
-                //NAB format date,amount,__,__,Type,Description,Balance,__
-                if (sizeof($row) != 8 && sizeof($row) != 9) {
+                // NAB format date,amount,__,__,Type,Description,Balance,__
+                if (8 != sizeof($row) && 9 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
+
                     return false;
                 }
-                if ($row[0] === 'Date') {
+                if ('Date' === $row[0]) {
                     // Header row
                     return false;
                 }
 
-                $description = preg_replace("/ {2,}/", " ", $row[5]);
-                if ($description == "") {
+                $description = preg_replace('/ {2,}/', ' ', $row[5]);
+                if ('' == $description) {
                     $description = $row[4];
                 }
-                $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
+                $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', $row[5]);
 
                 $date = new \DateTime($row[0]);
 
@@ -295,28 +299,29 @@ class importBankTransactions
                 break;
 
             case self::ACCOUNT_TYPE_UP:
-                /**
+                /*
                  * UP Bank CSV Format
                  * Time, BSB/Account number, Transaction Type, Payee, Description, Category, Tags,
                  * Subtotal (AUD), Currency, Subtotal (Transaction Currency), Fee (AUD),
                  * Round Up (AUD), Total (AUD), Payment Method, Settled Date
                  */
-                if (sizeof($row) != 15) {
+                if (15 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
+
                     return false;
                 }
 
-                if ($row[0] === 'Time') {
+                if ('Time' === $row[0]) {
                     // Header row
                     return false;
                 }
 
-                $fullDescription = "${row[2]}: ${row[3]} - ${row[4]}";
-                if ($row[8] != 'AUD') {
-                    $fullDescription .= " (${row[8]} ${row[9]})";
+                $fullDescription = "{$row[2]}: {$row[3]} - {$row[4]}";
+                if ('AUD' != $row[8]) {
+                    $fullDescription .= " ({$row[8]} {$row[9]})";
                 }
 
-                $description = "${row[3]} - ${row[4]}";
+                $description = "{$row[3]} - {$row[4]}";
 
                 $date = new \DateTime($row[0]);
 
@@ -327,27 +332,25 @@ class importBankTransactions
                     'bsb_account' => $row[1],
                     'transaction_type' => $row[2],
                     'payee' => $row[3],
-                    //'description' => $row[4],
+                    // 'description' => $row[4],
                     'category' => $row[5],
                     'tags' => $row[6],
-                    //'subtotal_aud' => $row[7],
+                    // 'subtotal_aud' => $row[7],
                     'currency' => $row[8],
                     'subtotal_currency' => $row[9],
-                    //'fee' => $row[10],
-                    //'roundup' => $row[11],
-                    //'total_aud' => $row[12],
+                    // 'fee' => $row[10],
+                    // 'roundup' => $row[11],
+                    // 'total_aud' => $row[12],
                     'payment_method' => $row[13],
                     'settlement_date' => $row[14],
                 ];
                 break;
 
-
             default:
                 throw new \Exception('Invalid Account Type');
-
         }
 
-        return (object)[
+        return (object) [
             'description' => $description,
             'fullDescription' => $fullDescription,
             'date' => $date,
@@ -355,7 +358,4 @@ class importBankTransactions
             'extra' => $extra,
         ];
     }
-
 }
-
-

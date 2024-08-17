@@ -16,120 +16,17 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
 use EnvelopeBundle\Shared\autoCodeTransactions;
-use EnvelopeBundle\Shared\importBankTransactions;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DefaultController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em)
     {
-    }
-
-    #[Route('/login', name: 'login')]
-    public function login()
-    {
-        if ($this->isGranted('IS_AUTHENTICATED')) {
-            return $this->redirectToRoute('dashboard');
-        }
-
-        return $this->render(
-            'login.html.twig'
-        );
-    }
-
-    #[Route('/', name: 'dashboard')]
-    #[IsGranted('IS_AUTHENTICATED')]
-    public function dashboard()
-    {
-        return $this->render(
-            'default/dashboard.html.twig'
-        );
-    }
-
-    #[Route('/profile', name: 'profile')]
-    public function profile(): Response
-    {
-        return $this->render(
-            'default/profile.html.twig',
-            [
-                'user' => $this->getUser(),
-            ]
-        );
-    }
-
-    private function importForm($accessGroup)
-    {
-        return $form = $this->createFormBuilder()
-            ->add('account', EntityType::class, [
-                'class' => Account::class,
-                'query_builder' => function (EntityRepository $repository) use ($accessGroup) {
-                    // EnvelopeBundle:BudgetAccount is the entity we are selecting
-                    $qb = $repository->createQueryBuilder('a');
-
-                    return $qb
-                        ->andWhere('a.access_group = :accessgroup')
-                        ->setParameter('accessgroup', $accessGroup)
-                    ;
-                },
-            ])
-            ->add('accountType', ChoiceType::class, ['choices' => importBankTransactions::ACCOUNT_TYPES])
-            ->add('bankExport', FileType::class)
-            ->add('save', SubmitType::class, ['label' => 'Import transactions'])
-            ->getForm();
-    }
-
-    public function importAction(Request $request)
-    {
-        $session = $request->getSession();
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT i FROM EnvelopeBundle:Import i'
-        );
-
-        $form = $this->importForm($session->get('accessgroupid'));
-
-        $form->handleRequest($request);
-
-        $dups = [];
-        $ignored = [];
-        $unknown = null;
-        $import = null;
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $bankImport = new importBankTransactions();
-            $bankImport->importBankFile(
-                $this->getDoctrine()->getManager(),
-                $form['bankExport']->getData()->getPathname(),
-                $form['account']->getData(),
-                $form['accountType']->getData()
-            );
-            $dups = $bankImport->getDuplicates();
-            $ignored = $bankImport->getIgnored();
-            $unknown = $bankImport->getUnknown();
-            $import = $bankImport->getImport();
-        }
-
-        return $this->render(
-            'EnvelopeBundle:Default:imports.html.twig',
-            [
-                'imports' => $query->getResult(),
-                'importform' => $form->createView(),
-                'lastimport' => $import,
-                'lastimportaccount' => $form['account']->getData(),
-                'dups' => $dups,
-                'ignored' => $ignored,
-                'unknown' => $unknown,
-            ]
-        );
     }
 
     /**

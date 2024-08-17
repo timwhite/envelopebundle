@@ -3,81 +3,35 @@
 {% block page_title %}Bank transaction import{% endblock %}
 {% block page_subtitle %}Import an export file from your bank{% endblock %}
 {% block page_content %}
-    <div class="row">
+    <div class="row row-cards">
         <div class="col-sm-6">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Imports</h3>
+            <div class="card">
+                <div class="card-header with-border">
+                    <h3 class="card-title">Import Transactions</h3>
 
-                    <div class="box-tools pull-right">
-                    </div>
                     <!-- /.box-tools -->
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Account</th>
-                            <th># Transactions</th>
-                        </tr>
-                        </thead>
-                        {% for import in imports %}
-                            <tr>
-                                <td>
-                                    {{ import.id }}
-                                </td>
-                                <td>{{ import.importtime|format_datetime('short', 'medium') }}</td>
-                                <td>{% if import.transactions|length > 0 %}{{ import.transactions[0].account }}{% endif %}</td>
-                                <td>{{ import.transactions|length }}</td>
-
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                <div class="box-footer">
-                </div>
-                <!-- box-footer -->
-            </div>
-            <!-- /.box -->
-        </div>
-        <!-- col -->
-
-        <div class="col-sm-6">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Import Transactions</h3>
-
-                    <div class="box-tools pull-right">
-                    </div>
-                    <!-- /.box-tools -->
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body">
+                <div class="card-body">
                     {{ form(importform) }}
                 </div>
-                <div class="box-footer">
-                </div>
                 <!-- box-footer -->
             </div>
             <!-- /.box -->
         </div>
         <!-- col -->
 
-        {% if lastimport != null %}
-            <div class="col-sm-6">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Import into {{ lastimportaccount }}</h3>
 
-                        <div class="box-tools pull-right">
-                        </div>
+        <div class="col-sm-6">
+            {% if lastimport != null %}
+                <div class="card">
+                    <div class="card-header with-border">
+                        <h3 class="card-title">Import into {{ lastimportaccount }}</h3>
+
                         <!-- /.box-tools -->
                     </div>
                     <!-- /.box-header -->
-                    <div class="box-body">
+                    <div class="card-table">
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -86,9 +40,6 @@
                                 <th>Amount</th>
                             </tr>
                             </thead>
-
-
-
                             {% if ignored|length > 0 %}
                                 <tr>
                                     <th colspan="3">Skipped Transactions (Probably uncleared)</th>
@@ -147,13 +98,49 @@
                             {% endif %}
                         </table>
                     </div>
-                    <div class="box-footer">
-                    </div>
                     <!-- box-footer -->
                 </div>
                 <!-- /.box -->
-            </div><!-- col -->
-        {% endif %}
+            {% endif %}
+        </div><!-- col -->
+
+
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header with-border">
+                    <h3 class="card-title">Imports</h3>
+
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="card-table">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Account</th>
+                            <th># Transactions</th>
+                        </tr>
+                        </thead>
+                        {% for import in imports %}
+                            <tr>
+                                <td>
+                                    {{ import.id }}
+                                </td>
+                                <td>{{ import.importtime|format_datetime('short', 'medium') }}</td>
+                                <td>{% if import.transactions|length > 0 %}{{ import.transactions[0].account }}{% endif %}</td>
+                                <td>{{ import.transactions|length }}</td>
+
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- col -->
 
 
     </div><!-- row -->

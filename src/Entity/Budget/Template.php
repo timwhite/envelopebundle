@@ -2,21 +2,20 @@
 
 namespace App\Entity\Budget;
 
-use App\Entity\Budget\TemplateTransaction;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\AccessGroup;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Template
+ * Template.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class Template
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -36,7 +35,7 @@ class Template
     private $description;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     #[ORM\Column(name: 'last_applied_date', type: 'date', nullable: true)]
     private $last_applied_date;
@@ -47,50 +46,48 @@ class Template
     #[ORM\Column(name: 'Archived', type: 'boolean', nullable: false)]
     private $archived = false;
 
-    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName:'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
     private $access_group;
-
 
     public function getBalance()
     {
         $balance = 0;
-        foreach($this->getTemplateTransactions() as $transaction)
-        {
+        foreach ($this->getTemplateTransactions() as $transaction) {
             $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
+
         return $balance;
     }
 
     public function getPositiveSum()
     {
         $sum = 0;
-        foreach($this->getTemplateTransactions() as $transaction)
-        {
-            if($transaction->getAmount() > 0) {
+        foreach ($this->getTemplateTransactions() as $transaction) {
+            if ($transaction->getAmount() > 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
+
         return $sum;
     }
 
     public function getNegativeSum()
     {
         $sum = 0;
-        foreach($this->getTemplateTransactions() as $transaction)
-        {
-            if($transaction->getAmount() < 0) {
+        foreach ($this->getTemplateTransactions() as $transaction) {
+            if ($transaction->getAmount() < 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);
             }
         }
+
         return $sum;
     }
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -98,9 +95,10 @@ class Template
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return Budget:Template
      */
     public function setName($name)
@@ -111,9 +109,9 @@ class Template
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -121,9 +119,10 @@ class Template
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return Budget:Template
      */
     public function setDescription($description)
@@ -134,40 +133,39 @@ class Template
     }
 
     /**
-     * Get description
+     * Get description.
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
         return $this->description;
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->template_transactions = new ArrayCollection();
     }
 
-
     public function __toString()
     {
-        $lastDate = "";
-        if($this->getLastAppliedDate())
-        {
-            $lastDate =  " - " . $this->getLastAppliedDate()->format('Y-m-d');
+        $lastDate = '';
+        if ($this->getLastAppliedDate()) {
+            $lastDate = ' - '.$this->getLastAppliedDate()->format('Y-m-d');
         }
-        return $this->getName() .": " .  $this->getDescription() ." (" . $this->getBalance() . ")$lastDate";
+
+        return $this->getName().': '.$this->getDescription().' ('.$this->getBalance().")$lastDate";
     }
 
     /**
-     * Add template_transactions
+     * Add template_transactions.
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      * @return Template
      */
-    public function addTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -175,19 +173,17 @@ class Template
     }
 
     /**
-     * Remove template_transactions
-     *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * Remove template_transactions.
      */
-    public function removeTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
 
     /**
-     * Get template_transactions
+     * Get template_transactions.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTemplateTransactions()
     {
@@ -195,9 +191,10 @@ class Template
     }
 
     /**
-     * Set last_applied_date
+     * Set last_applied_date.
      *
      * @param \DateTime $lastAppliedDate
+     *
      * @return Template
      */
     public function setLastAppliedDate($lastAppliedDate)
@@ -208,21 +205,22 @@ class Template
     }
 
     /**
-     * Get last_applied_date
+     * Get last_applied_date.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastAppliedDate()
     {
         return $this->last_applied_date;
     }
 
-    public function __clone() {
+    public function __clone()
+    {
         if ($this->id) {
             $this->id = null;
             $this->last_applied_date = null;
-            $this->setDescription("Cloned - ". $this->getDescription());
-            $this->setName("Cloned - ". $this->getName());
+            $this->setDescription('Cloned - '.$this->getDescription());
+            $this->setName('Cloned - '.$this->getName());
 
             // cloning the relation M which is a OneToMany
             $cloned_transactions = new ArrayCollection();
@@ -235,11 +233,11 @@ class Template
         }
     }
 
-
     /**
-     * Set archived
+     * Set archived.
      *
-     * @param boolean $archived
+     * @param bool $archived
+     *
      * @return BudgetAccount
      */
     public function setArchived($archived)
@@ -250,9 +248,9 @@ class Template
     }
 
     /**
-     * Get archived
+     * Get archived.
      *
-     * @return boolean
+     * @return bool
      */
     public function getArchived()
     {
@@ -260,12 +258,11 @@ class Template
     }
 
     /**
-     * Set access_group
+     * Set access_group.
      *
-     * @param \App\Entity\AccessGroup $accessGroup
      * @return Template
      */
-    public function setAccessGroup(\App\Entity\AccessGroup $accessGroup)
+    public function setAccessGroup(AccessGroup $accessGroup)
     {
         $this->access_group = $accessGroup;
 
@@ -273,12 +270,17 @@ class Template
     }
 
     /**
-     * Get access_group
+     * Get access_group.
      *
-     * @return \App\Entity\AccessGroup
+     * @return AccessGroup
      */
     public function getAccessGroup()
     {
         return $this->access_group;
+    }
+
+    public function isArchived(): ?bool
+    {
+        return $this->archived;
     }
 }

@@ -5,14 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * BudgetTransaction
+ * BudgetTransaction.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class BudgetTransaction
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -21,7 +21,7 @@ class BudgetTransaction
 
     /**
      * We need EAGER loading due to us displaying the balance on our _toString method, which requires all
-     * the transactions
+     * the transactions.
      */
     #[ORM\JoinColumn(name: 'transaction_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: \Transaction::class, inversedBy: 'budget_transactions', fetch: 'EAGER')]
@@ -37,11 +37,10 @@ class BudgetTransaction
     #[ORM\Column(name: 'Amount', type: 'decimal', scale: 2, nullable: false)]
     private $amount;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -49,9 +48,8 @@ class BudgetTransaction
     }
 
     /**
-     * Set transactionID
+     * Set transactionID.
      *
-     * @param \stdClass $transactionID
      * @return BudgetTransaction
      */
     public function setTransaction($transaction)
@@ -62,9 +60,9 @@ class BudgetTransaction
     }
 
     /**
-     * Get transactionID
+     * Get transactionID.
      *
-     * @return \stdClass 
+     * @return \stdClass
      */
     public function getTransaction()
     {
@@ -72,9 +70,10 @@ class BudgetTransaction
     }
 
     /**
-     * Set budgetAccount
+     * Set budgetAccount.
      *
      * @param \stdClass $budgetAccount
+     *
      * @return BudgetTransaction
      */
     public function setBudgetAccount($budgetAccount)
@@ -85,9 +84,9 @@ class BudgetTransaction
     }
 
     /**
-     * Get budgetAccount
+     * Get budgetAccount.
      *
-     * @return \stdClass 
+     * @return \stdClass
      */
     public function getBudgetAccount()
     {
@@ -95,9 +94,10 @@ class BudgetTransaction
     }
 
     /**
-     * Set amount
+     * Set amount.
      *
      * @param string $amount
+     *
      * @return BudgetTransaction
      */
     public function setAmount($amount)
@@ -108,9 +108,9 @@ class BudgetTransaction
     }
 
     /**
-     * Get amount
+     * Get amount.
      *
-     * @return string 
+     * @return string
      */
     public function getAmount()
     {

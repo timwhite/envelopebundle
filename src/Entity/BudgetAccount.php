@@ -2,11 +2,14 @@
 
 namespace App\Entity;
 
+use App\Entity\Budget\TemplateTransaction;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use EnvelopeBundle\Shared\BudgetAccountStats;
 
 /**
- * Account
+ * Account.
  */
 #[ORM\Table]
 #[ORM\Entity]
@@ -14,7 +17,7 @@ use EnvelopeBundle\Shared\BudgetAccountStats;
 class BudgetAccount
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -32,7 +35,7 @@ class BudgetAccount
     #[ORM\OneToMany(targetEntity: BudgetTransaction::class, mappedBy: 'budgetAccount')]
     private $budget_transactions;
 
-    #[ORM\OneToMany(targetEntity: \App\Entity\Budget\TemplateTransaction::class, mappedBy: 'budgetAccount')]
+    #[ORM\OneToMany(targetEntity: TemplateTransaction::class, mappedBy: 'budgetAccount')]
     private $template_transactions;
 
     #[ORM\JoinColumn(name: 'budget_group', referencedColumnName: 'id', nullable: false)]
@@ -40,7 +43,7 @@ class BudgetAccount
     private $budget_group;
 
     /**
-     * @var  BudgetAccountStats $budgetStats
+     * @var BudgetAccountStats
      */
     private $budgetStats;
 
@@ -61,21 +64,20 @@ class BudgetAccount
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
     }
 
-
-
     /**
-     * Set budgetName
+     * Set budgetName.
      *
      * @param string $budgetName
+     *
      * @return BudgetAccount
      */
     public function setBudgetName($budgetName)
@@ -86,39 +88,39 @@ class BudgetAccount
     }
 
     /**
-     * Get budgetName
+     * Get budgetName.
      *
-     * @return string 
+     * @return string
      */
     public function getBudgetName()
     {
         return $this->budget_name;
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->budget_transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->budget_transactions = new ArrayCollection();
         $this->budgetStats = new BudgetAccountStats($this->id);
+        $this->template_transactions = new ArrayCollection();
     }
 
     #[ORM\PostLoad]
     public function postLoad()
     {
-        if(!$this->budgetStats)
-        {
+        if (!$this->budgetStats) {
             $this->budgetStats = new BudgetAccountStats($this->id);
         }
     }
 
     /**
-     * Add budget_transactions
+     * Add budget_transactions.
      *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
      * @return BudgetAccount
      */
-    public function addBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function addBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions[] = $budgetTransactions;
 
@@ -126,19 +128,17 @@ class BudgetAccount
     }
 
     /**
-     * Remove budget_transactions
-     *
-     * @param \App\Entity\BudgetTransaction $budgetTransactions
+     * Remove budget_transactions.
      */
-    public function removeBudgetTransaction(\App\Entity\BudgetTransaction $budgetTransactions)
+    public function removeBudgetTransaction(BudgetTransaction $budgetTransactions)
     {
         $this->budget_transactions->removeElement($budgetTransactions);
     }
 
     /**
-     * Get budget_transactions
+     * Get budget_transactions.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getBudgetTransactions()
     {
@@ -149,16 +149,15 @@ class BudgetAccount
     {
         $balance = 0;
         /** @var BudgetTransaction $transaction */
-        foreach($this->budget_transactions as $transaction)
-        {
-            if(
-                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
-                $startdate == null || $enddate == null
+        foreach ($this->budget_transactions as $transaction) {
+            if (
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate)
+                || null == $startdate || null == $enddate
             ) {
                 $balance = bcadd($balance, $transaction->getAmount(), 2);
             }
-
         }
+
         return $balance;
     }
 
@@ -166,18 +165,17 @@ class BudgetAccount
     {
         $balance = 0;
         /** @var BudgetTransaction $transaction */
-        foreach($this->budget_transactions as $transaction)
-        {
-            if(
-                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
-                $startdate == null || $enddate == null
+        foreach ($this->budget_transactions as $transaction) {
+            if (
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate)
+                || null == $startdate || null == $enddate
             ) {
                 if ($transaction->getAmount() > 0) {
                     $balance = bcadd($balance, $transaction->getAmount(), 2);
                 }
             }
-
         }
+
         return $balance;
     }
 
@@ -185,39 +183,34 @@ class BudgetAccount
     {
         $balance = 0;
         /** @var BudgetTransaction $transaction */
-        foreach($this->budget_transactions as $transaction)
-        {
-            if(
-                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate) ||
-                $startdate == null || $enddate == null
+        foreach ($this->budget_transactions as $transaction) {
+            if (
+                ($transaction->getTransaction()->getDate() >= $startdate && $transaction->getTransaction()->getDate() <= $enddate)
+                || null == $startdate || null == $enddate
             ) {
                 if ($transaction->getAmount() < 0) {
                     $balance = bcadd($balance, $transaction->getAmount(), 2);
                 }
             }
-
         }
+
         return $balance;
     }
-
 
     public function __toString()
     {
         // NB: This should probably be handled by the view, instead of hard coding a locale here
-        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
-            ;
+        $fmt = numfmt_create('en_AU', \NumberFormatter::CURRENCY);
 
-        return $this->getBudgetName() . ": ". numfmt_format_currency($fmt, $this->getBalance(), 'AUD')."";
+        return $this->getBudgetName().': '.numfmt_format_currency($fmt, $this->getBalance(), 'AUD').'';
     }
 
-
     /**
-     * Set budget_group
+     * Set budget_group.
      *
-     * @param \App\Entity\BudgetGroup $budgetGroup
      * @return BudgetAccount
      */
-    public function setBudgetGroup(\App\Entity\BudgetGroup $budgetGroup)
+    public function setBudgetGroup(BudgetGroup $budgetGroup)
     {
         $this->budget_group = $budgetGroup;
 
@@ -225,24 +218,21 @@ class BudgetAccount
     }
 
     /**
-     * Get budget_group
+     * Get budget_group.
      *
-     * @return \App\Entity\BudgetGroup
+     * @return BudgetGroup
      */
     public function getBudgetGroup()
     {
         return $this->budget_group;
     }
 
-
-
     /**
-     * Add template_transactions
+     * Add template_transactions.
      *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
      * @return BudgetAccount
      */
-    public function addTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function addTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions[] = $templateTransactions;
 
@@ -250,19 +240,17 @@ class BudgetAccount
     }
 
     /**
-     * Remove template_transactions
-     *
-     * @param \App\Entity\Budget\TemplateTransaction $templateTransactions
+     * Remove template_transactions.
      */
-    public function removeTemplateTransaction(\App\Entity\Budget\TemplateTransaction $templateTransactions)
+    public function removeTemplateTransaction(TemplateTransaction $templateTransactions)
     {
         $this->template_transactions->removeElement($templateTransactions);
     }
 
     /**
-     * Get template_transactions
+     * Get template_transactions.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTemplateTransactions()
     {
@@ -272,19 +260,19 @@ class BudgetAccount
     public function getTemplateTransactionsDescriptionsTooltip()
     {
         // NB: This should probably be handled by the view, instead of hard coding a locale here
-        $fmt = numfmt_create( 'en_AU', \NumberFormatter::CURRENCY );
+        $fmt = numfmt_create('en_AU', \NumberFormatter::CURRENCY);
         $desc = [];
-        /** @var \App\Entity\Budget\TemplateTransaction $trans */
-        foreach($this->getTemplateTransactions() as $trans)
-        {
-            if(!$trans->getTemplate()->getArchived()) {
-                $desc[] = $trans->getDescription() . " (" . numfmt_format_currency(
-                        $fmt,
-                        $trans->getAmount(),
-                        'AUD'
-                    ) . ")";
+        /** @var TemplateTransaction $trans */
+        foreach ($this->getTemplateTransactions() as $trans) {
+            if (!$trans->getTemplate()->getArchived()) {
+                $desc[] = $trans->getDescription().' ('.numfmt_format_currency(
+                    $fmt,
+                    $trans->getAmount(),
+                    'AUD'
+                ).')';
             }
         }
-        return implode("<br/>", $desc);
+
+        return implode('<br/>', $desc);
     }
 }

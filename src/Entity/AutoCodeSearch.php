@@ -5,14 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AutoCodeSearch
+ * AutoCodeSearch.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class AutoCodeSearch
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -27,15 +27,15 @@ class AutoCodeSearch
     private $search;
 
     #[ORM\Column(name: 'description_rename', type: 'string', length: 255, nullable: true)] // The description we rename autocoded transactions
-    private $rename = null;
+    private $rename;
 
     #[ORM\Column(name: 'amount', type: 'decimal', scale: 2, nullable: true)] // An amount for searching exact amounts
-    private $amount = null;
+    private $amount;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -43,9 +43,10 @@ class AutoCodeSearch
     }
 
     /**
-     * Set search
+     * Set search.
      *
      * @param string $search
+     *
      * @return AutoCodeSearch
      */
     public function setSearch($search)
@@ -56,9 +57,9 @@ class AutoCodeSearch
     }
 
     /**
-     * Get search
+     * Get search.
      *
-     * @return string 
+     * @return string
      */
     public function getSearch()
     {
@@ -66,12 +67,11 @@ class AutoCodeSearch
     }
 
     /**
-     * Set budgetAccount
+     * Set budgetAccount.
      *
-     * @param \App\Entity\BudgetAccount $budgetAccount
      * @return AutoCodeSearch
      */
-    public function setBudgetAccount(\App\Entity\BudgetAccount $budgetAccount)
+    public function setBudgetAccount(BudgetAccount $budgetAccount)
     {
         $this->budgetAccount = $budgetAccount;
 
@@ -79,9 +79,9 @@ class AutoCodeSearch
     }
 
     /**
-     * Get budgetAccount
+     * Get budgetAccount.
      *
-     * @return \App\Entity\BudgetAccount
+     * @return BudgetAccount
      */
     public function getBudgetAccount()
     {
@@ -89,9 +89,10 @@ class AutoCodeSearch
     }
 
     /**
-     * Set rename
+     * Set rename.
      *
      * @param string $rename
+     *
      * @return AutoCodeSearch
      */
     public function setRename($rename)
@@ -102,9 +103,9 @@ class AutoCodeSearch
     }
 
     /**
-     * Get rename
+     * Get rename.
      *
-     * @return string 
+     * @return string
      */
     public function getRename()
     {
@@ -112,7 +113,7 @@ class AutoCodeSearch
     }
 
     /**
-     * @return null|float
+     * @return float|null
      */
     public function getAmount()
     {

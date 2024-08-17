@@ -2,17 +2,20 @@
 
 namespace App\Entity;
 
+use App\Repository\ImportRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Import
+ * Import.
  */
 #[ORM\Table]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ImportRepository::class)]
 class Import
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -25,20 +28,19 @@ class Import
     #[ORM\Column(name: 'ImportTime', type: 'datetime', nullable: false, unique: true)]
     private $importTime;
 
-
     #[ORM\OneToMany(targetEntity: \Transaction::class, mappedBy: 'import')]
     private $transactions;
 
     public function __construct()
     {
         $this->importTime = new \DateTime();
+        $this->transactions = new ArrayCollection();
     }
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -46,9 +48,10 @@ class Import
     }
 
     /**
-     * Set importTime
+     * Set importTime.
      *
      * @param \DateTime $importTime
+     *
      * @return Import
      */
     public function setImportTime($importTime)
@@ -59,9 +62,9 @@ class Import
     }
 
     /**
-     * Get importTime
+     * Get importTime.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getImportTime()
     {
@@ -70,16 +73,15 @@ class Import
 
     public function __toString()
     {
-        return $this->id . " " . $this->importTime->format('Y-m-d H:i:s');
+        return $this->id.' '.$this->importTime->format('Y-m-d H:i:s');
     }
 
     /**
-     * Add transactions
+     * Add transactions.
      *
-     * @param \App\Entity\Transaction $transactions
      * @return Import
      */
-    public function addTransaction(\App\Entity\Transaction $transactions)
+    public function addTransaction(Transaction $transactions)
     {
         $this->transactions[] = $transactions;
 
@@ -87,19 +89,17 @@ class Import
     }
 
     /**
-     * Remove transactions
-     *
-     * @param \App\Entity\Transaction $transactions
+     * Remove transactions.
      */
-    public function removeTransaction(\App\Entity\Transaction $transactions)
+    public function removeTransaction(Transaction $transactions)
     {
         $this->transactions->removeElement($transactions);
     }
 
     /**
-     * Get transactions
+     * Get transactions.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getTransactions()
     {
