@@ -6,16 +6,18 @@ use App\Entity\BudgetAccount;
 use App\Entity\BudgetGroup;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class BudgetAccountRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Security $security)
     {
         parent::__construct($registry, BudgetAccount::class);
     }
 
-    public function getUserBudgetAccounts(User $user, int $accountId = null)
+    public function getUserBudgetAccounts(User $user, ?int $accountId = null)
     {
         $query = $this->createQueryBuilder('a')
             ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
@@ -30,4 +32,14 @@ class BudgetAccountRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+    /**
+     * Get query builder filtered by current security user access groups.
+     */
+    public function getSecurityUserBudgetAccountsQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('budgetAccount')
+            ->leftJoin(BudgetGroup::class, 'budgetGroup', 'WITH', 'budgetAccount.budget_group = budgetGroup')
+            ->where('budgetGroup.access_group = :accessGroup')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup());
+    }
 }

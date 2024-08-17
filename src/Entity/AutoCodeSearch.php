@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\AutoCodeSearchRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * AutoCodeSearch.
  */
 #[ORM\Table]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AutoCodeSearchRepository::class)]
 class AutoCodeSearch
 {
     /**

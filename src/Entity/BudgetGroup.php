@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * BudgetGroup.
  */
 #[ORM\Table]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BudgetGroupRepository::class)]
 class BudgetGroup
 {
     /**

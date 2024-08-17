@@ -1,21 +1,3 @@
-envelope_autocode:
-    path:   /autocode/
-    defaults: { _controller: EnvelopeBundle:Default:autoCode }
-
-envelope_autocode_edit_search:
-    path:   /autocode/edit/{id}
-    defaults: { _controller: EnvelopeBundle:Default:autoCodeSearchEdit }
-
-envelope_autocode_delete_search:
-    path:   /autocode/delete/{id}
-    defaults: { _controller: EnvelopeBundle:Default:autoCodeSearchDelete }
-    methods:  [POST]
-
-
-envelope_transaction:
-    path:   /transaction/{id}
-    defaults: { _controller: EnvelopeBundle:Default:transactionList}
-
 envelope_transactionAddBudgetTransaction:
     path:   /transaction/{id}/addbudgettransaction/
     defaults: { _controller: EnvelopeBundle:Default:transactionAddBudgetTransaction}

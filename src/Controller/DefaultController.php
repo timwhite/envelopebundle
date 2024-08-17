@@ -4,18 +4,14 @@ namespace App\Controller;
 
 use App\Entity\AccessGroup;
 use App\Entity\Account;
-use App\Entity\AutoCodeSearch;
 use App\Entity\Budget\Template;
 use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
-use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Query;
 use EnvelopeBundle\Form\Type\BudgetTemplateType;
-use EnvelopeBundle\Shared\autoCodeTransactions;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,158 +23,6 @@ class DefaultController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em)
     {
-    }
-
-    /**
-     * @return Query
-     */
-    private function getUnbalancedTransactionsQuery($accessgroupid)
-    {
-        // Replace this with TransactionRepository->getUnbalancedTransactions()
-        return $this->getDoctrine()->getManager()->createQuery(
-            'SELECT t
-            FROM EnvelopeBundle:Transaction t
-            LEFT JOIN EnvelopeBundle:BudgetTransaction b
-            WITH b.transaction = t
-            LEFT JOIN EnvelopeBundle:Account a
-            WITH t.account = a
-            WHERE a.access_group = :accessgroup
-            GROUP BY t.id
-            HAVING (COUNT(b.amount) = 0 AND t.amount != 0) OR SUM(b.amount) != t.amount
-            ORDER BY t.date
-            '
-        )->setParameters(['accessgroup' => $accessgroupid]);
-    }
-
-    public function autoCodeAction(Request $request)
-    {
-        $session = $request->getSession();
-        $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
-
-        $form = $this->createFormBuilder()
-            ->add('save', SubmitType::class, ['label' => 'Auto code transactions'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        $autoCodeResults = [];
-        $actionRun = false;
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $autoCode = new autoCodeTransactions();
-            $autoCode->codeTransactions($em, $accessGroup);
-            $autoCodeResults = $autoCode->getResults();
-            $actionRun = true;
-        }
-
-        $searches = $em->createQuery('
-          SELECT s
-          FROM EnvelopeBundle:AutoCodeSearch s
-          LEFT JOIN EnvelopeBundle:BudgetAccount b WITH s.budgetAccount = b
-          LEFT JOIN EnvelopeBundle:BudgetGroup g WITH b.budget_group = g
-          WHERE g.access_group = :accessgroup
-          ')
-            ->setParameters(
-                [
-                    'accessgroup' => $accessGroup,
-                ])
-            ->getResult();
-
-        return $this->render(
-            'EnvelopeBundle:Default:autoCodeAction.html.twig',
-            [
-                'actionrun' => $actionRun,
-                'results' => $autoCodeResults,
-                'form' => $form->createView(),
-                'searches' => $searches,
-            ]
-        );
-    }
-
-    public function autoCodeSearchEditAction(Request $request, $id)
-    {
-        $session = $request->getSession();
-        $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
-
-        if ('new' == $id) {
-            $search = new AutoCodeSearch();
-        } else {
-            /** @var AutoCodeSearch $search */
-            $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id' => $id]);
-            if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
-                // Attempt to edit an search that assigns to a budget other than ours
-                $this->addFlash('error', 'No access to a search with that id');
-
-                return $this->redirectToRoute('envelope_autocode');
-            }
-        }
-
-        $form = $this->createFormBuilder($search)
-            ->add('budgetAccount', EntityType::class, [
-                'class' => BudgetAccount::class,
-                'query_builder' => function (EntityRepository $repository) use ($accessGroup) {
-                    $qb = $repository->createQueryBuilder('b');
-
-                    return $qb
-                        ->join('EnvelopeBundle:BudgetGroup', 'g', 'WITH', 'b.budget_group = g')
-                        ->Where('g.access_group = :accessgroup')
-                        ->setParameter('accessgroup', $accessGroup);
-                },
-            ])
-            ->add('search', null, ['label' => 'Search (SQL LIKE %% search string)'])
-            ->add('rename')
-            ->add('amount', null, ['label' => 'Optional Amount to restrict search to'])
-            ->add('save', SubmitType::class, ['label' => 'Save'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($search);
-            $em->flush();
-
-            $this->addFlash(
-                'success',
-                'Search Updated'
-            );
-
-            return $this->redirectToRoute('envelope_autocode');
-        }
-
-        return $this->render(
-            'EnvelopeBundle:Default:autoCodeSearch.html.twig',
-            [
-                'form' => $form->createView(),
-            ]
-        );
-    }
-
-    public function autoCodeSearchDeleteAction(Request $request, $id)
-    {
-        $session = $request->getSession();
-        $accessGroup = $session->get('accessgroupid');
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var AutoCodeSearch $search */
-        $search = $em->getRepository(AutoCodeSearch::class)->findOneBy(['id' => $id]);
-        if (!$search || $search->getBudgetAccount()->getBudgetGroup()->getAccessGroup()->getId() != $accessGroup) {
-            // Attempt to delete an search that assigns to a budget other than ours
-            $this->addFlash('error', 'No access to a search with that id');
-
-            return $this->redirectToRoute('envelope_autocode');
-        }
-
-        $em->remove($search);
-        $em->flush();
-
-        $this->addFlash(
-            'success',
-            'Search deleted'
-        );
-
-        return $this->redirectToRoute('envelope_autocode');
     }
 
     private function findFirstTransactionDate()

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Account;
+use App\Entity\AutoCodeSearch;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -17,10 +18,10 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
-//    public function find($id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): ?object
-//    {
-//        return $this->findOneBy(['id' => $id, 'access_group' => $this->security->getUser()->getAccessGroup()]);
-//    }
+    //    public function find($id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): ?object
+    //    {
+    //        return $this->findOneBy(['id' => $id, 'access_group' => $this->security->getUser()->getAccessGroup()]);
+    //    }
 
     public function getUnbalancedTransactions()
     {
@@ -35,6 +36,27 @@ class TransactionRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    /**
+     * @return Transaction[]
+     */
+    public function searchTransactions(AutoCodeSearch $search): array
+    {
+        $query = $this->createQueryBuilder('t')
+            ->leftJoin(Account::class, 'a', 'WITH', 't.account = a')
+            ->where('NOT EXISTS (SELECT b FROM '.BudgetTransaction::class.' b WHERE b.transaction = t.id)')
+            ->andWhere('t.description LIKE :search')
+            ->setParameter('search', '%'.$search->getSearch().'%')
+            ->andWhere('a.access_group = :accessGroup')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup());
+
+        if ($search->getAmount()) {
+            $query->andWhere('t.amount = :amount')
+                ->setParameter('amount', $search->getAmount());
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
     public function persistTransaction(Transaction $transaction): Transaction
     {
         $this->getEntityManager()->persist($transaction);
@@ -42,5 +64,4 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $transaction;
     }
-
 }
