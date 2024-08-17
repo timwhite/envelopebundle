@@ -6,6 +6,7 @@ use App\Entity\BudgetAccount;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use App\Form\Type\TransactionType;
+use App\Repository\AccountRepository;
 use App\Repository\BudgetAccountRepository;
 use App\Repository\TransactionRepository;
 use App\Voter\BudgetAccountVoter;
@@ -24,6 +25,18 @@ class TransactionController extends AbstractController
 
     }
 
+    #[Route(path: '/transaction/list', name: 'envelope_transactions')]
+    public function transactionsList(TransactionRepository $transactionRepository, AccountRepository $accountRepository): Response
+    {
+        return $this->render(
+            'default/transactions.html.twig',
+            [
+                'accounts' => $accountRepository->getUsersAccounts(),
+                //'unbalancedtransactions' => $transactionRepository->getUnbalancedTransactions()
+            ]
+        );
+    }
+
     #[Route(path: '/transaction/new', name: 'envelope_transaction_new')]
     public function transactionNew(Request $request): Response
     {
@@ -32,6 +45,7 @@ class TransactionController extends AbstractController
 
         return $this->transactionList($transaction, $request, false);
     }
+
 
     #[Route(path: '/transaction/{id}', name: 'envelope_transaction')]
     #[IsGranted(TransactionVoter::EDIT, 'transaction')]
@@ -136,4 +150,6 @@ class TransactionController extends AbstractController
 
         return $this->redirectToRoute('envelope_transactions_unbalanced');
     }
+
+
 }

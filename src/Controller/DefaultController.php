@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\AccountRepository;
 use App\Repository\BudgetAccountRepository;
 use App\Repository\TransactionRepository;
 use App\Voter\TransactionVoter;
@@ -142,26 +143,7 @@ class DefaultController extends AbstractController
         );
     }
 
-    public function transactionsListAction(Request $request)
-    {
-        $session = $request->getSession();
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT a
-            FROM EnvelopeBundle:Account a
-            WHERE a.access_group = :accessgroup
-            '
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
 
-        $query2 = $this->getUnbalancedTransactionsQuery($session->get('accessgroupid'));
-
-        return $this->render(
-            'EnvelopeBundle:Default:transactions.html.twig',
-            [
-                'accounts' => $query->getResult(),
-                'unbalancedtransactions' => $query2->getResult()
-            ]
-        );
-    }
 
     /**
      * @param $accessgroupid

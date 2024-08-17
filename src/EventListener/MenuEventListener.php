@@ -40,24 +40,24 @@ class MenuEventListener implements EventSubscriberInterface {
                 'profile' => 'Profile',
                 //'envelope_budgets' => "Budgets",
                 'envelope_budgettransactions' => "Budget Transactions",
-//                'bank_transactions' => [
-//                    "label" => "Bank Transactions",
-//                    'children' => [
-//                        'envelope_transactions_unbalanced' => [
-//                            'label' => 'Unbalanced Transactions',
-//                        ],
-//                        'envelope_transactions' => [
-//                            'label' => 'View Transactions',
-//                            'children' => [
+                'bank_transactions' => [
+                    "label" => "Bank Transactions",
+                    'children' => [
+                        'envelope_transactions_unbalanced' => [
+                            'label' => 'Unbalanced Transactions',
+                        ],
+                        'envelope_transactions' => [
+                            'label' => 'View Transactions',
+                            'children' => [
 //                                'envelope_transaction' => ['label' => 'A']
-//                            ],
-//                        ],
+                            ],
+                        ],
 //                        'envelope_transaction_new' => [
 //                            'label' => 'New Transaction',
 //                            'route_args' => ['id' => 'new']
 //                        ]
-//                    ],
-//                ],
+                    ],
+                ],
 //                'envelope_budget_templates' => "Budget Templates",
 //                'envelope_budget_apply_template' => "Apply Budget Template",
 //                'envelope_import' => "Import",

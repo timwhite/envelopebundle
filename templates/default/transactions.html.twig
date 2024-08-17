@@ -3,67 +3,16 @@
 {% block page_subtitle %}Browse bank transactions by account, and view the unassigned amount{% endblock %}
 
 {% block page_content %}
-    <div class="row">
-        <div class="col-md-6">
-            <div class="box collapsed-box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Unbalanced Transactions ({{ unbalancedtransactions|length }})</h3>
-
-                    <div class="box-tools pull-right">
-                        <span class="label label-info"></span>
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-                            <i class="fa fa-plus"></i></button>
-                    </div>
-                    <!-- /.box-tools -->
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <table class="table table-striped datatable" data-order='[[ 0, "asc" ]]' data-page-length='25'>
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Unassigned Amount</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for transaction in unbalancedtransactions %}
-                            <tr>
-                                <td>{{ transaction.date|date('d/m/y') }}</td>
-                                <td>
-                                    <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'transactions'}) }}">{{ transaction.description }}</a>
-                                </td>
-                                <td align="right" {% if transaction.amount < 0 %}class="text-danger"{% endif %}>
-                                    <span data-toggle="tooltip"
-                                          title="{{ transaction.PositiveBudgetSum|format_currency('AUD') }} / {{ transaction.NegativeBudgetSum|format_currency('AUD') }}">
-                                    {{ transaction.amount|format_currency('AUD') }}
-                                    </span>
-                                </td>
-                                <td align="right">{{ transaction.unassignedsum|format_currency('AUD') }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="box-footer">
-                </div>
-                <!-- box-footer -->
-            </div>
-            <!-- /.box -->
-        </div>
-        <!-- col -->
-        <span class="clearfix"></span>
-
+    <div class="row row-cards">
         {% set networth=0 %}
         {% for account in accounts %}
             {% set networth=networth+account.balance %}
             <div class="col-md-6">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
+                <div class="card">
+                    <div class="card-header with-border">
+                        <h3 class="card-title">{{ account.name }} Transactions ({{ account.transactions|length }})</h3>
 
-                        <div class="box-tools pull-right">
+                        <div class="card-actions pull-right">
                             <span class="label {% if account.balance <= 0 %}label-danger{% elseif account.balance < 100 %}label-warning{% else %}label-success{% endif %}">{{ account.balance|format_currency('AUD') }}</span>
                             <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
                                     title="Collapse"><i class="fa fa-minus"></i></button>
@@ -71,8 +20,9 @@
                         <!-- /.box-tools -->
                     </div>
                     <!-- /.box-header -->
-                    <div class="box-body">
-                        <table class="table table-striped datatable">
+                    <div class="card-body"></div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-striped datatable">
                             <thead>
                             <tr>
                                 <th>Date</th>
@@ -112,25 +62,16 @@
         {% endfor %}
     </div><!-- row -->
 
-    <div class="row">
+    <div class="row row-cards">
         <div class="col-md-6">
-            <div class="box collapsed-box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Net Position</h3>
-                    <div class="box-tools pull-right">
-                        <span class="label label-info"></span>
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-                            <i class="fa fa-plus"></i></button>
-                    </div>
-                    <!-- /.box-tools -->
+            <div class="card">
+                <div class="card-header with-border">
+                    <h3 class="card-title">Net Position</h3>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body">
+                <div class="card-body">
                     Net Position: {{ networth |format_currency('AUD') }}
                 </div>
-                <div class="box-footer">
-                </div>
-                <!-- box-footer -->
             </div>
             <!-- /.box -->
         </div>
