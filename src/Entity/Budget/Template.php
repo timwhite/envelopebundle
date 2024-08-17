@@ -3,6 +3,7 @@
 namespace App\Entity\Budget;
 
 use App\Entity\AccessGroup;
+use App\Repository\BudgetTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Template.
  */
 #[ORM\Table]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BudgetTemplateRepository::class)]
 class Template
 {
     /**
