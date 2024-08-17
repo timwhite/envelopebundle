@@ -25,58 +25,6 @@ class DefaultController extends AbstractController
     {
     }
 
-    private function findFirstTransactionDate()
-    {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
-            ->select('MIN(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    private function findLastTransactionDate()
-    {
-        return $this->getDoctrine()->getManager()->createQueryBuilder()
-            ->select('MAX(t.date)')
-            ->from('EnvelopeBundle:Transaction', 't')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function budgetAccountListAction(Request $request)
-    {
-        $session = $request->getSession();
-
-        if ($request->query->get('startdate')) {
-            $startdate = new \DateTime($request->query->get('startdate'));
-        } else {
-            $startdate = new \DateTime($this->findFirstTransactionDate());
-        }
-        if ($request->query->get('enddate')) {
-            $enddate = new \DateTime($request->query->get('enddate'));
-        } else {
-            $enddate = new \DateTime($this->findLastTransactionDate());
-        }
-
-        $query = $this->getDoctrine()->getManager()->createQuery(
-            'SELECT b
-            FROM EnvelopeBundle:BudgetGroup b
-            JOIN EnvelopeBundle:AccessGroup a
-            WITH b.access_group = a
-            WHERE a.id  = :accessgroup'
-        )->setParameters(['accessgroup' => $session->get('accessgroupid')]);
-        $budgetgroups = $query->getResult();
-
-        return $this->render(
-            'EnvelopeBundle:Default:budgetaccounts.html.twig',
-            [
-                'budgetgroups' => $budgetgroups,
-                'startdate' => $startdate,
-                'enddate' => $enddate,
-            ]
-        );
-    }
-
     public function budgetTemplateCloneAction(Request $request, $templateid)
     {
         $session = $request->getSession();

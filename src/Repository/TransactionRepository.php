@@ -64,4 +64,26 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $transaction;
     }
+
+    public function findUserFirstTransactionDate()
+    {
+        return $this->createQueryBuilder('transaction')
+            ->select('MIN(transaction.date)')
+            ->leftJoin(Account::class, 'a', 'WITH', 'transaction.account = a')
+            ->andWhere('a.access_group = :accessGroup')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findUserLastTransactionDate()
+    {
+        return $this->createQueryBuilder('transaction')
+            ->select('MAX(transaction.date)')
+            ->leftJoin(Account::class, 'a', 'WITH', 'transaction.account = a')
+            ->andWhere('a.access_group = :accessGroup')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

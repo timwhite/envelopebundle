@@ -21,11 +21,11 @@
         {% set totalnegsum = 0 %}
     {% for budgetgroup in budgetgroups %}
 
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ budgetgroup.name }}</h3>
-                    <div class="box-tools pull-right">
+        <div class="col-md-12 col-lg-4">
+            <div class="card">
+                <div class="card-header with-border">
+                    <h3 class="card-title">{{ budgetgroup.name }}</h3>
+                    <div class="card-tools pull-right">
                         {% set budgetgroupsum = budgetgroup.getBudgetSum(startdate, enddate) %}
                         {% set budgetgrouppossum = budgetgroup.getPositiveBudgetSum(startdate, enddate) %}
                         {% set budgetgroupnegsum = budgetgroup.getNegativeBudgetSum(startdate, enddate) %}
@@ -39,8 +39,8 @@
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
                 </div><!-- /.box-header -->
-                <div class="box-body">
-                    <table class="table table-striped">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-striped">
                         <thead>
                         <tr>
                             <th></th>
@@ -72,9 +72,9 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="box-footer">
-                </div><!-- box-footer -->
-            </div><!-- /.box -->
+                <div class="card-footer">
+                </div><!-- card-footer -->
+            </div><!-- /.card -->
         </div><!-- col -->
 
     {% endfor %}
@@ -82,14 +82,14 @@
 
     <div class="row">
         <div class="col-sm-6 col-md-3 col-lg-3">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Summary</h3>
-                    <div class="box-tools pull-right">
+            <div class="card">
+                <div class="card-header with-border">
+                    <h3 class="card-title">Summary</h3>
+                    <div class="card-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
-                <div class="box-body">
+                    </div><!-- /.card-tools -->
+                </div><!-- /.card-header -->
+                <div class="card-body">
                     <span class="text-warning">The Budget summary gives an overview of all budget transactions for the selected period. If there are any unbalanced transactions in that period, the full amount of that transaction will not be reflected here and so this figure may be different to your Net Worth on the Bank transactions page.</span>
                     <table class="table table-striped">
                         <thead>
@@ -114,6 +114,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        {{ include('EnvelopeBundle:Stats:datepicker.js.twig') }}
+        {{ include('Stats/datepicker.js.twig') }}
     </script>
 {% endblock %}

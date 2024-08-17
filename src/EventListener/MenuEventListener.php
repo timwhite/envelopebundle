@@ -38,7 +38,7 @@ class MenuEventListener implements EventSubscriberInterface
             $items = [
                 'dashboard' => 'Dashboard',
                 'profile' => 'Profile',
-                // 'envelope_budgets' => "Budgets",
+                'envelope_budgets' => 'Budgets',
                 'envelope_budgettransactions' => 'Budget Transactions',
                 'bank_transactions' => [
                     'label' => 'Bank Transactions',
