@@ -16,4 +16,7 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'apexcharts' => [
+        'version' => '3.52.0',
+    ],
 ];

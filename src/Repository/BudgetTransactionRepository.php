@@ -27,6 +27,7 @@ class BudgetTransactionRepository extends ServiceEntityRepository
         return $this->getBudgetSums($dateFrom, $dateTo, false);
     }
 
+    // @TODO make all of these use accessGroup for permissions checking
     public function getBudgetSums(\DateTime $dateFrom, \DateTime $dateTo, bool $positive = true): array
     {
         $query = $this->createQueryBuilder('budgetTransaction')

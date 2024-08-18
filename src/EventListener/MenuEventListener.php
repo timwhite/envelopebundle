@@ -14,14 +14,14 @@ class MenuEventListener implements EventSubscriberInterface
     {
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             MenuEvent::class => ['onSetupMenu', 100],
         ];
     }
 
-    public function onSetupMenu(MenuEvent $event)
+    public function onSetupMenu(MenuEvent $event): void
     {
         $request = $event->getRequest();
 
@@ -49,12 +49,11 @@ class MenuEventListener implements EventSubscriberInterface
                         'envelope_transactions' => [
                             'label' => 'View Transactions',
                             'children' => [
-                                //                                'envelope_transaction' => ['label' => 'A']
+                                // 'envelope_transaction' => ['label' => 'A'],
                             ],
                         ],
                         'envelope_transaction_new' => [
                             'label' => 'New Transaction',
-                            // 'route_args' => ['id' => 'new']
                         ],
                     ],
                 ],
@@ -66,7 +65,7 @@ class MenuEventListener implements EventSubscriberInterface
                     'label' => 'Statistics',
                     'children' => [
                         'envelope_budget_stats' => ['label' => 'Fortnight Trends'],
-                        //                                         'envelope_budget_stats_spending'=> ['label'=>'Spending Breakdown'],
+                        'envelope_budget_stats_spending' => ['label' => 'Spending Breakdown'],
                     ],
                 ],
             ];
@@ -83,7 +82,7 @@ class MenuEventListener implements EventSubscriberInterface
         return $this->activateByRoute($request->get('_route'), $menuItems);
     }
 
-    protected function buildMenuItem($route, $item)
+    protected function buildMenuItem($route, $item): MenuItemModel
     {
         $menuitem = new MenuItemModel($route, $item['label'], $route);
         if (isset($item['route_args'])) {

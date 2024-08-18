@@ -5,3 +5,8 @@
 
 {% block page_actions %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+{% endblock %}

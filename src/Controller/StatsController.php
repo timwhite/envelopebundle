@@ -7,6 +7,7 @@ use App\Repository\TransactionRepository;
 use App\Service\BudgetAccountStatsLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class StatsController extends AbstractController
@@ -19,9 +20,9 @@ class StatsController extends AbstractController
     }
 
     #[Route('/stats', name: 'envelope_budget_stats')]
-    public function budgetStatsAction(Request $request)
+    public function budgetStatsAction(Request $request): Response
     {
-        $budgetaccounts = $this->budgetAccountRepository->getUserBudgetAccounts();
+        $budgetAccounts = $this->budgetAccountRepository->getUserBudgetAccounts();
 
         if ($request->query->get('startdate')) {
             $startDate = new \DateTime($request->query->get('startdate'));
@@ -39,14 +40,15 @@ class StatsController extends AbstractController
         return $this->render(
             'default/budgetaccountstats.html.twig',
             [
-                'budgetaccounts' => $budgetaccounts,
+                'budgetaccounts' => $budgetAccounts,
                 'startdate' => $this->budgetAccountStatsLoader->getFirstTransactionDate(),
                 'enddate' => $this->budgetAccountStatsLoader->getLastTransactionDate(),
             ]
         );
     }
 
-    public function spendingStatsAction(Request $request)
+    #[Route(path: '/stats/spending', name: 'envelope_budget_stats_spending')]
+    public function spendingStatsAction(Request $request): Response
     {
         $session = $request->getSession();
 
@@ -61,47 +63,23 @@ class StatsController extends AbstractController
             $enddate = new \DateTime($this->transactionRepository->findUserLastTransactionDate());
         }
 
-        $excludeDescriptions = [
-            'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings',
-        ];
-
-        $query = $this->getDoctrine()->getManager()->getConnection()->prepare("
-            SELECT
-              COUNT(SUBSTRING_INDEX( `Description` , '-', 1 )) AS numtransactions,
-              SUBSTRING_INDEX( `Description` , '-', 1 ) AS description,
-              SUM(`amount`) as sumamount,
-              AVG(`amount`) as avgamount
-            FROM `transaction`
-              JOIN `account` ON `transaction`.`account_id` = `account`.`id`
-            WHERE `amount` < 0
-              AND `account`.`accessgroup_id` = :accessgroup
-              AND `Description` NOT IN ('".implode("','", $excludeDescriptions)."')
-              AND `transaction`.`date` >= :startdate
-              AND `transaction`.`date` <= :enddate
-              GROUP BY SUBSTRING_INDEX( `Description` , '-', 1 )
-              ORDER BY SUM(`amount`) ASC");
-
         $total = 0;
+        $pieSeriesData = [];
+        $pieSeriesLabels = [];
         $results = [];
         $excluded_transactions = [];
-        if ($query->execute(
-            [
-                'accessgroup' => $session->get('accessgroupid'),
-                'startdate' => $startdate->format('Y-m-d'),
-                'enddate' => $enddate->format('Y-m-d'),
-            ]
-        )) {
-            foreach ($query as $result) {
-                if ($result['numtransactions'] > 1) {
-                    $results[] = [
-                        'value' => abs($result['sumamount']),
-                        'label' => "{$result['description']} ({$result['avgamount']} / {$result['numtransactions']})",
-                    ];
-                } else {
-                    $excluded_transactions[] = $result;
-                }
-                $total = bcadd($total, $result['sumamount'], 2);
+        foreach ($this->transactionRepository->getSpendingStats($startdate, $enddate) as $result) {
+            if ($result['numtransactions'] > 1) {
+                $pieSeriesData[] = abs($result['sumamount']);
+                $pieSeriesLabels[] = "{$result['description']} ({$result['avgamount']} / {$result['numtransactions']})";
+                $results[] = [
+                    'value' => abs($result['sumamount']),
+                    'label' => "{$result['description']} ({$result['avgamount']} / {$result['numtransactions']})",
+                ];
+            } else {
+                $excluded_transactions[] = $result;
             }
+            $total = bcadd($total, $result['sumamount'], 2);
         }
 
         foreach ($results as $key => $result) {
@@ -109,9 +87,11 @@ class StatsController extends AbstractController
         }
 
         return $this->render(
-            'EnvelopeBundle:Stats:spendingStats.html.twig',
+            'Stats/spendingStats.html.twig',
             [
-                'piechartvalues' => json_encode($results),
+                'piechartvalues' => $results,
+                'pieChartData' => $pieSeriesData,
+                'pieChartLabels' => $pieSeriesLabels,
                 'excludedtransactions' => $excluded_transactions,
                 'startdate' => $startdate,
                 'enddate' => $enddate,

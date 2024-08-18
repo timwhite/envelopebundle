@@ -86,4 +86,33 @@ class TransactionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function getSpendingStats(\DateTime $dateFrom, \DateTime $dateTo): array
+    {
+        $excludeDescriptions = [
+            'Fortnight Savings', 'Fortnight Cash', 'Credit Card Transfer', 'Savings',
+        ];
+
+        return $this->createQueryBuilder('transaction')
+            ->select('
+                COUNT(SUBSTRING_INDEX(transaction.description, \'-\', 1)) AS numtransactions,
+                SUBSTRING_INDEX(transaction.description, \'-\', 1 ) AS description,
+                SUM(transaction.amount) as sumamount,
+                AVG(transaction.amount) as avgamount
+            ')
+            ->join(Account::class, 'account', 'WITH', 'transaction.account = account.id')
+            ->andWhere('transaction.amount < 0')
+            ->andWhere('account.access_group = :accessGroup')
+            ->andWhere('transaction.description NOT IN(:excludedDescriptions)')
+            ->andWhere('transaction.date BETWEEN :dateFrom AND :dateTo')
+            ->groupBy('description')
+            ->orderBy('SUM(transaction.amount)', 'ASC')
+            ->setParameters([
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'excludedDescriptions' => $excludeDescriptions,
+                'accessGroup' => $this->security->getUser()->getAccessGroup(),
+            ])
+            ->getQuery()->getResult();
+    }
 }

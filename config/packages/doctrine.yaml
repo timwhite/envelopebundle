@@ -25,6 +25,8 @@ doctrine:
         dql:
             datetime_functions:
                 yearweek: DoctrineExtensions\Query\Mysql\YearWeek
+            string_functions:
+                substring_index: DoctrineExtensions\Query\Mysql\SubstringIndex
 
 when@test:
     doctrine:
