@@ -10,3 +10,17 @@
     {{ parent() }}
     {% block importmap %}{{ importmap('app') }}{% endblock %}
 {% endblock %}
+
+{% block navbar_menu_condensed %}
+    {% include '@Tabler/includes/menu.html.twig' %}
+    <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+        <form action="{{ path('envelope_budget_search') }}" method="get">
+            <div class="input-icon">
+            <span class="input-icon-addon">
+                <i class="fas fa-search"></i>
+            </span>
+                <input name="q" type="text" class="form-control" placeholder="Search…" aria-label="Search in website">
+            </div>
+        </form>
+    </div>
+{% endblock %}

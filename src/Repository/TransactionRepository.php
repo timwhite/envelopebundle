@@ -7,7 +7,6 @@ use App\Entity\AutoCodeSearch;
 use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -113,6 +112,20 @@ class TransactionRepository extends ServiceEntityRepository
                 'excludedDescriptions' => $excludeDescriptions,
                 'accessGroup' => $this->security->getUser()->getAccessGroup(),
             ])
+            ->getQuery()->getResult();
+    }
+
+    /**
+     * Search for transactions based on string.
+     */
+    public function getSearchResult(string $search): array
+    {
+        return $this->createQueryBuilder('transaction')
+            ->join('transaction.account', 'account')
+            ->andWhere('account.access_group = :accessGroup')
+            ->andWhere('transaction.description LIKE :search OR transaction.fullDescription LIKE :search')
+            ->setParameter('search', '%'.$search.'%')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup())
             ->getQuery()->getResult();
     }
 }

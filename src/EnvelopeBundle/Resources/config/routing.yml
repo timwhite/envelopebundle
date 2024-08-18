@@ -1,7 +1,0 @@
-envelope_budget_stats_spending:
-    path:   /stats/spending
-    defaults: { _controller: EnvelopeBundle:Stats:spendingStats}
-
-envelope_budget_search:
-    path:   /search/
-    defaults: { _controller: EnvelopeBundle:Search:search}
