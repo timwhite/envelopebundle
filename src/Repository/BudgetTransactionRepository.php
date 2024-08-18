@@ -48,4 +48,53 @@ class BudgetTransactionRepository extends ServiceEntityRepository
             ->andWhere('budgetTransaction.amount < 0')
             ->getQuery()->getResult();
     }
+
+    public function getIncomeSums(\DateTime $dateFrom, \DateTime $dateTo): array
+    {
+        return $this->createQueryBuilder('budgetTransaction')
+            ->select('budgetAccount.budget_name as budgetName,
+                    budgetAccount.id as budget_account_id,
+                    MIN(transaction.date) as mindate,
+                    MAX(transaction.date) as maxdate,
+                    SUM(budgetTransaction.amount) as positivesum')
+            ->join('budgetTransaction.transaction', 'transaction')
+            ->join('budgetTransaction.budgetAccount', 'budgetAccount')
+            ->andWhere('transaction.amount != 0')
+            ->andWhere('budgetTransaction.amount > 0')
+            ->andWhere('transaction.date BETWEEN :dateFrom AND :dateTo')
+            ->setParameters(['dateFrom' => $dateFrom, 'dateTo' => $dateTo])
+            ->groupBy('budgetAccount.id')
+            ->getQuery()->getResult();
+    }
+
+    public function getWeeklySums(\DateTime $dateFrom, \DateTime $dateTo): array
+    {
+        return $this->createQueryBuilder('budgetTransaction')
+            ->select('YEARWEEK(transaction.date, 3) AS yearweeknum,
+                    budgetAccount.budget_name as budgetName,
+                    budgetAccount.id as budget_account_id,
+                    SUM(budgetTransaction.amount) as weeksum')
+            ->join('budgetTransaction.transaction', 'transaction')
+            ->join('budgetTransaction.budgetAccount', 'budgetAccount')
+            ->andWhere('transaction.date BETWEEN :dateFrom AND :dateTo')
+            ->setParameters(['dateFrom' => $dateFrom, 'dateTo' => $dateTo])
+            ->groupBy('budgetAccount.id, yearweeknum')
+            ->getQuery()->getResult();
+    }
+
+    public function getWeeklySpends(\DateTime $dateFrom, \DateTime $dateTo): array
+    {
+        return $this->createQueryBuilder('budgetTransaction')
+            ->select('YEARWEEK(transaction.date, 3) AS yearweeknum,
+                    budgetAccount.budget_name as budgetName,
+                    budgetAccount.id as budget_account_id,
+                    SUM(budgetTransaction.amount) as weekspend')
+            ->join('budgetTransaction.transaction', 'transaction')
+            ->join('budgetTransaction.budgetAccount', 'budgetAccount')
+            ->andWhere('budgetTransaction.amount < 0')
+            ->andWhere('transaction.date BETWEEN :dateFrom AND :dateTo')
+            ->setParameters(['dateFrom' => $dateFrom, 'dateTo' => $dateTo])
+            ->groupBy('budgetAccount.id, yearweeknum')
+            ->getQuery()->getResult();
+    }
 }

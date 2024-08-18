@@ -22,6 +22,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+        dql:
+            datetime_functions:
+                yearweek: DoctrineExtensions\Query\Mysql\YearWeek
 
 when@test:
     doctrine:
