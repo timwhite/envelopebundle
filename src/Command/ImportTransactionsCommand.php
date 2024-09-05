@@ -1,91 +1,87 @@
 <?php
 
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 use App\Entity\Import;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use App\Entity\Transaction;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use App\Entity\Account;
-use App\Entity\Transaction;
-
 // @TODO Update this to use importBankTransactions
-class ImportTransactionsCommand  extends ContainerAwareCommand
+#[AsCommand(name: 'account:import', description: 'Imports Bank Transactions into Account')]
+class ImportTransactionsCommand extends Command
 {
-    protected function configure()
+    public function __construct(private readonly EntityManagerInterface $entityManager)
+    {
+        parent::__construct();
+    }
+
+    protected function configure(): void
     {
         $this
-            ->setName("account:import")
-            ->setDescription("Imports Bank Transactions into Account")
             ->addArgument('accountName', InputArgument::REQUIRED, 'The transaction account name')
             ->addArgument('inputFile', InputArgument::REQUIRED, 'CSV file of transactions')
             ->addOption('import_duplicates', null, InputOption::VALUE_NONE, 'Import suspected duplicates')
             ->addOption('importANZ', null, InputOption::VALUE_NONE, 'Import an ANZ CSV file')
         ;
-
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $em = $this->getContainer()->get("doctrine")->getManager();
+        $em = $this->entityManager;
         $inputFile = $input->getArgument('inputFile');
 
-        if(!file_exists($inputFile)) {
-            $output->writeln("Unable to open input file");
+        if (!file_exists($inputFile)) {
+            $output->writeln('Unable to open input file');
             exit(1);
         }
 
         $account = $em->getRepository('EnvelopeBundle:Account')
             ->findOneByName($input->getArgument('accountName'));
-        if(!$account) {
-            $output->writeln("Unable to find that account");
+        if (!$account) {
+            $output->writeln('Unable to find that account');
             exit(1);
         }
 
-
-
-        if (($handle = fopen($inputFile, "r")) !== FALSE) {
+        if (($handle = fopen($inputFile, 'r')) !== false) {
             $import = new Import();
             $em->persist($import);
             $em->flush();
 
-            while(($row = fgetcsv($handle)) !== FALSE) {
-
-
+            while (($row = fgetcsv($handle)) !== false) {
                 // ANZ and NAB differ for importing description
-                if($input->getOption('importANZ'))
-                {
+                if ($input->getOption('importANZ')) {
                     // ANZ format is date,amount,description
-                    if(sizeof($row) < 3) {
+                    if (sizeof($row) < 3) {
                         continue;
                     }
-                    $description = preg_replace("/ {2,}/", " ", $row[2]);
+                    $description = preg_replace('/ {2,}/', ' ', $row[2]);
                     $fullDescription = $description;
 
-                    $dateparts = explode('/',$row[0],3);
-                    $date = new\DateTime($dateparts[2]."/".$dateparts[1]."/".$dateparts[0]);
-                    //$output->writeln($description);
+                    $dateparts = explode('/', $row[0], 3);
+                    $date = new \DateTime($dateparts[2].'/'.$dateparts[1].'/'.$dateparts[0]);
+                // $output->writeln($description);
                 } else {
-                    //NAB format date,amount,__,__,Type,Description,Balance,__
-                    if(sizeof($row) < 5) {
+                    // NAB format date,amount,__,__,Type,Description,Balance,__
+                    if (sizeof($row) < 5) {
                         continue;
                     }
-                    $description = preg_replace("/ {2,}/", " ", $row[5]);
-                    if ($description == "") {
+                    $description = preg_replace('/ {2,}/', ' ', $row[5]);
+                    if ('' == $description) {
                         $description = $row[4];
                     }
-                    $fullDescription = $row[4] . ':' . preg_replace("/ {2,}/", " ", $row[5]);
+                    $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', $row[5]);
 
                     $date = new \DateTime($row[0]);
                 }
 
                 // Limit to transactions new
-                if ($date < new \DateTime("2015-07-01 00:00:00"))
-                {
+                if ($date < new \DateTime('2015-07-01 00:00:00')) {
                     $output->write('.');
                     continue;
                 }
@@ -93,8 +89,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
 
                 $amount = $row[1];
 
-                if(!$input->getOption('import_duplicates'))
-                {
+                if (!$input->getOption('import_duplicates')) {
                     // Attempt to detect duplicate transaction
                     $query = $em->createQuery('
                       SELECT t FROM App\Entity\Transaction t
@@ -109,12 +104,11 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                             'fulldesc' => $fullDescription,
                             'amount' => $amount,
                             'tdate' => $date,
-                            'import' => $import->getId()
+                            'import' => $import->getId(),
                         ]
                     );
                     $results = $query->getResult();
-                    if(sizeof($results) > 0)
-                    {
+                    if (sizeof($results) > 0) {
                         $output->writeln("Not importing duplicate($import) transaction: ".$date->format('Y-m-d H:i:s').": $amount, $fullDescription");
                         continue;
                     }
@@ -131,7 +125,7 @@ class ImportTransactionsCommand  extends ContainerAwareCommand
                 $em->persist($transaction);
             }
             $em->flush();
-            $output->writeln("*");
+            $output->writeln('*');
         }
     }
 }

@@ -1,48 +1,51 @@
 <?php
 
-
-namespace EnvelopeBundle\Command;
+namespace App\Command;
 
 use App\Entity\ExternalConnector;
+use Doctrine\ORM\EntityManagerInterface;
 use EnvelopeBundle\Service\ApiImportService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpApiImportTransactionsCommand extends ContainerAwareCommand
+#[AsCommand(name: 'up:api:importTransactions', description: 'Import transactions from UP account API')]
+class UpApiImportTransactionsCommand extends Command
 {
+    public function __construct(protected readonly EntityManagerInterface $entityManager,
+        private readonly ApiImportService $apiImportService)
+    {
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
-            ->setName("up:api:importTransactions")
-            ->setDescription("Import transactions from UP account API")
             ->addArgument('externalConnectorId', InputArgument::REQUIRED, 'ID of External Connector to fetch for')
         ;
-
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $externalConnectorId = $input->getArgument('externalConnectorId');
         /** @var ExternalConnector $externalConnector */
-        $externalConnector = $this->getContainer()->get("doctrine")->getManager()->getRepository(ExternalConnector::class)->find($externalConnectorId);
+        $externalConnector = $this->entityManager->getRepository(ExternalConnector::class)->find($externalConnectorId);
         if (empty($externalConnector)) {
             $output->writeln('<error>External connector not found</error>');
-            return 1;
+
+            return Command::FAILURE;
         }
 
-        if ($externalConnector->getSystemType() !== 'UP') {
+        if ('UP' !== $externalConnector->getSystemType()) {
             $output->writeln('<error>External connector not of type UP</error>');
-            return 1;
+
+            return Command::FAILURE;
         }
 
-        /** @var ApiImportService $apiImport */
-        $apiImport = $this->getContainer()->get('api_import');
+        $this->apiImportService->importAccount($externalConnector);
 
-        $apiImport->importAccount($externalConnector);
-        return 0;
+        return Command::SUCCESS;
     }
-
-
 }

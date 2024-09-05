@@ -1,40 +1,36 @@
 <?php
 
-namespace EnvelopeBundle\Command;
-
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
+namespace App\Command;
 
 use App\Entity\Account;
-use App\Entity\Transaction;
 use App\Entity\BudgetTransaction;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-
-class AutoBudgetCommand  extends ContainerAwareCommand
+#[AsCommand(name: 'transactions:autobudget', description: 'Automatically assign unassigned transactions')]
+class AutoBudgetCommand extends Command
 {
     protected $searches =
         [
             'Fast Food' => [
                 ' HJ ',
-                'DOMINOS'
-            ]
+                'DOMINOS',
+            ],
         ];
 
-    protected function configure()
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this
-            ->setName("transactions:autobudget")
-            ->setDescription("Automatically assign unassigned transactions");
+        parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $em = $this->getContainer()->get("doctrine")->getManager();
-        //$account = $em->getRepository('EnvelopeBundle:Account')
+        // @TODO make this use a service that is shared with the web interface for running this
+        $em = $this->entityManager;
+        // $account = $em->getRepository('EnvelopeBundle:Account')
         //    ->find($input->getArgument('accountID'));
         $searches = $em->createQuery('SELECT s from EnvelopeBundle:AutoCodeSearch s')->getResult();
 
@@ -51,11 +47,10 @@ class AutoBudgetCommand  extends ContainerAwareCommand
             '
         );
 
-        foreach($searches as $search) {
+        foreach ($searches as $search) {
             $query->setParameters(
-                ['search' => "%" . $search->getSearch() . "%"]
+                ['search' => '%'.$search->getSearch().'%']
             );
-
 
             $transactions = $query->getResult();
             foreach ($transactions as $transaction) {
@@ -67,7 +62,7 @@ class AutoBudgetCommand  extends ContainerAwareCommand
                 $output->writeln($search->getSearch());
                 $output->writeln($search->getBudgetAccount()->getBudgetName());
 
-                if ($search->getRename() != "") {
+                if ('' != $search->getRename()) {
                     $transaction->setDescription($search->getRename());
                     $em->persist($transaction);
                 }
@@ -77,7 +72,4 @@ class AutoBudgetCommand  extends ContainerAwareCommand
             $em->flush();
         }
     }
-
-
-
 }

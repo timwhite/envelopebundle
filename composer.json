@@ -34,7 +34,8 @@
         "kevinpapst/tabler-bundle": "^1.4",
         "twig/intl-extra": "^3.11",
         "symfony/asset-mapper": "6.4.*",
-        "beberlei/doctrineextensions": "^1.5"
+        "beberlei/doctrineextensions": "^1.5",
+        "paragonie/halite": "^5"
     },
     "conflict": {
 	"symfony/symfony": "*"
