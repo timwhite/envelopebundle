@@ -4,6 +4,7 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -14,6 +15,7 @@ class UpApiListAccountsCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $question = new Question('Enter the API secret for UP: ');
         $apiSecret = $helper->ask($input, $output, $question);
@@ -30,5 +32,7 @@ class UpApiListAccountsCommand extends Command
         ]);
 
         dump(json_decode($result->getContent()));
+
+        return Command::SUCCESS;
     }
 }

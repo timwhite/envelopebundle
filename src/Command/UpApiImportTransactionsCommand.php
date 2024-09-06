@@ -30,7 +30,6 @@ class UpApiImportTransactionsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $externalConnectorId = $input->getArgument('externalConnectorId');
-        /** @var ExternalConnector $externalConnector */
         $externalConnector = $this->entityManager->getRepository(ExternalConnector::class)->find($externalConnectorId);
         if (empty($externalConnector)) {
             $output->writeln('<error>External connector not found</error>');

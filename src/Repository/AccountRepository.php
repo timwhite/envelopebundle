@@ -14,6 +14,11 @@ class AccountRepository extends ServiceEntityRepository
         parent::__construct($registry, Account::class);
     }
 
+    public function findOneByName(string $name): ?Account
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     /**
      * @return Account[]
      */

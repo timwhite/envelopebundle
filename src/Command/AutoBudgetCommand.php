@@ -13,20 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'transactions:autobudget', description: 'Automatically assign unassigned transactions')]
 class AutoBudgetCommand extends Command
 {
-    protected $searches =
-        [
-            'Fast Food' => [
-                ' HJ ',
-                'DOMINOS',
-            ],
-        ];
-
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // @TODO make this use a service that is shared with the web interface for running this
         $em = $this->entityManager;
@@ -71,5 +63,7 @@ class AutoBudgetCommand extends Command
             }
             $em->flush();
         }
+
+        return Command::SUCCESS;
     }
 }

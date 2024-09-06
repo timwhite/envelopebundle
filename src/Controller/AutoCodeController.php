@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\AutoCodeSearch;
 use App\Entity\BudgetAccount;
 use App\Entity\BudgetGroup;
+use App\Entity\User;
 use App\Repository\AutoCodeSearchRepository;
 use App\Service\autoCodeTransactions;
 use App\Voter\AutoCodeSearchVoter;
@@ -28,7 +29,7 @@ class AutoCodeController extends AbstractController
     }
 
     #[Route(path: '/', name: '')]
-    public function autoCode(Request $request, autoCodeTransactions $autoCodeTransactions, AutoCodeSearchRepository $autoCodeSearchRepository)
+    public function autoCode(Request $request, autoCodeTransactions $autoCodeTransactions, AutoCodeSearchRepository $autoCodeSearchRepository): Response
     {
         $session = $request->getSession();
         $accessGroup = $session->get('accessgroupid');
@@ -73,6 +74,7 @@ class AutoCodeController extends AbstractController
     #[IsGranted(AutoCodeSearchVoter::EDIT, 'search')]
     public function autoCodeSearchEdit(Request $request, AutoCodeSearch $search): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         $form = $this->createFormBuilder($search)
             ->add('budgetAccount', EntityType::class, [
@@ -114,7 +116,7 @@ class AutoCodeController extends AbstractController
 
     #[Route(path: '/delete/{id}', name: '_delete_search', methods: ['POST'])]
     #[IsGranted(AutoCodeSearchVoter::EDIT, 'search')]
-    public function autoCodeSearchDelete(Request $request, AutoCodeSearch $search)
+    public function autoCodeSearchDelete(Request $request, AutoCodeSearch $search): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $searchString = $search->getSearch();
         $this->entityManager->remove($search);

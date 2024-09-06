@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Import;
 use App\Entity\Transaction;
+use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'account:import', description: 'Imports Bank Transactions into Account')]
 class ImportTransactionsCommand extends Command
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly AccountRepository $accountRepository)
     {
         parent::__construct();
     }
@@ -31,7 +32,7 @@ class ImportTransactionsCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->entityManager;
         $inputFile = $input->getArgument('inputFile');
@@ -41,8 +42,7 @@ class ImportTransactionsCommand extends Command
             exit(1);
         }
 
-        $account = $em->getRepository('EnvelopeBundle:Account')
-            ->findOneByName($input->getArgument('accountName'));
+        $account = $this->accountRepository->findOneByName($input->getArgument('accountName'));
         if (!$account) {
             $output->writeln('Unable to find that account');
             exit(1);
@@ -127,5 +127,7 @@ class ImportTransactionsCommand extends Command
             $em->flush();
             $output->writeln('*');
         }
+
+        return Command::SUCCESS;
     }
 }
