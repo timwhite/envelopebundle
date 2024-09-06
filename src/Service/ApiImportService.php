@@ -1,46 +1,34 @@
 <?php
 
+namespace App\Service;
 
-namespace EnvelopeBundle\Service;
-
-
-use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ExternalConnector;
 use App\Entity\Import;
 use App\Entity\Transaction;
+use Doctrine\ORM\EntityManagerInterface;
 use ParagonIE\Halite\Halite;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto as Symmetric;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpClient\HttpClient;
 
 class ApiImportService
 {
-    private ParameterBagInterface $parameterBag;
-    private EntityManagerInterface $em;
-
-    public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager)
+    public function __construct(private readonly ParameterBagInterface $parameterBag, private readonly EntityManagerInterface $em, private readonly LoggerInterface $logger)
     {
-        $this->parameterBag = $parameterBag;
-        $this->em = $entityManager;
     }
 
-    /**
-     * @param ExternalConnector $externalConnector
-     * @param DateTime|null     $startDate
-     */
-    public function importAccount(ExternalConnector $externalConnector, ?DateTime $startDate = null)
+    public function importAccount(ExternalConnector $externalConnector, ?\DateTime $startDate = null)
     {
         switch ($externalConnector->getSystemType()) {
             case 'UP':
                 $this->importUp($externalConnector, $startDate);
                 break;
         }
-
     }
 
-    private function importUp(ExternalConnector $externalConnector, ?DateTime $startDate = null)
+    private function importUp(ExternalConnector $externalConnector, ?\DateTime $startDate = null)
     {
         $encryptionKey = KeyFactory::loadEncryptionKey($this->parameterBag->get('api_secret_key_file'));
         $apiSecret = Symmetric::decrypt(
@@ -52,14 +40,14 @@ class ApiImportService
         $requestParams = [
             'page[size]' => 100,
 
-            'filter[status]' => 'SETTLED'
+            'filter[status]' => 'SETTLED',
         ];
         if ($startDate) {
             $requestParams['filter[since]'] = $startDate->format(\DateTimeInterface::RFC3339);
         }
 
-        $requestUrl = 'https://api.up.com.au/api/v1/accounts/' . $externalConnector->getSystemId() . '/transactions?';
-        $requestUrl = $requestUrl . http_build_query($requestParams);
+        $requestUrl = 'https://api.up.com.au/api/v1/accounts/'.$externalConnector->getSystemId().'/transactions?';
+        $requestUrl = $requestUrl.http_build_query($requestParams);
 
         $import = null;
 
@@ -69,7 +57,7 @@ class ApiImportService
                 'GET',
                 $requestUrl,
                 [
-                    'auth_bearer' => $apiSecret
+                    'auth_bearer' => $apiSecret,
                 ]
             );
             $results = json_decode($result->getContent());
@@ -77,7 +65,7 @@ class ApiImportService
                 // Check if transaction already exists based on ID
                 $transaction = $this->findTransactionByExternalId($externalConnector, $externalTransaction->id);
                 if ($transaction) {
-                    print("Found transaction based on id {$externalTransaction->id}\n");
+                    $this->logger->info("Found transaction based on id {$externalTransaction->id}");
                     continue;
                 }
 
@@ -88,12 +76,12 @@ class ApiImportService
                     $externalConnector,
                     $externalTransaction->attributes->amount->value,
                     $description,
-                    (new DateTime($externalTransaction->attributes->createdAt))->format('Y-m-d')
+                    (new \DateTime($externalTransaction->attributes->createdAt))->format('Y-m-d')
                 );
                 if ($transaction) {
-                    print("Found transaction based on metadata {$externalTransaction->id}. Updating with externalID\n");
+                    $this->logger->info("Found transaction based on metadata {$externalTransaction->id}. Updating with externalID");
                     if (empty($transaction->getExtra())) {
-                        $transaction->setExtra((array)$externalTransaction);
+                        $transaction->setExtra((array) $externalTransaction);
                     }
                     $transaction->setExternalId($externalTransaction->id);
                     $this->em->persist($transaction);
@@ -101,7 +89,7 @@ class ApiImportService
                 }
 
                 // Create new transaction
-                print("{$externalTransaction->id} not found, creating new transaction\n");
+                $this->logger->info("{$externalTransaction->id} not found, creating new transaction");
 
                 if (!$import) {
                     $import = new Import();
@@ -111,14 +99,14 @@ class ApiImportService
                 $fullDescription = "{$externalTransaction->attributes->description} - {$externalTransaction->attributes->rawText}";
 
                 // For transactions that are not in AUD, include the foreign amount
-                if ($externalTransaction->attributes->foreignAmount && $externalTransaction->attributes->foreignAmount->currencyCode !== 'AUD') {
+                if ($externalTransaction->attributes->foreignAmount && 'AUD' !== $externalTransaction->attributes->foreignAmount->currencyCode) {
                     $fullDescription .= " ({$externalTransaction->attributes->foreignAmount->currencyCode} {$externalTransaction->attributes->foreignAmount->value})";
                 }
 
                 $description = $externalTransaction->attributes->description;
-                $date = new DateTime($externalTransaction->attributes->createdAt);
+                $date = new \DateTime($externalTransaction->attributes->createdAt);
                 $amount = $externalTransaction->attributes->amount->value;
-                $extra = (array)$externalTransaction;
+                $extra = (array) $externalTransaction;
 
                 $transaction = new Transaction();
                 $transaction->setAccount($externalConnector->getAccount());
@@ -137,7 +125,7 @@ class ApiImportService
 
             if (!empty($results->links->next)) {
                 $requestUrl = $results->links->next;
-                print("Next page -> $requestUrl");
+                $this->logger->info("Next page -> $requestUrl");
             } else {
                 $requestUrl = null;
             }
@@ -149,24 +137,20 @@ class ApiImportService
         return $this->em->getRepository(Transaction::class)->findBy(
             [
                 'externalId' => $transactionId,
-                'account' => $externalConnector->getAccount()
+                'account' => $externalConnector->getAccount(),
             ]
         );
     }
 
     /**
-     * @param ExternalConnector $externalConnector
-     * @param                   $amount
-     * @param                   $description
-     * @param                   $date
-     *
      * @return Transaction|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     private function findTransactionByMetadata(ExternalConnector $externalConnector, $amount, $description, $date)
     {
         $transaction = $this->em->getRepository(Transaction::class)->createQueryBuilder('t')
-            //->select(Transaction::class, 't')
+            // ->select(Transaction::class, 't')
             ->andWhere('t.account = :account')
             ->andWhere('t.amount = :amount')
             ->andWhere('t.description LIKE :description')
@@ -176,8 +160,7 @@ class ApiImportService
                     'account' => $externalConnector->getAccount(),
                     'amount' => $amount,
                     'description' => "%$description%",
-                    'date' => $date
-
+                    'date' => $date,
                 ]
             )
             ->getQuery()->getOneOrNullResult();
@@ -189,17 +172,17 @@ class ApiImportService
         // If not found, retry with this overrides
 
         // Override description for NAB Transfers
-        if ($description == 'NAB Transactional') {
+        if ('NAB Transactional' == $description) {
             $description = 'NAB Transfer';
         }
 
         // Override for referral bonus
-        if ($description == 'Bonus Payment') {
+        if ('Bonus Payment' == $description) {
             $description = 'Referral Bonus';
         }
 
         return $this->em->getRepository(Transaction::class)->createQueryBuilder('t')
-            //->select(Transaction::class, 't')
+            // ->select(Transaction::class, 't')
             ->andWhere('t.account = :account')
             ->andWhere('t.amount = :amount')
             ->andWhere('t.description LIKE :description')
@@ -209,14 +192,9 @@ class ApiImportService
                     'account' => $externalConnector->getAccount(),
                     'amount' => $amount,
                     'description' => "%$description%",
-                    'date' => $date
-
+                    'date' => $date,
                 ]
             )
             ->getQuery()->getOneOrNullResult();
-
-
     }
-
-
 }

@@ -15,14 +15,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(name: 'account:store-api-secret', description: 'Stores API secret for external connector')]
 class StoreApiSecretCommand extends Command
 {
     private string $apiSecretKeyFile;
 
-    public function __construct(protected readonly EntityManagerInterface $em, protected readonly ParameterBag $parameterBag)
+    public function __construct(protected readonly EntityManagerInterface $em, protected readonly ParameterBagInterface $parameterBag)
     {
         parent::__construct();
     }

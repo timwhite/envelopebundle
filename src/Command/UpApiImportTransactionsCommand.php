@@ -3,8 +3,8 @@
 namespace App\Command;
 
 use App\Entity\ExternalConnector;
+use App\Service\ApiImportService;
 use Doctrine\ORM\EntityManagerInterface;
-use EnvelopeBundle\Service\ApiImportService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
