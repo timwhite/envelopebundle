@@ -2,43 +2,60 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use App\Repository\TransactionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 /**
  * Transactions.
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
+// #[Get(security: "is_granted('transaction_edit', object)")]
 class Transaction
 {
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'Description', type: 'string', length: 255)]
+    #[Groups(['read'])]
     private string $description;
 
     #[ORM\Column(name: 'FullDescription', type: 'string', length: 255)]
+    #[Groups(['read'])]
     private string $fullDescription = '';
 
     #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: Account::class)]
+    // #[Groups(['read'])]
+    // #[MaxDepth(1)]
     private ?Account $account = null;
 
     #[ORM\Column(name: 'Date', type: 'date', nullable: false)]
+    #[Groups(['read'])]
     private \DateTime $date;
 
     #[ORM\Column(name: 'Amount', type: 'decimal', scale: 2, nullable: false)]
+    #[Groups(['read'])]
     private string $amount = '0';
 
     /**
      * Due to us getting the Budget Sum in our _toString, we need EAGER loading.
      */
     #[ORM\OneToMany(mappedBy: 'transaction', targetEntity: BudgetTransaction::class, cascade: ['persist'], fetch: 'EAGER')]
+    // #[Groups(['read'])]
     private Collection $budget_transactions;
 
     #[ORM\JoinColumn(name: 'import_id', referencedColumnName: 'id', nullable: true)]
@@ -46,12 +63,14 @@ class Transaction
     private ?Import $import;
 
     #[ORM\Column(name: 'extra', type: 'json', nullable: true)]
+    #[Groups(['read'])]
     private ?array $extra;
 
     /**
      * An external immutable ID to match this transaction automatically via an API or similar.
      */
     #[ORM\Column(type: 'string', length: 512, nullable: true)]
+    #[Groups(['read'])]
     private string $externalId;
 
     /**
@@ -162,12 +181,10 @@ class Transaction
         return $this->account;
     }
 
-    /**
-     * @return string
-     */
-    public function getBudgetSum(): int|string
+    #[Groups(['read'])]
+    public function getBudgetSum(): string
     {
-        $balance = 0;
+        $balance = '0';
         foreach ($this->budget_transactions as $transaction) {
             $balance = bcadd($balance, $transaction->getAmount(), 2);
         }
@@ -175,9 +192,9 @@ class Transaction
         return $balance;
     }
 
-    public function getPositiveBudgetSum(): int|string
+    public function getPositiveBudgetSum(): string
     {
-        $sum = 0;
+        $sum = '0';
         foreach ($this->getBudgetTransactions() as $transaction) {
             if ($transaction->getAmount() > 0) {
                 $sum = bcadd($sum, $transaction->getAmount(), 2);

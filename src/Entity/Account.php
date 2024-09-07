@@ -2,16 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Account.
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Account
 {
     /**
@@ -20,29 +26,33 @@ class Account
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['read'])]
     private $id;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'Name', type: 'string', length: 255, nullable: false)]
+    #[Groups(['read'])]
     private $name;
 
-    #[ORM\OneToMany(targetEntity: \Transaction::class, mappedBy: 'account', fetch: 'EAGER')]
+    #[ORM\OneToMany(mappedBy: 'account', targetEntity: Transaction::class, fetch: 'EAGER')]
     #[ORM\OrderBy(['date' => 'DESC'])]
+    #[Groups(['read'])]
     private $transactions;
 
     #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: \AccessGroup::class)]
+    #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
     private $access_group;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'budget_transfer', type: 'boolean')]
+    #[Groups(['read'])]
     private $budgetTransfer = false;
 
-    #[ORM\OneToMany(targetEntity: \ExternalConnector::class, mappedBy: 'account')]
+    #[ORM\OneToMany(targetEntity: ExternalConnector::class, mappedBy: 'account')]
     private $externalConnectors;
 
     /**

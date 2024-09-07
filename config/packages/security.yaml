@@ -13,6 +13,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            stateless: false
             lazy: true
             logout:
                 path: /logout
