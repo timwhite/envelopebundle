@@ -1,22 +1,21 @@
 <?php
 
-namespace Application\Migrations;
+declare(strict_types=1);
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+namespace DoctrineMigrations;
+
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
 class Version20160731111438 extends AbstractMigration
 {
-    /**
-     * @param Schema $schema
-     */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE transaction DROP FOREIGN KEY FK_723705D19B6B5FBA');
         $this->addSql('ALTER TABLE transaction DROP FOREIGN KEY FK_723705D1B6A263D9');
@@ -44,13 +43,10 @@ class Version20160731111438 extends AbstractMigration
         $this->addSql('UPDATE template SET Archived=0');
     }
 
-    /**
-     * @param Schema $schema
-     */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE account DROP FOREIGN KEY FK_7D3656A44239E22F');
         $this->addSql('ALTER TABLE account ADD CONSTRAINT FK_7D3656A44239E22F FOREIGN KEY (accessgroup_id) REFERENCES access_group (id) ON UPDATE CASCADE');

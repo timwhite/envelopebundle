@@ -1,27 +1,23 @@
 <?php
 
-namespace Application\Migrations;
+declare(strict_types=1);
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+namespace DoctrineMigrations;
+
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Increase avatar length
+ * Increase avatar length.
  */
 class Version20240106040054 extends AbstractMigration
 {
-    /**
-     * @param Schema $schema
-     */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE user CHANGE avatar avatar VARCHAR(2048) DEFAULT NULL');
     }
 
-    /**
-     * @param Schema $schema
-     */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE user CHANGE avatar avatar VARCHAR(255) CHARACTER SET utf8mb3 DEFAULT NULL COLLATE `utf8mb3_unicode_ci`');
     }
