@@ -3,16 +3,17 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TeamTNT\TNTSearch\Classifier\TNTClassifier;
 
 /**
- * AccessGroup
+ * AccessGroup.
  */
 #[ORM\Table]
 #[ORM\Entity]
 class AccessGroup
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -25,22 +26,27 @@ class AccessGroup
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $classifierSerialized = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lastClassified = null;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
         return $this->id;
     }
 
-
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return AccessGroup
      */
     public function setName($name)
@@ -51,9 +57,9 @@ class AccessGroup
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -63,5 +69,35 @@ class AccessGroup
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Store the TNT Classifier in the DB.
+     *
+     * @return $this
+     */
+    public function storeClassifier(TNTClassifier $classifier): self
+    {
+        $this->classifierSerialized = serialize($classifier);
+        $this->lastClassified = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getClassifier(): ?TNTClassifier
+    {
+        if (!$this->classifierSerialized) {
+            return null;
+        }
+
+        return unserialize($this->classifierSerialized);
+    }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getLastClassified(): ?\DateTimeImmutable
+    {
+        return $this->lastClassified;
     }
 }

@@ -312,4 +312,15 @@ class Transaction
 
         return $this;
     }
+
+    public function getCategory(): string
+    {
+        /** @var BudgetTransaction[] $budgetTransactions */
+        $budgetTransactions = $this->getBudgetTransactions();
+        if (1 !== sizeof($budgetTransactions)) {
+            return '';
+        }
+
+        return $budgetTransactions[0]->getBudgetAccount()->getBudgetName();
+    }
 }

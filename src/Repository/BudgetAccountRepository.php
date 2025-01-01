@@ -6,6 +6,7 @@ use App\Entity\BudgetAccount;
 use App\Entity\BudgetGroup;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -33,6 +34,23 @@ class BudgetAccountRepository extends ServiceEntityRepository
         }
 
         return $query->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $name
+     * @return BudgetAccount|null
+     * @throws NonUniqueResultException
+     */
+    public function getUserBudgetAccountByName(string $name): ?BudgetAccount
+    {
+        $query = $this->createQueryBuilder('a')
+            ->join(BudgetGroup::class, 'g', 'WITH', 'a.budget_group = g')
+            ->andWhere('g.access_group = :accessGroup')
+            ->setParameter('accessGroup', $this->security->getUser()->getAccessGroup())
+            ->andWhere('a.budget_name = :name')
+            ->setParameter('name', $name);
+
+        return $query->getQuery()->getOneOrNullResult();
     }
 
     /**

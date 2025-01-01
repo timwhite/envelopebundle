@@ -14,7 +14,7 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function getUserFromSecurity(UserInterface $security)
+    public function getUserFromSecurity(UserInterface $security): ?User
     {
         return $this->findOneBy(['username' => $security->getUserIdentifier()]);
     }

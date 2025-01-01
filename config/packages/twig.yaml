@@ -3,6 +3,8 @@ twig:
 
     form_themes:
         - '@Tabler/layout/form-theme.html.twig'
+    globals:
+        tntClassifier: '@App\Service\TNTClassifier'
 
 when@test:
     twig:

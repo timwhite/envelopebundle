@@ -19,6 +19,7 @@
                             <th>Description</th>
                             <th>Amount</th>
                             <th>Unassigned Amount</th>
+                            <th>Suggested Category</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -35,6 +36,7 @@
                                     </span>
                                 </td>
                                 <td align="right">{{ transaction.unassignedsum|format_currency('AUD') }}</td>
+                                <td>{{ tntClassifier.suggestBudgetAccount(transaction) }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
