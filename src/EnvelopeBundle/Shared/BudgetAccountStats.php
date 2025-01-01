@@ -6,7 +6,7 @@
  * Time: 8:45 PM
  */
 
-namespace EnvelopeBundle\Shared;
+namespace App\EnvelopeBundle\Shared;
 
 
 use Doctrine\DBAL\Types\DecimalType;

@@ -3,8 +3,27 @@ EnvelopeBudget
 
 A budgeting app based on the Envelope Budgeting method, using virtual envelopes (that unfortunately can be put into the negative)
 
+## Setup production
+- Clone the git repo `git clone https://github.com/timwhite/envelopebundle.git && cd envelopebundle`
+- Install packages `composer install`
+- Create `.env.local` with the following variables filled out
+  ```config
+  HWI_GOOGLE_CLIENT_ID=
+  HWI_GOOGLE_CLIENT_SECRET=
+  DATABASE_URL=
+  APP_ENV=prod`
+   ```
+- If migrating from older version 3.4, see below for doctrine migration commands
+- Setup assets and run migrations
+  ```console
+  php ./bin/console assets:install
+  php ./bin/console importmap:install
+  php ./bin/console doctrine:migrations:migrate
+  php ./bin/console train:budget
+  ```  
 
-## Bootstrap
+
+## Bootstrap development
 - Setup .env.local with `HWI_GOOGLE_CLIENT_SECRET` and `DATABASE_URL` if needed.
 - docker compose -f docker-compose.dev.yml up -d
 - docker compose -f docker-compose.dev.yml exec php /code/bin/console assets:install
