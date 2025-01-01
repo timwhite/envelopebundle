@@ -11,6 +11,9 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
+/**
+ * @method BudgetAccount|null find($id, $lockMode = null, $lockVersion = null)
+ */
 class BudgetAccountRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry, private Security $security)

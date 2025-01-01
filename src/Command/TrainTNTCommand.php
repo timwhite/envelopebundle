@@ -38,8 +38,9 @@ class TrainTNTCommand extends Command
                         /** @var BudgetTransaction $budgetTransaction */
                         $budgetTransaction = $transaction->getBudgetTransactions()->first();
                         $description = \App\Service\TNTClassifier::prepareString($transaction->getFullDescription());
+                        $budgetId = $budgetTransaction->getBudgetAccount()->getId();
                         $budgetName = $budgetTransaction->getBudgetAccount()->getBudgetName();
-                        $classifier->learn($description, $budgetName);
+                        $classifier->learn($description, $budgetId);
                         $output->writeln("Learning '$description' as category '$budgetName'");
                     }
                 }

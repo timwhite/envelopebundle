@@ -19,7 +19,7 @@ class TNTClassifier
     ) {
     }
 
-    public function suggestBudgetAccount(Transaction $transaction): string
+    public function suggestBudgetAccount(Transaction $transaction): array
     {
         if (!$this->classifier) {
             $user = $this->userRepository->getUserFromSecurity($this->security->getUser());
@@ -33,8 +33,8 @@ class TNTClassifier
 
         // Account ID
         // $this->budgetAccountRepository->getUserBudgetAccountByName($result['label'])?->getId()
-
-        return $result['label'];
+        $budget = $this->budgetAccountRepository->find($result['label']);
+        return ['budgetAccountId' => $budget->getId(), 'suggestedBudget' => $budget->getBudgetName()];
     }
 
     /**

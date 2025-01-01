@@ -12,6 +12,7 @@ use App\Voter\BudgetAccountVoter;
 use App\Voter\TransactionVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -115,6 +116,24 @@ class TransactionController extends AbstractController
                 'codingForm' => $form->createView(),
             ]
         );
+    }
+
+    #[Route(path: '/transaction/{id}/code_api', name: 'envelope_transaction_code_api', options: ['expose' => true])]
+    #[IsGranted(TransactionVoter::EDIT, 'transaction')]
+    public function transactionCodeApi(Transaction $transaction, Request $request, TransactionRepository $transactionRepository, BudgetAccountRepository $budgetAccountRepository): JsonResponse
+    {
+        $budgetAccountId = $request->query->get('budgetAccountId');
+        $budgetAccount = $budgetAccountRepository->find($budgetAccountId);
+        $this->denyAccessUnlessGranted(BudgetAccountVoter::EDIT, $budgetAccount);
+
+        $budgetTransaction = new BudgetTransaction();
+        $budgetTransaction->setBudgetAccount($budgetAccount);
+        $budgetTransaction->setAmount($transaction->getUnassignedSum());
+        $transaction->addBudgetTransaction($budgetTransaction);
+
+        $transactionRepository->persistTransaction($transaction);
+
+        return new JsonResponse(['success' => true, 'transactionId' => $transaction->getId()]);
     }
 
     #[Route(path: '/bulkcode', name: 'envelope_bulk_code', methods: ['POST'])]
