@@ -22,6 +22,7 @@ A budgeting app based on the Envelope Budgeting method, using virtual envelopes 
   APP_ENV=prod APP_DEBUG=0 php ./bin/console cache:warmup
   php ./bin/console assets:install
   php ./bin/console importmap:install
+  php ./bin/console asset-map:compile
   php ./bin/console doctrine:migrations:migrate
   php ./bin/console train:budget
   ```  
