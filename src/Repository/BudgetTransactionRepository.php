@@ -98,4 +98,10 @@ class BudgetTransactionRepository extends ServiceEntityRepository
             ->groupBy('budgetAccount.id, yearweeknum')
             ->getQuery()->getResult();
     }
+
+    public function persistBudgetTransaction(BudgetTransaction $budgetTransaction): void
+    {
+        $this->getEntityManager()->persist($budgetTransaction);
+        $this->getEntityManager()->flush();
+    }
 }

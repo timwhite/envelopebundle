@@ -4,13 +4,18 @@ namespace App\Service;
 
 use App\Entity\BudgetTransaction;
 use App\Repository\AutoCodeSearchRepository;
+use App\Repository\BudgetTransactionRepository;
 use App\Repository\TransactionRepository;
 
 class autoCodeTransactions
 {
     private $codedResults = [];
 
-    public function __construct(private AutoCodeSearchRepository $autoCodeSearchRepository, private TransactionRepository $transactionRepository)
+    public function __construct(
+        private AutoCodeSearchRepository $autoCodeSearchRepository,
+        private TransactionRepository $transactionRepository,
+        private BudgetTransactionRepository $budgetTransactionRepository
+    )
     {
     }
 
@@ -34,6 +39,7 @@ class autoCodeTransactions
                     $transaction->setDescription($search->getRename());
                     $this->transactionRepository->persistTransaction($transaction);
                 }
+                $this->budgetTransactionRepository->persistBudgetTransaction($budgetTransaction);
             }
         }
     }
