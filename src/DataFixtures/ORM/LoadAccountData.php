@@ -16,7 +16,7 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
 
         $yaml = new Parser();
@@ -53,7 +53,7 @@ class LoadAccountData extends AbstractFixture implements OrderedFixtureInterface
     /**
      * {@inheritDoc}
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return 1; // the order in which fixtures will be loaded
     }

@@ -18,7 +18,7 @@ class LoadBudgetTemplateData extends AbstractFixture implements OrderedFixtureIn
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
 
         $yaml = new Parser();
@@ -80,7 +80,7 @@ class LoadBudgetTemplateData extends AbstractFixture implements OrderedFixtureIn
     /**
      * {@inheritDoc}
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return 3; // the order in which fixtures will be loaded
     }

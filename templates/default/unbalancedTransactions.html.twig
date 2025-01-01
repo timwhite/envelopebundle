@@ -86,7 +86,7 @@
             fetch(query, {method: 'POST'})
                 .then((response) => {
                     if (!response.ok) {
-                        alert('Error coding transaction')
+                        alert('Error coding transaction ' + transactionId)
                     }
 
                     return response.json()

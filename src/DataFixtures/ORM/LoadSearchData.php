@@ -13,7 +13,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
     /**
      * {@inheritDoc}
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $yaml = new Parser();
         try {
@@ -55,7 +55,7 @@ class LoadSearchData extends AbstractFixture implements OrderedFixtureInterface 
     /**
      * {@inheritDoc}
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return 2;
     }
