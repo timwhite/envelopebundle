@@ -1,2 +1,10 @@
 body {
 }
+
+tr {
+    transition: opacity 1s, visibility 1s;
+}
+
+tr.removed {
+    opacity: 0;
+}

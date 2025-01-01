@@ -93,7 +93,10 @@
                 })
                 .then((response) => {
                     if (response.success === true && response.transactionId === transactionId) {
-                        parent_tr.remove()
+                        parent_tr.classList.add("removed");
+                        parent_tr.addEventListener("transitionend", () => {
+                            parent_tr.remove();
+                        })
                         console.log("Successfully coded transaction " + transactionId);
                     } else {
                         console.debug(response)
