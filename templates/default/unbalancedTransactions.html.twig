@@ -25,7 +25,7 @@
                         <tbody>
                         {% for transaction in unbalancedtransactions %}
                             <tr data-transaction-id="{{ transaction.id }}">
-                                <td><input type="checkbox" name="bulktransactions[]" value="{{ transaction.id }}"/>{{ transaction.date|date('d/m/y') }}</td>
+                                <td><input type="checkbox" name="bulktransactions[]" value="{{ transaction.id }}" data-transaction-id="{{ transaction.id }}"/>{{ transaction.date|date('d/m/y') }}</td>
                                 <td>
                                     <a href="{{ path('envelope_transaction', {'id': transaction.id, 'return': 'unbalanced_transactions'}) }}">{{ transaction.description }}</a>
                                 </td>
@@ -51,7 +51,7 @@
                         <span class="col-sm-8 col-xs-7">
                                 {{ form_widget(codingForm.budget_transactions.vars.prototype.budgetaccount, { 'attr': {'class': 'combobox'} })|replace({'__name__': 0})|raw }}
                         </span>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" onclick="bulk_code_transactions(); return false;">
                             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-category-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h6v6h-6zm10 0h6v6h-6zm-10 10h6v6h-6zm10 3h6m-3 -3v6" /></svg>
                             Bulk Code Selected Transactions
                         </button>
@@ -70,6 +70,51 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        function bulk_code_transactions() {
+            const category = parseInt(document.getElementById('transaction_budget_transactions_0_budgetaccount').value);
+            document.getElementById('transaction_budget_transactions_0_budgetaccount').value = '';
+            const selectedItems = [...document.querySelectorAll("input[type=checkbox][data-transaction-id]:checked")].map(elem => {
+                elem.disabled = true;
+                elem.checked = false;
+                return parseInt(elem.getAttribute('data-transaction-id'));
+            });
+
+            const query = Routing.generate('envelope_transaction_bulk_code_api');
+
+            fetch(query, {
+                body: JSON.stringify({'category': category, 'transactions': selectedItems}),
+                method: 'POST'})
+                .then((response) => {
+                    if (!response.ok) {
+                        alert('Error bulk coding transactions')
+                    }
+                    return response.json()
+                })
+                .then((response) => {
+                    console.log(response);
+                    console.log(selectedItems);
+                    if (response.error) {
+                        alert(response.error)
+
+                        selectedItems.forEach((transactionId) => {
+                            const checkbox = document.querySelector(`input[type=checkbox][data-transaction-id="${transactionId}"]`)
+                            checkbox.disabled = false;
+                        })
+
+                        return;
+                    }
+
+                    response.successfulIds.forEach((transactionId) => {
+                        const transaction_tr = document.querySelector(`tr[data-transaction-id="${transactionId }"]`);
+                        transaction_tr.classList.add("removed");
+                        transaction_tr.addEventListener("transitionend", () => {
+                            transaction_tr.remove();
+                        })
+                        console.log("Successfully coded transaction " + transactionId);
+                    })
+                })
+        }
+
         function code_suggested_category(elem) {
             elem.classList.add('disabled');
             elem.classList.add('btn-loading');

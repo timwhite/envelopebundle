@@ -118,7 +118,7 @@ class TransactionController extends AbstractController
         );
     }
 
-    #[Route(path: '/transaction/{id}/code_api', name: 'envelope_transaction_code_api', options: ['expose' => true])]
+    #[Route(path: '/transaction/{id}/code_api', name: 'envelope_transaction_code_api', options: ['expose' => true], methods: ['POST'])]
     #[IsGranted(TransactionVoter::EDIT, 'transaction')]
     public function transactionCodeApi(Transaction $transaction, Request $request, TransactionRepository $transactionRepository, BudgetAccountRepository $budgetAccountRepository): JsonResponse
     {
@@ -136,6 +136,47 @@ class TransactionController extends AbstractController
         return new JsonResponse(['success' => true, 'transactionId' => $transaction->getId()]);
     }
 
+    #[Route(path: '/transaction/bulk_code/api', name: 'envelope_transaction_bulk_code_api', options: ['expose' => true], methods: ['POST'])]
+    public function transactionBulkCodeApi(Request $request, TransactionRepository $transactionRepository, BudgetAccountRepository $budgetAccountRepository): JsonResponse
+    {
+        $results = $request->toArray();
+        $budgetAccountId = $results['category'];
+        try {
+            $budgetAccount = $budgetAccountRepository->find($budgetAccountId);
+        } catch (\Throwable $exception) {
+            return new JsonResponse(['error' => 'Invalid budget account'], 200);
+        }
+        if (!$this->isGranted(BudgetAccountVoter::EDIT, $budgetAccount)) {
+            return new JsonResponse(['error' => 'Invalid budget account'], 200);
+        }
+
+        $transactions = $results['transactions'];
+
+        $errors = [];
+        $successfulIds = [];
+
+        foreach ($transactions as $transactionId) {
+            /** @var Transaction $transaction */
+            $transaction = $transactionRepository->find($transactionId);
+            if (!$this->isGranted(TransactionVoter::EDIT, $transaction)) {
+                $errors[] = "Access denied to transaction $transactionId";
+                continue;
+            }
+
+            $budgetTransaction = new BudgetTransaction();
+            $budgetTransaction->setBudgetAccount($budgetAccount);
+            $budgetTransaction->setAmount($transaction->getUnassignedSum());
+            $transaction->addBudgetTransaction($budgetTransaction);
+
+            $transactionRepository->persistTransaction($transaction);
+
+            $successfulIds[] = $transactionId;
+        }
+
+        return new JsonResponse(['successfulIds' => $successfulIds, 'errors' => $errors]);
+    }
+
+    // @TODO this function is no longer needed thanks to the JS version above
     #[Route(path: '/bulkcode', name: 'envelope_bulk_code', methods: ['POST'])]
     public function transactionBulkCodeAction(Request $request, TransactionRepository $transactionRepository, BudgetAccountRepository $budgetAccountRepository): Response
     {
