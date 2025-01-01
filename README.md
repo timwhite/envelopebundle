@@ -16,6 +16,10 @@ A budgeting app based on the Envelope Budgeting method, using virtual envelopes 
 - If migrating from older version 3.4, see below for doctrine migration commands
 - Setup assets and run migrations
   ```console
+  composer install --no-dev --optimize-autoloader
+  composer dump-env prod
+  APP_ENV=prod APP_DEBUG=0 php ./bin/console cache:clear
+  APP_ENV=prod APP_DEBUG=0 php ./bin/console cache:warmup
   php ./bin/console assets:install
   php ./bin/console importmap:install
   php ./bin/console doctrine:migrations:migrate
@@ -35,7 +39,7 @@ A budgeting app based on the Envelope Budgeting method, using virtual envelopes 
 - Create new migrations table `docker compose -f docker-compose.dev.yml exec php /code/bin/console doctrine:migrations:sync-metadata-storage`
 - Move existing migrations to new table
   ```sql
-  INSERT INTO doctrine_migration_versions (version, executed_at, execution_time) SELECT concat("DoctrineMigrations\\Version", version), executed_at, 1 FROM migration_versions;
+  INSERT INTO doctrine_migration_versions (version, executed_at, execution_time) SELECT concat("DoctrineMigrations\\Version", version), NULL, 1 FROM migration_versions;
   ```
 
 ## Budget category suggestion
