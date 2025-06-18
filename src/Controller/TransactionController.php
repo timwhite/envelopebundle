@@ -27,6 +27,7 @@ class TransactionController extends AbstractController
     #[Route(path: '/transaction/list', name: 'envelope_transactions')]
     public function transactionsList(TransactionRepository $transactionRepository, AccountRepository $accountRepository): Response
     {
+        // @TODO make UI easier to manage when 1000's of transactions. Maybe anchor tags with an index at the top for easy jumping?
         return $this->render(
             'default/transactions.html.twig',
             [
