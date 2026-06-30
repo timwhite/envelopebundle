@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TransactionController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
     }
 
@@ -144,7 +144,7 @@ class TransactionController extends AbstractController
         $budgetAccountId = $results['category'];
         try {
             $budgetAccount = $budgetAccountRepository->find($budgetAccountId);
-        } catch (\Throwable $exception) {
+        } catch (\Throwable) {
             return new JsonResponse(['error' => 'Invalid budget account'], 200);
         }
         if (!$this->isGranted(BudgetAccountVoter::EDIT, $budgetAccount)) {

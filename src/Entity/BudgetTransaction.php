@@ -14,7 +14,7 @@ class BudgetTransaction
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * We need EAGER loading due to us displaying the balance on our _toString method, which requires all

@@ -12,9 +12,9 @@ class autoCodeTransactions
     private $codedResults = [];
 
     public function __construct(
-        private AutoCodeSearchRepository $autoCodeSearchRepository,
-        private TransactionRepository $transactionRepository,
-        private BudgetTransactionRepository $budgetTransactionRepository
+        private readonly AutoCodeSearchRepository $autoCodeSearchRepository,
+        private readonly TransactionRepository $transactionRepository,
+        private readonly BudgetTransactionRepository $budgetTransactionRepository
     )
     {
     }

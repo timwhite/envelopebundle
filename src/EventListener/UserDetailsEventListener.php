@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: UserDetailsEvent::class)]
 class UserDetailsEventListener
 {
-    public function __construct(private Security $security)
+    public function __construct(private readonly Security $security)
     {
     }
     public function __invoke(UserDetailsEvent $event): void

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table]
 #[ORM\Entity]
-class TemplateTransaction
+class TemplateTransaction implements \Stringable
 {
     /**
      * @var int
@@ -142,7 +142,7 @@ class TemplateTransaction
         return $this->budgetAccount;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $string = 'Empty Account';
         if ($this->budgetAccount) {

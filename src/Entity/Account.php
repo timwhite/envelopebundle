@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
 )]
-class Account
+class Account implements \Stringable
 {
     /**
      * @var int
@@ -89,7 +89,7 @@ class Account
         return $this->name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->getName();
     }
@@ -101,7 +101,7 @@ class Account
     {
         $balance = 0;
         foreach ($this->transactions as $transaction) {
-            $balance = bcadd($balance, $transaction->getAmount(), 2);
+            $balance = bcadd($balance, (string) $transaction->getAmount(), 2);
         }
 
         return $balance;

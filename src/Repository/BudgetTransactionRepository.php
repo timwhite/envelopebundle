@@ -12,7 +12,7 @@ use Symfony\Bundle\SecurityBundle\Security;
  */
 class BudgetTransactionRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private Security $security)
+    public function __construct(ManagerRegistry $registry, private readonly Security $security)
     {
         parent::__construct($registry, BudgetTransaction::class);
     }

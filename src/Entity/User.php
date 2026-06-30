@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Class User.
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundle\Model\UserInterface
+class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundle\Model\UserInterface, \Stringable
 {
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -21,15 +21,15 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
     #[ORM\Column(type: 'string')]
     protected string $firstname;
     #[ORM\Column(type: 'string', nullable: true)]
-    protected ?string $lastname;
+    protected ?string $lastname = null;
     #[ORM\Column(type: 'string', nullable: true)]
-    protected ?string $email;
+    protected ?string $email = null;
 
     #[ORM\Column(name: 'username', type: 'string', length: 255, unique: true, nullable: true)]
     protected ?string $username = null;
 
     #[ORM\Column(name: 'avatar', type: 'string', length: 2048, nullable: true)]
-    protected ?string $avatar;
+    protected ?string $avatar = null;
 
     #[ORM\JoinColumn(name: 'accessgroup_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: AccessGroup::class)]
@@ -51,10 +51,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
      */
     public function unserialize($serialized): void
     {
-        list(
-            $this->id,
-            $this->username
-        ) = unserialize($serialized);
+        [$this->id, $this->username] = unserialize($serialized);
     }
 
     public function isEqualTo(UserInterface $user): bool
@@ -66,7 +63,7 @@ class User implements EquatableInterface, UserInterface, \KevinPapst\TablerBundl
         return false;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->firstname.' '.$this->lastname;
     }

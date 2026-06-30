@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MenuEventListener implements EventSubscriberInterface
 {
-    public function __construct(private Security $security)
+    public function __construct(private readonly Security $security)
     {
     }
 

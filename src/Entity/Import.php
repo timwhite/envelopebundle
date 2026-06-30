@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: ImportRepository::class)]
-class Import
+class Import implements \Stringable
 {
     /**
      * @var int
@@ -71,7 +71,7 @@ class Import
         return $this->importTime;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->id.' '.$this->importTime->format('Y-m-d H:i:s');
     }

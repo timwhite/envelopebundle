@@ -29,7 +29,7 @@ class importBankTransactions
         'OUTSTANDING TRANS',
     ];
 
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
@@ -137,7 +137,7 @@ class importBankTransactions
     private function checkUnclearedTransaction($fullDescription)
     {
         foreach ($this->uncleared_searches as $search) {
-            if (false !== strpos($fullDescription, $search)) {
+            if (str_contains((string) $fullDescription, (string) $search)) {
                 return true;
             } // stop on first true result
         }
@@ -188,10 +188,10 @@ class importBankTransactions
 
                     return false;
                 }
-                $description = preg_replace('/ {2,}/', ' ', $row[2]);
+                $description = preg_replace('/ {2,}/', ' ', (string) $row[2]);
                 $fullDescription = $description;
 
-                $dateparts = explode('/', $row[0], 3);
+                $dateparts = explode('/', (string) $row[0], 3);
                 $date = new \DateTime($dateparts[2].'/'.$dateparts[1].'/'.$dateparts[0]);
                 // $output->writeln($description);
 
@@ -199,7 +199,7 @@ class importBankTransactions
                      * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
                      * unless it has a - at the start
                      */
-                $amount = ltrim($row[1], '+');
+                $amount = ltrim((string) $row[1], '+');
                 // Remove any , characters in the string, they stuff things up too
                 $amount = str_replace(',', '', $amount);
                 break;
@@ -244,8 +244,8 @@ class importBankTransactions
                 /*
                  * Get the amount. But remove any extra '$' at the start of the string, also remove the , characters
                  */
-                $debit = -str_replace(',', '', ltrim($row[3], '-$'));
-                $credit = str_replace(',', '', ltrim($row[4], '$'));
+                $debit = -str_replace(',', '', ltrim((string) $row[3], '-$'));
+                $credit = str_replace(',', '', ltrim((string) $row[4], '$'));
 
                 $amount = $debit + $credit;
 
@@ -285,11 +285,11 @@ class importBankTransactions
                     return false;
                 }
 
-                $description = preg_replace('/ {2,}/', ' ', $row[5]);
+                $description = preg_replace('/ {2,}/', ' ', (string) $row[5]);
                 if ('' == $description) {
                     $description = $row[4];
                 }
-                $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', $row[5]);
+                $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', (string) $row[5]);
 
                 $date = new \DateTime($row[0]);
 
@@ -297,7 +297,7 @@ class importBankTransactions
                  * Get the amount. But remove any extra '+' at the start of the string, we know it's a positive number
                  * unless it has a - at the start
                  */
-                $amount = ltrim($row[1], '+');
+                $amount = ltrim((string) $row[1], '+');
                 // Remove any , characters in the string, they stuff things up too
                 $amount = str_replace(',', '', $amount);
                 break;

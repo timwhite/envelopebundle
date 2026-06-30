@@ -60,10 +60,10 @@ class ImportTransactionsCommand extends Command
                     if (sizeof($row) < 3) {
                         continue;
                     }
-                    $description = preg_replace('/ {2,}/', ' ', $row[2]);
+                    $description = preg_replace('/ {2,}/', ' ', (string) $row[2]);
                     $fullDescription = $description;
 
-                    $dateparts = explode('/', $row[0], 3);
+                    $dateparts = explode('/', (string) $row[0], 3);
                     $date = new \DateTime($dateparts[2].'/'.$dateparts[1].'/'.$dateparts[0]);
                 // $output->writeln($description);
                 } else {
@@ -71,11 +71,11 @@ class ImportTransactionsCommand extends Command
                     if (sizeof($row) < 5) {
                         continue;
                     }
-                    $description = preg_replace('/ {2,}/', ' ', $row[5]);
+                    $description = preg_replace('/ {2,}/', ' ', (string) $row[5]);
                     if ('' == $description) {
                         $description = $row[4];
                     }
-                    $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', $row[5]);
+                    $fullDescription = $row[4].':'.preg_replace('/ {2,}/', ' ', (string) $row[5]);
 
                     $date = new \DateTime($row[0]);
                 }

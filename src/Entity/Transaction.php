@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Attribute\MaxDepth;
     denormalizationContext: ['groups' => ['write']],
 )]
 // #[Get(security: "is_granted('transaction_edit', object)")]
-class Transaction
+class Transaction implements \Stringable
 {
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -60,11 +60,11 @@ class Transaction
 
     #[ORM\JoinColumn(name: 'import_id', referencedColumnName: 'id', nullable: true)]
     #[ORM\ManyToOne(targetEntity: Import::class)]
-    private ?Import $import;
+    private ?Import $import = null;
 
     #[ORM\Column(name: 'extra', type: 'json', nullable: true)]
     #[Groups(['read'])]
-    private ?array $extra;
+    private ?array $extra = null;
 
     /**
      * An external immutable ID to match this transaction automatically via an API or similar.
@@ -186,7 +186,7 @@ class Transaction
     {
         $balance = '0';
         foreach ($this->budget_transactions as $transaction) {
-            $balance = bcadd($balance, $transaction->getAmount(), 2);
+            $balance = bcadd($balance, (string) $transaction->getAmount(), 2);
         }
 
         return $balance;
@@ -197,7 +197,7 @@ class Transaction
         $sum = '0';
         foreach ($this->getBudgetTransactions() as $transaction) {
             if ($transaction->getAmount() > 0) {
-                $sum = bcadd($sum, $transaction->getAmount(), 2);
+                $sum = bcadd($sum, (string) $transaction->getAmount(), 2);
             }
         }
 
@@ -209,7 +209,7 @@ class Transaction
         $sum = 0;
         foreach ($this->getBudgetTransactions() as $transaction) {
             if ($transaction->getAmount() < 0) {
-                $sum = bcadd($sum, $transaction->getAmount(), 2);
+                $sum = bcadd($sum, (string) $transaction->getAmount(), 2);
             }
         }
 
@@ -265,7 +265,7 @@ class Transaction
         return $this->budget_transactions;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getDescription().': '.$this->getBudgetSum().'/'.$this->getAmount();
     }

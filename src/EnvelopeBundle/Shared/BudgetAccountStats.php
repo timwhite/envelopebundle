@@ -14,7 +14,6 @@ use Symfony\Component\Validator\Constraints\DateTime;
 
 class BudgetAccountStats
 {
-    private $budgetID;
     private $negativeSum;
     private $positiveSum;
     private $averageFortnightlySpend;
@@ -38,9 +37,8 @@ class BudgetAccountStats
     private $runningTotal = [];
     private $weeklySpend = [];
 
-    public function __construct($budgetID)
+    public function __construct(private $budgetID)
     {
-        $this->budgetID = $budgetID;
     }
 
     /**
@@ -92,10 +90,7 @@ class BudgetAccountStats
         return $this->negativeSum;
     }
 
-    /**
-     * @param mixed $negativeSum
-     */
-    public function setNegativeSum($negativeSum)
+    public function setNegativeSum(mixed $negativeSum)
     {
         $this->negativeSum = $negativeSum;
     }
@@ -108,10 +103,7 @@ class BudgetAccountStats
         return $this->positiveSum;
     }
 
-    /**
-     * @param mixed $positiveSum
-     */
-    public function setPositiveSum($positiveSum)
+    public function setPositiveSum(mixed $positiveSum)
     {
         $this->positiveSum = $positiveSum;
     }
@@ -172,10 +164,7 @@ class BudgetAccountStats
         return $this->averageFortnightlyIncome;
     }
 
-    /**
-     * @param mixed $averageFortnightlyIncome
-     */
-    public function setAverageFortnightlyIncome($averageFortnightlyIncome)
+    public function setAverageFortnightlyIncome(mixed $averageFortnightlyIncome)
     {
         $this->averageFortnightlyIncome = $averageFortnightlyIncome;
     }
@@ -220,20 +209,17 @@ class BudgetAccountStats
         return $this->averageFortnightlyPositive;
     }
 
-    /**
-     * @param mixed $averageFortnightlyPositive
-     */
-    public function setAverageFortnightlyPositive($averageFortnightlyPositive)
+    public function setAverageFortnightlyPositive(mixed $averageFortnightlyPositive)
     {
         $this->averageFortnightlyPositive = $averageFortnightlyPositive;
     }
 
     public function appendWeekRunningTotal($yearweek, $sum)
     {
-        $year = substr($yearweek, 0, 4);
-        $week = substr($yearweek, 4, 2);
-        list($lastYear, $lastWeek, $lastSum, $lastTotal) = end($this->runningTotal);
-        $total = bcadd($lastTotal, $sum, 2);
+        $year = substr((string) $yearweek, 0, 4);
+        $week = substr((string) $yearweek, 4, 2);
+        [$lastYear, $lastWeek, $lastSum, $lastTotal] = end($this->runningTotal);
+        $total = bcadd((string) $lastTotal, (string) $sum, 2);
 
         /*// Give us a data point the week before if this is the start
         if($lastYear == 0) {
@@ -244,8 +230,8 @@ class BudgetAccountStats
 
     public function appendWeekSpend($yearweek, $spend)
     {
-        $year = substr($yearweek, 0, 4);
-        $week = substr($yearweek, 4, 2);
+        $year = substr((string) $yearweek, 0, 4);
+        $week = substr((string) $yearweek, 4, 2);
         $this->weeklySpend[] = [$year, $week, $spend];
     }
 
@@ -258,7 +244,7 @@ class BudgetAccountStats
         if (sizeof($this->weeklySpend) == 0) return implode(',', $sparkline);
 
         // Load first available transaction
-        list($lastYear, $lastWeek, $spend) = $this->weeklySpend[0];
+        [$lastYear, $lastWeek, $spend] = $this->weeklySpend[0];
         $lastDate = new \DateTime($lastYear . "W" . $lastWeek);
 
         // Pad start of sparkline if first transaction is after our starting point
@@ -269,7 +255,7 @@ class BudgetAccountStats
 
         // Process our transactions
         foreach ($this->weeklySpend as $weekData) {
-            list($year, $week, $spend) = $weekData;
+            [$year, $week, $spend] = $weekData;
             $date = new \DateTime($year . "W" . $week);
 
             // If date is after our starting range we process it and before our end date
@@ -300,7 +286,7 @@ class BudgetAccountStats
         if (sizeof($this->runningTotal) == 0) return implode(',', $sparkline);
 
         // Load first available transaction
-        list($lastYear, $lastWeek, $lastSum, $lastTotal) = $this->runningTotal[0];
+        [$lastYear, $lastWeek, $lastSum, $lastTotal] = $this->runningTotal[0];
         $lastDate = new \DateTime($lastYear . "W" . $lastWeek);
 
         // Pad start of sparkline if first transaction is after our starting point
@@ -311,7 +297,7 @@ class BudgetAccountStats
 
         // Process our transactions
         foreach ($this->runningTotal as $weekData) {
-            list($year, $week, $sum, $total) = $weekData;
+            [$year, $week, $sum, $total] = $weekData;
             $date = new \DateTime($year . "W" . $week);
 
             // If date is after our starting range we process it and before our end date

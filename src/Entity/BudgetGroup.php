@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: BudgetGroupRepository::class)]
-class BudgetGroup
+class BudgetGroup implements \Stringable
 {
     /**
      * @var int
@@ -69,7 +69,7 @@ class BudgetGroup
         return $this->name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName() ?? '';
     }
@@ -116,7 +116,7 @@ class BudgetGroup
     {
         $balance = 0;
         foreach ($this->getBudgetAccounts() as $account) {
-            $balance = bcadd($balance, $account->getBalance($startdate, $enddate), 2);
+            $balance = bcadd($balance, (string) $account->getBalance($startdate, $enddate), 2);
         }
 
         return $balance;
@@ -126,7 +126,7 @@ class BudgetGroup
     {
         $balance = 0;
         foreach ($this->getBudgetAccounts() as $account) {
-            $balance = bcadd($balance, $account->getPositiveBalance($startdate, $enddate), 2);
+            $balance = bcadd($balance, (string) $account->getPositiveBalance($startdate, $enddate), 2);
         }
 
         return $balance;
@@ -136,7 +136,7 @@ class BudgetGroup
     {
         $balance = 0;
         foreach ($this->getBudgetAccounts() as $account) {
-            $balance = bcadd($balance, $account->getNegativeBalance($startdate, $enddate), 2);
+            $balance = bcadd($balance, (string) $account->getNegativeBalance($startdate, $enddate), 2);
         }
 
         return $balance;

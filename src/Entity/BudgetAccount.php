@@ -14,7 +14,7 @@ use App\EnvelopeBundle\Shared\BudgetAccountStats;
 #[ORM\Table]
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
-class BudgetAccount
+class BudgetAccount implements \Stringable
 {
     /**
      * @var int
@@ -197,7 +197,7 @@ class BudgetAccount
         return $balance;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         // NB: This should probably be handled by the view, instead of hard coding a locale here
         $fmt = numfmt_create('en_AU', \NumberFormatter::CURRENCY);

@@ -13,12 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table]
 #[ORM\Entity(repositoryClass: BudgetTemplateRepository::class)]
-class Template
+class Template implements \Stringable
 {
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
@@ -27,7 +27,7 @@ class Template
     private string $description;
 
     #[ORM\Column(name: 'last_applied_date', type: 'date', nullable: true)]
-    private ?\DateTime $last_applied_date;
+    private ?\DateTime $last_applied_date = null;
 
     #[ORM\OneToMany(mappedBy: 'template', targetEntity: TemplateTransaction::class, cascade: ['persist', 'remove'])]
     private Collection $template_transactions;
@@ -43,7 +43,7 @@ class Template
     {
         $balance = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
-            $balance = bcadd($balance, $transaction->getAmount(), 2);
+            $balance = bcadd($balance, (string) $transaction->getAmount(), 2);
         }
 
         return $balance;
@@ -54,7 +54,7 @@ class Template
         $sum = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
             if ($transaction->getAmount() > 0) {
-                $sum = bcadd($sum, $transaction->getAmount(), 2);
+                $sum = bcadd($sum, (string) $transaction->getAmount(), 2);
             }
         }
 
@@ -66,7 +66,7 @@ class Template
         $sum = '0';
         foreach ($this->getTemplateTransactions() as $transaction) {
             if ($transaction->getAmount() < 0) {
-                $sum = bcadd($sum, $transaction->getAmount(), 2);
+                $sum = bcadd($sum, (string) $transaction->getAmount(), 2);
             }
         }
 
@@ -125,7 +125,7 @@ class Template
         $this->template_transactions = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $lastDate = '';
         if ($this->getLastAppliedDate()) {

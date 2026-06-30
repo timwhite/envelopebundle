@@ -10,7 +10,7 @@ use TeamTNT\TNTSearch\Classifier\TNTClassifier;
  */
 #[ORM\Table]
 #[ORM\Entity]
-class AccessGroup
+class AccessGroup implements \Stringable
 {
     /**
      * @var int
@@ -66,7 +66,7 @@ class AccessGroup
         return $this->name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName();
     }

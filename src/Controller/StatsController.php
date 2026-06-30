@@ -79,7 +79,7 @@ class StatsController extends AbstractController
             } else {
                 $excluded_transactions[] = $result;
             }
-            $total = bcadd($total, $result['sumamount'], 2);
+            $total = bcadd($total, (string) $result['sumamount'], 2);
         }
 
         foreach ($results as $key => $result) {
