@@ -1,90 +1,92 @@
 {
-    "name": "tim/envelope-budget",
-    "license": "proprietary",
-    "type": "project",
-    "autoload": {
-        "psr-4": {"App\\": "src/"}
-    },
-    "require": {
-        "php": ">=8.1",
-        "ext-curl": "*",
-        "ext-bcmath": "*",
-        "ext-intl": "*",
-        "doctrine/orm": "^2.6",
-        "doctrine/doctrine-migrations-bundle": "^3.3",
-        "composer/package-versions-deprecated": "1.11.99.1",
-        "symfony/http-client": "6.4.*",
-        "symfony/flex": "*",
-        "symfony/asset": "6.4.*",
-        "symfony/monolog-bundle": "^3.10",
-        "symfony/form": "6.4.*",
-        "symfony/security-bundle": "6.4.*",
-        "symfony/validator": "6.4.*",
-        "doctrine/doctrine-fixtures-bundle": "^3.6",
-        "symfony/twig-bundle": "6.4.*",
-        "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0",
-        "doctrine/dbal": "^3",
-        "doctrine/doctrine-bundle": "^2.12",
-        "hwi/oauth-bundle": "^2.2",
-        "symfony/console": "6.4.*",
-        "symfony/runtime": "6.4.*",
-        "symfony/yaml": "6.4.*",
-        "symfony/dotenv": "6.4.*",
-        "kevinpapst/tabler-bundle": "^1.4",
-        "twig/intl-extra": "^3.11",
-        "symfony/asset-mapper": "6.4.*",
-        "beberlei/doctrineextensions": "^1.5",
-        "paragonie/halite": "^5",
-        "nelmio/cors-bundle": "^2.5",
-        "symfony/expression-language": "6.4.*",
-        "phpdocumentor/reflection-docblock": "^5.4",
-        "phpstan/phpdoc-parser": "^1.30",
-        "symfony/property-access": "6.4.*",
-        "symfony/property-info": "6.4.*",
-        "symfony/serializer": "6.4.*",
-        "teamtnt/tntsearch": "^4.4",
-        "friendsofsymfony/jsrouting-bundle": "^3.5"
-    },
-    "conflict": {
-	"symfony/symfony": "*"
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "SymfonyStandard\\Composer::hookRootPackageInstall"
-        ],
-        "post-install-cmd": [
-        ],
-        "post-update-cmd": [
-        ],
-        "auto-scripts": {
-            "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "importmap:install": "symfony-cmd"
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "symfony/flex": true,
-            "symfony/runtime": true
-        }
-    },
-    "extra": {
-        "symfony-app-dir": "app",
-        "symfony-web-dir": "web",
-        "symfony-var-dir": "var",
-        "symfony-bin-dir": "bin",
-        "symfony-tests-dir": "tests",
-        "symfony-assets-install": "relative",
-	"symfony": {"require": "6.4.*"}
-    },
-    "require-dev": {
-        "symfony/stopwatch": "6.4.*",
-        "symfony/web-profiler-bundle": "6.4.*",
-        "rector/rector": "^1.2",
-        "friendsofphp/php-cs-fixer": "^3.62",
-        "symfony/maker-bundle": "^1.60",
-        "symfony/var-dumper": "6.4.*",
-        "symfony/debug-bundle": "6.4.*"
+  "name": "tim/envelope-budget",
+  "license": "proprietary",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
     }
+  },
+  "require": {
+    "php": ">=8.4",
+    "ext-curl": "*",
+    "ext-bcmath": "*",
+    "ext-intl": "*",
+    "doctrine/orm": "^2.6",
+    "doctrine/doctrine-migrations-bundle": "^3.3",
+    "composer/package-versions-deprecated": "1.11.99.1",
+    "symfony/http-client": "6.4.*",
+    "symfony/flex": "*",
+    "symfony/asset": "6.4.*",
+    "symfony/monolog-bundle": "^3.10",
+    "symfony/form": "6.4.*",
+    "symfony/security-bundle": "6.4.*",
+    "symfony/validator": "6.4.*",
+    "doctrine/doctrine-fixtures-bundle": "^3.6",
+    "symfony/twig-bundle": "6.4.*",
+    "twig/extra-bundle": "^2.12|^3.0",
+    "twig/twig": "^2.12|^3.0",
+    "doctrine/dbal": "^3",
+    "doctrine/doctrine-bundle": "^2.12",
+    "hwi/oauth-bundle": "^2.2",
+    "symfony/console": "6.4.*",
+    "symfony/runtime": "6.4.*",
+    "symfony/yaml": "6.4.*",
+    "symfony/dotenv": "6.4.*",
+    "kevinpapst/tabler-bundle": "^1.4",
+    "twig/intl-extra": "^3.11",
+    "symfony/asset-mapper": "6.4.*",
+    "beberlei/doctrineextensions": "^1.5",
+    "paragonie/halite": "^5",
+    "nelmio/cors-bundle": "^2.5",
+    "symfony/expression-language": "6.4.*",
+    "phpdocumentor/reflection-docblock": "^5.4",
+    "phpstan/phpdoc-parser": "^1.30",
+    "symfony/property-access": "6.4.*",
+    "symfony/property-info": "6.4.*",
+    "symfony/serializer": "6.4.*",
+    "teamtnt/tntsearch": "^4.4",
+    "friendsofsymfony/jsrouting-bundle": "^3.5"
+  },
+  "conflict": {
+    "symfony/symfony": "*"
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "SymfonyStandard\\Composer::hookRootPackageInstall"
+    ],
+    "post-install-cmd": [],
+    "post-update-cmd": [],
+    "auto-scripts": {
+      "cache:clear": "symfony-cmd",
+      "assets:install %PUBLIC_DIR%": "symfony-cmd",
+      "importmap:install": "symfony-cmd"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "symfony/flex": true,
+      "symfony/runtime": true
+    }
+  },
+  "extra": {
+    "symfony-app-dir": "app",
+    "symfony-web-dir": "web",
+    "symfony-var-dir": "var",
+    "symfony-bin-dir": "bin",
+    "symfony-tests-dir": "tests",
+    "symfony-assets-install": "relative",
+    "symfony": {
+      "require": "6.4.*"
+    }
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.62",
+    "rector/rector": "^2.5",
+    "symfony/debug-bundle": "6.4.*",
+    "symfony/maker-bundle": "^1.60",
+    "symfony/stopwatch": "6.4.*",
+    "symfony/var-dumper": "6.4.*",
+    "symfony/web-profiler-bundle": "6.4.*"
+  }
 }
