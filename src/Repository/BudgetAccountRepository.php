@@ -40,8 +40,6 @@ class BudgetAccountRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $name
-     * @return BudgetAccount|null
      * @throws NonUniqueResultException
      */
     public function getUserBudgetAccountByName(string $name): ?BudgetAccount

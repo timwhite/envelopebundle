@@ -34,6 +34,7 @@ class TNTClassifier
         // Account ID
         // $this->budgetAccountRepository->getUserBudgetAccountByName($result['label'])?->getId()
         $budget = $this->budgetAccountRepository->find($result['label']);
+
         return ['budgetAccountId' => $budget->getId(), 'suggestedBudget' => $budget->getBudgetName()];
     }
 

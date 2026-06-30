@@ -13,6 +13,7 @@ class UserDetailsEventListener
     public function __construct(private readonly Security $security)
     {
     }
+
     public function __invoke(UserDetailsEvent $event): void
     {
         $user = $this->security->getUser();
@@ -20,6 +21,5 @@ class UserDetailsEventListener
         if ($user instanceof UserInterface) {
             $event->setUser($user);
         }
-
     }
 }

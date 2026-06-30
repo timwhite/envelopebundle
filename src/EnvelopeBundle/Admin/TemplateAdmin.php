@@ -3,8 +3,8 @@
 namespace EnvelopeBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 class TemplateAdmin extends Admin
@@ -13,7 +13,7 @@ class TemplateAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', [ 'label' => 'Budget Template Name' ] )
+            ->add('name', 'text', ['label' => 'Budget Template Name'])
             ->add('description')
         ;
     }

@@ -4,8 +4,8 @@ namespace EnvelopeBundle\Admin;
 
 use App\Entity\Account;
 use Sonata\AdminBundle\Admin\Admin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 class TransactionAdmin extends Admin
@@ -17,7 +17,7 @@ class TransactionAdmin extends Admin
             ->add('description')
             ->add('date')
             ->add('fullDescription')
-            ->add('account', 'entity', [ 'class' => Account::class ] )
+            ->add('account', 'entity', ['class' => Account::class])
             ->add('amount')
         ;
     }

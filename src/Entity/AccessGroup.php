@@ -93,9 +93,6 @@ class AccessGroup implements \Stringable
         return unserialize($this->classifierSerialized);
     }
 
-    /**
-     * @return \DateTimeImmutable|null
-     */
     public function getLastClassified(): ?\DateTimeImmutable
     {
         return $this->lastClassified;

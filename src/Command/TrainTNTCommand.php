@@ -27,7 +27,6 @@ class TrainTNTCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         foreach ($this->entityManager->getRepository(AccessGroup::class)->findAll() as $accessGroup) {
-
             $classifier = new TNTClassifier();
             $accounts = $this->accountRepository->findBy(['access_group' => $accessGroup]);
             foreach ($accounts as $account) {
@@ -49,7 +48,6 @@ class TrainTNTCommand extends Command
             $accessGroup->storeClassifier($classifier);
             $this->entityManager->persist($accessGroup);
             $this->entityManager->flush();
-
         }
 
         return Command::SUCCESS;

@@ -11,9 +11,6 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class BudgetGroupAdmin extends Admin
 {
-    /**
-     * @param DatagridMapper $datagridMapper
-     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
@@ -22,9 +19,6 @@ class BudgetGroupAdmin extends Admin
         ;
     }
 
-    /**
-     * @param ListMapper $listMapper
-     */
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
@@ -36,25 +30,19 @@ class BudgetGroupAdmin extends Admin
                     'show' => [],
                     'edit' => [],
                     'delete' => [],
-                ]
-            ] )
+                ],
+            ])
         ;
     }
 
-    /**
-     * @param FormMapper $formMapper
-     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', [ 'label' => 'Budget Group Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => AccessGroup::class ] )
+            ->add('name', 'text', ['label' => 'Budget Group Name'])
+            ->add('accessGroup', 'entity', ['class' => AccessGroup::class])
         ;
     }
 
-    /**
-     * @param ShowMapper $showMapper
-     */
     protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper

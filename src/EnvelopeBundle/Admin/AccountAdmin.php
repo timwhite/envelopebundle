@@ -4,8 +4,8 @@ namespace EnvelopeBundle\Admin;
 
 use App\Entity\AccessGroup;
 use Sonata\AdminBundle\Admin\Admin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 class AccountAdmin extends Admin
@@ -14,8 +14,8 @@ class AccountAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', [ 'label' => 'Account Name' ] )
-            ->add('accessGroup',  'entity', [ 'class' => AccessGroup::class ] )
+            ->add('name', 'text', ['label' => 'Account Name'])
+            ->add('accessGroup', 'entity', ['class' => AccessGroup::class])
         ;
     }
 

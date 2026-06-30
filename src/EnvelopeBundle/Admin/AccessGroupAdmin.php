@@ -10,9 +10,6 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 class AccessGroupAdmin extends Admin
 {
-    /**
-     * @param DatagridMapper $datagridMapper
-     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
@@ -21,9 +18,6 @@ class AccessGroupAdmin extends Admin
         ;
     }
 
-    /**
-     * @param ListMapper $listMapper
-     */
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
@@ -34,14 +28,11 @@ class AccessGroupAdmin extends Admin
                     'show' => [],
                     'edit' => [],
                     'delete' => [],
-                ]
-            ] )
+                ],
+            ])
         ;
     }
 
-    /**
-     * @param FormMapper $formMapper
-     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
@@ -49,9 +40,6 @@ class AccessGroupAdmin extends Admin
         ;
     }
 
-    /**
-     * @param ShowMapper $showMapper
-     */
     protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper

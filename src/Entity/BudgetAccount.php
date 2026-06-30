@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use App\Entity\Budget\TemplateTransaction;
+use App\EnvelopeBundle\Shared\BudgetAccountStats;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\EnvelopeBundle\Shared\BudgetAccountStats;
 
 /**
  * Account.

@@ -14,9 +14,8 @@ class autoCodeTransactions
     public function __construct(
         private readonly AutoCodeSearchRepository $autoCodeSearchRepository,
         private readonly TransactionRepository $transactionRepository,
-        private readonly BudgetTransactionRepository $budgetTransactionRepository
-    )
-    {
+        private readonly BudgetTransactionRepository $budgetTransactionRepository,
+    ) {
     }
 
     /**

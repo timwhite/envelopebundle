@@ -2,18 +2,17 @@
 
 namespace App\Voter;
 
-use App\Entity\BudgetTransaction;
 use App\Entity\Transaction;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
- * Voter on (Account) Transactions. They must belong to your access group
+ * Voter on (Account) Transactions. They must belong to your access group.
  */
 class TransactionVoter extends Voter
 {
-    const EDIT = 'transaction_edit';
+    public const EDIT = 'transaction_edit';
 
     protected function supports(string $attribute, mixed $subject): bool
     {

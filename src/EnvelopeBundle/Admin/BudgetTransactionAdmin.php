@@ -5,8 +5,8 @@ namespace EnvelopeBundle\Admin;
 use App\Entity\BudgetAccount;
 use App\Entity\Transaction;
 use Sonata\AdminBundle\Admin\Admin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 class BudgetTransactionAdmin extends Admin
@@ -15,8 +15,8 @@ class BudgetTransactionAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('transaction', 'entity', [ 'class' => Transaction::class ] )
-            ->add('budgetAccount', 'entity', [ 'class' => BudgetAccount::class ] )
+            ->add('transaction', 'entity', ['class' => Transaction::class])
+            ->add('budgetAccount', 'entity', ['class' => BudgetAccount::class])
             ->add('amount')
         ;
     }

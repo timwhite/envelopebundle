@@ -79,7 +79,7 @@ class AutoCodeController extends AbstractController
         $form = $this->createFormBuilder($search)
             ->add('budgetAccount', EntityType::class, [
                 'class' => BudgetAccount::class,
-                'query_builder' => fn(EntityRepository $repository) => $repository->createQueryBuilder('budgetAccount')
+                'query_builder' => fn (EntityRepository $repository) => $repository->createQueryBuilder('budgetAccount')
                     ->leftJoin(BudgetGroup::class, 'budgetGroup', 'WITH', 'budgetAccount.budget_group = budgetGroup')
                     ->where('budgetGroup.access_group = :accessGroup')
                     ->setParameter('accessGroup', $user->getAccessGroup()),

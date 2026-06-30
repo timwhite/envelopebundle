@@ -9,7 +9,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class BudgetTransactionVoter extends Voter
 {
-
     protected function supports(string $attribute, mixed $subject): bool
     {
         if (!$subject instanceof BudgetTransaction) {

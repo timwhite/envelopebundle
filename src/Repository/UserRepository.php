@@ -18,5 +18,4 @@ class UserRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['username' => $security->getUserIdentifier()]);
     }
-
 }

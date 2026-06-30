@@ -3,14 +3,13 @@
 namespace App\Voter;
 
 use App\Entity\BudgetAccount;
-use App\Entity\BudgetTransaction;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class BudgetAccountVoter extends Voter
 {
-    const EDIT = 'budget_account_edit';
+    public const EDIT = 'budget_account_edit';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -32,7 +31,6 @@ class BudgetAccountVoter extends Voter
         if (!$user instanceof User) {
             return false;
         }
-
 
         if ($user->getAccessGroup() !== $subject->getBudgetGroup()->getAccessGroup()) {
             return false;
