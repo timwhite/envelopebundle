@@ -36,7 +36,6 @@
         "symfony/asset-mapper": "6.4.*",
         "beberlei/doctrineextensions": "^1.5",
         "paragonie/halite": "^5",
-        "api-platform/core": "^3.3",
         "nelmio/cors-bundle": "^2.5",
         "symfony/expression-language": "6.4.*",
         "phpdocumentor/reflection-docblock": "^5.4",
