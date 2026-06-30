@@ -14,7 +14,6 @@
     "ext-intl": "*",
     "doctrine/orm": "^2.6",
     "doctrine/doctrine-migrations-bundle": "^3.3",
-    "composer/package-versions-deprecated": "1.11.99.1",
     "symfony/http-client": "6.4.*",
     "symfony/flex": "*",
     "symfony/asset": "6.4.*",
