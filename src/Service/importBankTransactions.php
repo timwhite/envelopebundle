@@ -268,14 +268,18 @@ class importBankTransactions
                  * If no merchant name, then there will be less fields in the row
                  * 02 Feb 22,-20,1XXXXXXXX, ,MISCELLANEOUS DEBIT,VXXXX 01/02 GOOGLE CLOUD,123.45,Shopping,Google Cloud
                  * 27 Jan 22,8.00,1XXXXXXXX, ,INTER-BANK CREDIT,Internet Wordpress,131.45,Other income
+                 *
+                 * New NAB format (2026-06) is
+                 * Date,Amount,Account Number,,Transaction Type,Transaction Details,Balance,Category,Merchant Name,Processed On
                  */
 
                 // NAB format date,amount,__,__,Type,Description,Balance,__
-                if (8 != sizeof($row) && 9 != sizeof($row)) {
+                if (10 != sizeof($row)) {
                     $this->unknown[] = implode(',', $row);
 
                     return false;
                 }
+
                 if ('Date' === $row[0]) {
                     // Header row
                     return false;
